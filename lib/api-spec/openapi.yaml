@@ -1,22 +1,26 @@
 openapi: 3.1.0
 info:
-  # Do not change the title, if the title changes, the import paths will be broken
   title: Api
   version: 0.1.0
-  description: API specification
+  description: Resin Trading Manager API
 servers:
   - url: /api
     description: Base API path
 tags:
   - name: health
     description: Health operations
+  - name: sources
+    description: Resin sources (supply)
+  - name: demands
+    description: Resin demands (buy requests)
+  - name: matches
+    description: Source-demand matching
 paths:
   /healthz:
     get:
       operationId: healthCheck
       tags: [health]
       summary: Health check
-      description: Returns server health status
       responses:
         "200":
           description: Healthy
@@ -24,6 +28,174 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+
+  /sources:
+    get:
+      operationId: listSources
+      tags: [sources]
+      summary: List all resin sources
+      parameters:
+        - name: resinCategory
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/ResinCategory"
+      responses:
+        "200":
+          description: List of sources
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ResinEntry"
+    post:
+      operationId: createSource
+      tags: [sources]
+      summary: Create a new resin source
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateResinEntry"
+      responses:
+        "201":
+          description: Created source
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResinEntry"
+
+  /sources/{id}:
+    put:
+      operationId: updateSource
+      tags: [sources]
+      summary: Update a resin source
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateResinEntry"
+      responses:
+        "200":
+          description: Updated source
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResinEntry"
+    delete:
+      operationId: deleteSource
+      tags: [sources]
+      summary: Delete a resin source
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /demands:
+    get:
+      operationId: listDemands
+      tags: [demands]
+      summary: List all resin demands
+      parameters:
+        - name: resinCategory
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/ResinCategory"
+      responses:
+        "200":
+          description: List of demands
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ResinEntry"
+    post:
+      operationId: createDemand
+      tags: [demands]
+      summary: Create a new resin demand
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateResinEntry"
+      responses:
+        "201":
+          description: Created demand
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResinEntry"
+
+  /demands/{id}:
+    put:
+      operationId: updateDemand
+      tags: [demands]
+      summary: Update a resin demand
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateResinEntry"
+      responses:
+        "200":
+          description: Updated demand
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ResinEntry"
+    delete:
+      operationId: deleteDemand
+      tags: [demands]
+      summary: Delete a resin demand
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "204":
+          description: Deleted
+
+  /matches:
+    get:
+      operationId: getMatches
+      tags: [matches]
+      summary: Get potential source-demand matches
+      responses:
+        "200":
+          description: List of matches
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Match"
+
 components:
   schemas:
     HealthStatus:
@@ -34,3 +206,171 @@ components:
       required:
         - status
 
+    ResinCategory:
+      type: string
+      enum: [virgin, offgrade, recycled]
+
+    ResinType:
+      type: string
+      enum: [PP, PE, PS, ABS, PVC, PET, PC, Nylon, EVA, PMMA, Other]
+
+    PPType:
+      type: string
+      enum: [Homopolymer, Copolymer, Random, Impact, Terpolymer, N/A]
+
+    PackagingType:
+      type: string
+      enum: [Bags, Octabin, Bulk, Jumbo_Bag, Box, Other]
+
+    ResinEntry:
+      type: object
+      properties:
+        id:
+          type: integer
+        entryType:
+          type: string
+          enum: [source, demand]
+        resinCategory:
+          $ref: "#/components/schemas/ResinCategory"
+        date:
+          type: string
+          format: date
+        counterparty:
+          type: string
+        personInCharge:
+          type: string
+        resinType:
+          $ref: "#/components/schemas/ResinType"
+        manufacturer:
+          type: string
+          nullable: true
+        grade:
+          type: string
+          nullable: true
+        ppType:
+          $ref: "#/components/schemas/PPType"
+          nullable: true
+        sampleAvailable:
+          type: boolean
+          nullable: true
+        packaging:
+          $ref: "#/components/schemas/PackagingType"
+          nullable: true
+        meltFlowIndex:
+          type: number
+          nullable: true
+        charpy:
+          type: number
+          nullable: true
+        izod:
+          type: number
+          nullable: true
+        density:
+          type: number
+          nullable: true
+        price:
+          type: number
+          nullable: true
+        quantity:
+          type: number
+          nullable: true
+        remarks:
+          type: string
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - entryType
+        - resinCategory
+        - date
+        - counterparty
+        - personInCharge
+        - resinType
+        - createdAt
+        - updatedAt
+
+    CreateResinEntry:
+      type: object
+      properties:
+        entryType:
+          type: string
+          enum: [source, demand]
+        resinCategory:
+          $ref: "#/components/schemas/ResinCategory"
+        date:
+          type: string
+          format: date
+        counterparty:
+          type: string
+        personInCharge:
+          type: string
+        resinType:
+          $ref: "#/components/schemas/ResinType"
+        manufacturer:
+          type: string
+          nullable: true
+        grade:
+          type: string
+          nullable: true
+        ppType:
+          $ref: "#/components/schemas/PPType"
+          nullable: true
+        sampleAvailable:
+          type: boolean
+          nullable: true
+        packaging:
+          $ref: "#/components/schemas/PackagingType"
+          nullable: true
+        meltFlowIndex:
+          type: number
+          nullable: true
+        charpy:
+          type: number
+          nullable: true
+        izod:
+          type: number
+          nullable: true
+        density:
+          type: number
+          nullable: true
+        price:
+          type: number
+          nullable: true
+        quantity:
+          type: number
+          nullable: true
+        remarks:
+          type: string
+          nullable: true
+      required:
+        - entryType
+        - resinCategory
+        - date
+        - counterparty
+        - personInCharge
+        - resinType
+
+    Match:
+      type: object
+      properties:
+        source:
+          $ref: "#/components/schemas/ResinEntry"
+        demand:
+          $ref: "#/components/schemas/ResinEntry"
+        score:
+          type: integer
+          description: Match score 0-100
+        reasons:
+          type: array
+          items:
+            type: string
+      required:
+        - source
+        - demand
+        - score
+        - reasons

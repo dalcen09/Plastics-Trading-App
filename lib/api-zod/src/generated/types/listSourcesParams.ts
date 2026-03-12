@@ -5,7 +5,8 @@
  * Resin Trading Manager API
  * OpenAPI spec version: 0.1.0
  */
+import type { ResinCategory } from "./resinCategory";
 
-export interface HealthStatus {
-  status: string;
-}
+export type ListSourcesParams = {
+  resinCategory?: ResinCategory;
+};

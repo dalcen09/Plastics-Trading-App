@@ -1,0 +1,14 @@
+packages:
+  "react-hook-form": "Form state management"
+  "@hookform/resolvers": "Zod resolver for forms"
+  "zod": "Schema validation"
+  "date-fns": "Date formatting"
+  "clsx": "Utility for constructing className strings conditionally"
+  "tailwind-merge": "Utility for merging tailwind classes safely"
+  "lucide-react": "Icons"
+
+images: []
+
+notes:
+  - Using generated hooks from @workspace/api-client-react
+  - Forms are strictly validated against the API schema requirements
