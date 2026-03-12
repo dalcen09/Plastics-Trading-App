@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Layout } from "@/components/Layout";
 import { ResinTable } from "@/components/ResinTable";
@@ -19,7 +19,7 @@ import {
   CreateResinEntryEntryType,
   ResinEntry
 } from "@workspace/api-client-react";
-import { Plus, ArrowDownToLine, ArrowUpFromLine, Upload, Search, X, SlidersHorizontal } from "lucide-react";
+import { Plus, ArrowDownToLine, ArrowUpFromLine, Upload, Search, X, SlidersHorizontal, ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { ImportModal } from "@/components/ImportModal";
@@ -86,6 +86,8 @@ export function CategoryView({ category }: CategoryViewProps) {
   const [editingEntry, setEditingEntry] = useState<ResinEntry | undefined>();
   const [filters, setFilters] = useState<Filters>(emptyFilters);
   const [showFilters, setShowFilters] = useState(false);
+  const [pageSize, setPageSize] = useState<number>(50);
+  const [page, setPage] = useState(1);
 
   const { data: sources = [], isLoading: sourcesLoading } = useListSources({ resinCategory: category as ResinCategory });
   const { data: demands = [], isLoading: demandsLoading } = useListDemands({ resinCategory: category as ResinCategory });
@@ -104,6 +106,17 @@ export function CategoryView({ category }: CategoryViewProps) {
     [activeData]);
 
   const filteredData = useMemo(() => applyFilters(activeData, filters), [activeData, filters]);
+
+  const totalPages = pageSize === 0 ? 1 : Math.max(1, Math.ceil(filteredData.length / pageSize));
+  const safePage = Math.min(page, totalPages);
+  const pagedData = useMemo(() => {
+    if (pageSize === 0) return filteredData;
+    const start = (safePage - 1) * pageSize;
+    return filteredData.slice(start, start + pageSize);
+  }, [filteredData, safePage, pageSize]);
+
+  // Reset to page 1 when filters or tab changes
+  useEffect(() => { setPage(1); }, [filters, activeTab, pageSize]);
 
   const hasActiveFilters = Object.values(filters).some(v => v !== "");
   const activeFilterCount = Object.values(filters).filter(v => v !== "").length;
@@ -403,28 +416,95 @@ export function CategoryView({ category }: CategoryViewProps) {
           </div>
         )}
 
-        {/* Results count */}
+        {/* Results count + page size */}
         {(hasActiveFilters || activeData.length > 0) && (
-          <div className="flex items-center gap-2 text-sm text-muted-foreground -mt-1">
-            <span>
-              {hasActiveFilters
-                ? `${filteredData.length} 件表示 / 全 ${activeData.length} 件`
-                : `全 ${activeData.length} 件`}
-            </span>
-            {hasActiveFilters && filteredData.length === 0 && (
-              <span className="text-amber-600 font-medium">— 条件に一致するデータがありません</span>
-            )}
+          <div className="flex items-center justify-between gap-2 text-sm text-muted-foreground -mt-1">
+            <div className="flex items-center gap-2">
+              <span>
+                {pageSize === 0
+                  ? (hasActiveFilters ? `全 ${filteredData.length} 件表示 / 元 ${activeData.length} 件` : `全 ${activeData.length} 件`)
+                  : (hasActiveFilters
+                      ? `${(safePage - 1) * pageSize + 1}–${Math.min(safePage * pageSize, filteredData.length)} 件表示 / 絞り込み ${filteredData.length} 件 / 全 ${activeData.length} 件`
+                      : `${(safePage - 1) * pageSize + 1}–${Math.min(safePage * pageSize, filteredData.length)} 件表示 / 全 ${activeData.length} 件`)
+                }
+              </span>
+              {hasActiveFilters && filteredData.length === 0 && (
+                <span className="text-amber-600 font-medium">条件に一致するデータがありません</span>
+              )}
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              <span className="text-xs font-medium">表示件数</span>
+              <select
+                value={pageSize}
+                onChange={e => setPageSize(Number(e.target.value))}
+                className="px-2.5 py-1.5 rounded-lg border border-border bg-card text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
+              >
+                <option value={25}>25件</option>
+                <option value={50}>50件</option>
+                <option value={100}>100件</option>
+                <option value={0}>すべて</option>
+              </select>
+            </div>
           </div>
         )}
 
         {/* Data View */}
-        <div className="flex-1 min-h-0 pb-10">
+        <div className="flex-1 min-h-0 pb-4">
           <ResinTable 
-            data={filteredData}
+            data={pagedData}
             isLoading={activeTab === "sources" ? sourcesLoading : demandsLoading}
             onEdit={handleOpenForm}
             onDelete={handleDelete}
           />
+
+          {/* Pagination controls */}
+          {pageSize > 0 && totalPages > 1 && (
+            <div className="flex items-center justify-center gap-2 mt-4 pb-6">
+              <button
+                onClick={() => setPage(p => Math.max(1, p - 1))}
+                disabled={safePage === 1}
+                className="p-2 rounded-lg border border-border bg-card hover:bg-secondary disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              >
+                <ChevronLeft className="w-4 h-4" />
+              </button>
+
+              {/* Page number pills */}
+              {Array.from({ length: totalPages }, (_, i) => i + 1)
+                .filter(p => p === 1 || p === totalPages || Math.abs(p - safePage) <= 2)
+                .reduce<(number | "…")[]>((acc, p, idx, arr) => {
+                  if (idx > 0 && (p as number) - (arr[idx - 1] as number) > 1) acc.push("…");
+                  acc.push(p);
+                  return acc;
+                }, [])
+                .map((p, idx) =>
+                  p === "…" ? (
+                    <span key={`ellipsis-${idx}`} className="px-1 text-muted-foreground text-sm">…</span>
+                  ) : (
+                    <button
+                      key={p}
+                      onClick={() => setPage(p as number)}
+                      className={cn(
+                        "min-w-[36px] h-9 px-3 rounded-lg border text-sm font-medium transition-colors",
+                        safePage === p
+                          ? "bg-primary text-primary-foreground border-primary shadow-sm"
+                          : "border-border bg-card hover:bg-secondary text-foreground"
+                      )}
+                    >
+                      {p}
+                    </button>
+                  )
+                )
+              }
+
+              <button
+                onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+                disabled={safePage === totalPages}
+                className="p-2 rounded-lg border border-border bg-card hover:bg-secondary disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+              >
+                <ChevronRight className="w-4 h-4" />
+              </button>
+            </div>
+          )}
         </div>
       </div>
 
