@@ -14,6 +14,7 @@ export * from "./listDemandsParams";
 export * from "./listSourcesParams";
 export * from "./match";
 export * from "./packagingType";
+export * from "./pEType";
 export * from "./pPType";
 export * from "./quantityType";
 export * from "./resinCategory";

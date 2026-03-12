@@ -6,6 +6,7 @@
  * OpenAPI spec version: 0.1.0
  */
 import type { PackagingType } from "./packagingType";
+import type { PEType } from "./pEType";
 import type { PPType } from "./pPType";
 import type { QuantityType } from "./quantityType";
 import type { ResinCategory } from "./resinCategory";
@@ -23,6 +24,7 @@ export interface ResinEntry {
   manufacturer?: string | null;
   grade?: string | null;
   ppType?: PPType | null;
+  peType?: PEType | null;
   sampleAvailable?: boolean | null;
   packaging?: PackagingType | null;
   meltFlowIndex?: number | null;

@@ -41,6 +41,13 @@ export const PPType = {
   ランダム: "ランダム",
 } as const;
 
+export type PEType = (typeof PEType)[keyof typeof PEType];
+
+export const PEType = {
+  LD: "LD",
+  HD: "HD",
+} as const;
+
 export type QuantityType = (typeof QuantityType)[keyof typeof QuantityType];
 
 export const QuantityType = {
@@ -78,6 +85,7 @@ export interface ResinEntry {
   manufacturer?: string | null;
   grade?: string | null;
   ppType?: PPType | null;
+  peType?: PEType | null;
   sampleAvailable?: boolean | null;
   packaging?: PackagingType | null;
   meltFlowIndex?: number | null;
@@ -111,6 +119,7 @@ export interface CreateResinEntry {
   manufacturer?: string | null;
   grade?: string | null;
   ppType?: PPType | null;
+  peType?: PEType | null;
   sampleAvailable?: boolean | null;
   packaging?: PackagingType | null;
   meltFlowIndex?: number | null;

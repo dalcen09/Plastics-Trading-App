@@ -260,6 +260,10 @@ components:
       type: string
       enum: [ホモ, ブロック, ランダム]
 
+    PEType:
+      type: string
+      enum: [LD, HD]
+
     QuantityType:
       type: string
       enum: ["月間", "スポット"]
@@ -295,6 +299,9 @@ components:
           nullable: true
         ppType:
           $ref: "#/components/schemas/PPType"
+          nullable: true
+        peType:
+          $ref: "#/components/schemas/PEType"
           nullable: true
         sampleAvailable:
           type: boolean
@@ -371,6 +378,9 @@ components:
           nullable: true
         ppType:
           $ref: "#/components/schemas/PPType"
+          nullable: true
+        peType:
+          $ref: "#/components/schemas/PEType"
           nullable: true
         sampleAvailable:
           type: boolean

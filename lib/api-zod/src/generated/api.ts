@@ -44,6 +44,7 @@ export const ListSourcesResponseItem = zod.object({
   manufacturer: zod.string().nullish(),
   grade: zod.string().nullish(),
   ppType: zod.enum(["ホモ", "ブロック", "ランダム"]).nullish(),
+  peType: zod.enum(["LD", "HD"]).nullish(),
   sampleAvailable: zod.boolean().nullish(),
   packaging: zod
     .enum(["Bags", "Octabin", "Bulk", "Jumbo_Bag", "Box", "Other"])
@@ -87,6 +88,7 @@ export const CreateSourceBody = zod.object({
   manufacturer: zod.string().nullish(),
   grade: zod.string().nullish(),
   ppType: zod.enum(["ホモ", "ブロック", "ランダム"]).nullish(),
+  peType: zod.enum(["LD", "HD"]).nullish(),
   sampleAvailable: zod.boolean().nullish(),
   packaging: zod
     .enum(["Bags", "Octabin", "Bulk", "Jumbo_Bag", "Box", "Other"])
@@ -131,6 +133,7 @@ export const UpdateSourceBody = zod.object({
   manufacturer: zod.string().nullish(),
   grade: zod.string().nullish(),
   ppType: zod.enum(["ホモ", "ブロック", "ランダム"]).nullish(),
+  peType: zod.enum(["LD", "HD"]).nullish(),
   sampleAvailable: zod.boolean().nullish(),
   packaging: zod
     .enum(["Bags", "Octabin", "Bulk", "Jumbo_Bag", "Box", "Other"])
@@ -169,6 +172,7 @@ export const UpdateSourceResponse = zod.object({
   manufacturer: zod.string().nullish(),
   grade: zod.string().nullish(),
   ppType: zod.enum(["ホモ", "ブロック", "ランダム"]).nullish(),
+  peType: zod.enum(["LD", "HD"]).nullish(),
   sampleAvailable: zod.boolean().nullish(),
   packaging: zod
     .enum(["Bags", "Octabin", "Bulk", "Jumbo_Bag", "Box", "Other"])
@@ -223,6 +227,7 @@ export const ListDemandsResponseItem = zod.object({
   manufacturer: zod.string().nullish(),
   grade: zod.string().nullish(),
   ppType: zod.enum(["ホモ", "ブロック", "ランダム"]).nullish(),
+  peType: zod.enum(["LD", "HD"]).nullish(),
   sampleAvailable: zod.boolean().nullish(),
   packaging: zod
     .enum(["Bags", "Octabin", "Bulk", "Jumbo_Bag", "Box", "Other"])
@@ -266,6 +271,7 @@ export const CreateDemandBody = zod.object({
   manufacturer: zod.string().nullish(),
   grade: zod.string().nullish(),
   ppType: zod.enum(["ホモ", "ブロック", "ランダム"]).nullish(),
+  peType: zod.enum(["LD", "HD"]).nullish(),
   sampleAvailable: zod.boolean().nullish(),
   packaging: zod
     .enum(["Bags", "Octabin", "Bulk", "Jumbo_Bag", "Box", "Other"])
@@ -310,6 +316,7 @@ export const UpdateDemandBody = zod.object({
   manufacturer: zod.string().nullish(),
   grade: zod.string().nullish(),
   ppType: zod.enum(["ホモ", "ブロック", "ランダム"]).nullish(),
+  peType: zod.enum(["LD", "HD"]).nullish(),
   sampleAvailable: zod.boolean().nullish(),
   packaging: zod
     .enum(["Bags", "Octabin", "Bulk", "Jumbo_Bag", "Box", "Other"])
@@ -348,6 +355,7 @@ export const UpdateDemandResponse = zod.object({
   manufacturer: zod.string().nullish(),
   grade: zod.string().nullish(),
   ppType: zod.enum(["ホモ", "ブロック", "ランダム"]).nullish(),
+  peType: zod.enum(["LD", "HD"]).nullish(),
   sampleAvailable: zod.boolean().nullish(),
   packaging: zod
     .enum(["Bags", "Octabin", "Bulk", "Jumbo_Bag", "Box", "Other"])
@@ -399,6 +407,7 @@ export const GetMatchesResponseItem = zod.object({
     manufacturer: zod.string().nullish(),
     grade: zod.string().nullish(),
     ppType: zod.enum(["ホモ", "ブロック", "ランダム"]).nullish(),
+    peType: zod.enum(["LD", "HD"]).nullish(),
     sampleAvailable: zod.boolean().nullish(),
     packaging: zod
       .enum(["Bags", "Octabin", "Bulk", "Jumbo_Bag", "Box", "Other"])
@@ -438,6 +447,7 @@ export const GetMatchesResponseItem = zod.object({
     manufacturer: zod.string().nullish(),
     grade: zod.string().nullish(),
     ppType: zod.enum(["ホモ", "ブロック", "ランダム"]).nullish(),
+    peType: zod.enum(["LD", "HD"]).nullish(),
     sampleAvailable: zod.boolean().nullish(),
     packaging: zod
       .enum(["Bags", "Octabin", "Bulk", "Jumbo_Bag", "Box", "Other"])
