@@ -43,8 +43,8 @@ export function ResinTable({ data, onEdit, onDelete, isLoading }: ResinTableProp
               <th className="px-4 py-4">担当者</th>
               <th className="px-4 py-4">製品</th>
               <th className="px-4 py-4">仕様</th>
-              <th className="px-4 py-4 text-right">価格 (MT)</th>
-              <th className="px-4 py-4 text-right">数量 (MT)</th>
+              <th className="px-4 py-4 text-right">価格 (円/kg)</th>
+              <th className="px-4 py-4 text-right">数量 (kg)</th>
               <th className="px-4 py-4 table-sticky-col-right bg-secondary/90 backdrop-blur-sm text-center z-20">操作</th>
             </tr>
           </thead>
@@ -99,7 +99,7 @@ export function ResinTable({ data, onEdit, onDelete, isLoading }: ResinTableProp
                 </td>
                 <td className="px-4 py-3 text-right">
                   <span className="font-medium px-2 py-1 rounded-lg bg-secondary/80">
-                    {formatNumber(row.quantity)}
+                    {formatNumber(row.quantity, "kg")}
                   </span>
                 </td>
                 <td className="px-4 py-3 table-sticky-col-right bg-card group-hover:bg-secondary/40 text-center z-10 transition-colors">
