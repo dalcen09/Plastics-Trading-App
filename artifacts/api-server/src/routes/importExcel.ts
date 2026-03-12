@@ -288,11 +288,16 @@ function normalizeBool(val: any): boolean | null {
 function parseDate(val: any): string | null {
   if (!val) return null;
   if (typeof val === "number") {
-    const d = XLSX.SSF.parse_date_code(val);
-    if (d) return `${d.y}-${String(d.m).padStart(2, "0")}-${String(d.d).padStart(2, "0")}`;
+    // Convert Excel serial date to calendar date
+    // 25569 = days between Excel epoch (Jan 0 1900) and Unix epoch (Jan 1 1970)
+    const ms = (val - 25569) * 86400 * 1000;
+    const d = new Date(ms);
+    if (!isNaN(d.getTime())) {
+      return `${d.getUTCFullYear()}-${String(d.getUTCMonth() + 1).padStart(2, "0")}-${String(d.getUTCDate()).padStart(2, "0")}`;
+    }
   }
   const s = String(val).trim();
-  // Japanese date formats like 2026/3/12 or 令和X年
+  // yyyy/mm/dd or yyyy-mm-dd (including single-digit month/day)
   const slash = s.match(/^(\d{4})[\/\-](\d{1,2})[\/\-](\d{1,2})$/);
   if (slash) return `${slash[1]}-${String(slash[2]).padStart(2, "0")}-${String(slash[3]).padStart(2, "0")}`;
   const parsed = new Date(s);
