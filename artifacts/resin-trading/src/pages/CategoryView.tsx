@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Layout } from "@/components/Layout";
-import { ResinTable } from "@/components/ResinTable";
+import { ResinTable, ALL_COLUMNS, DEFAULT_VISIBLE, ColumnKey } from "@/components/ResinTable";
 import { ResinForm } from "@/components/ResinForm";
 import { 
   useListSources, 
@@ -19,7 +19,7 @@ import {
   CreateResinEntryEntryType,
   ResinEntry
 } from "@workspace/api-client-react";
-import { Plus, ArrowDownToLine, ArrowUpFromLine, Upload, Search, X, SlidersHorizontal, ChevronLeft, ChevronRight } from "lucide-react";
+import { Plus, ArrowDownToLine, ArrowUpFromLine, Upload, Search, X, SlidersHorizontal, ChevronLeft, ChevronRight, Columns3 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { ImportModal } from "@/components/ImportModal";
@@ -86,8 +86,17 @@ export function CategoryView({ category }: CategoryViewProps) {
   const [editingEntry, setEditingEntry] = useState<ResinEntry | undefined>();
   const [filters, setFilters] = useState<Filters>(emptyFilters);
   const [showFilters, setShowFilters] = useState(false);
+  const [showColumns, setShowColumns] = useState(false);
+  const [visibleColumns, setVisibleColumns] = useState<Set<ColumnKey>>(new Set(DEFAULT_VISIBLE));
   const [pageSize, setPageSize] = useState<number>(50);
   const [page, setPage] = useState(1);
+
+  const toggleColumn = (key: ColumnKey) =>
+    setVisibleColumns(prev => {
+      const next = new Set(prev);
+      if (next.has(key)) { next.delete(key); } else { next.add(key); }
+      return next;
+    });
 
   const { data: sources = [], isLoading: sourcesLoading } = useListSources({ resinCategory: category as ResinCategory });
   const { data: demands = [], isLoading: demandsLoading } = useListDemands({ resinCategory: category as ResinCategory });
@@ -336,6 +345,56 @@ export function CategoryView({ category }: CategoryViewProps) {
                 </span>
               )}
             </button>
+
+            {/* Column chooser */}
+            <div className="relative shrink-0">
+              <button
+                onClick={() => setShowColumns(v => !v)}
+                className={cn(
+                  "px-3.5 py-2.5 rounded-xl border text-sm font-semibold flex items-center gap-1.5 transition-colors",
+                  showColumns
+                    ? "border-primary bg-primary/10 text-primary"
+                    : "border-border bg-card text-foreground hover:bg-secondary"
+                )}
+              >
+                <Columns3 className="w-4 h-4" />
+                列
+              </button>
+
+              {showColumns && (
+                <>
+                  {/* backdrop */}
+                  <div className="fixed inset-0 z-30" onClick={() => setShowColumns(false)} />
+                  <div className="absolute right-0 top-full mt-2 z-40 bg-card border border-border rounded-xl shadow-xl p-3 min-w-[180px]">
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 px-1">表示する列</p>
+                    <div className="flex flex-col gap-0.5">
+                      {ALL_COLUMNS.map(({ key, label }) => (
+                        <label
+                          key={key}
+                          className="flex items-center gap-2.5 px-2 py-1.5 rounded-lg hover:bg-secondary cursor-pointer text-sm"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={visibleColumns.has(key)}
+                            onChange={() => toggleColumn(key)}
+                            className="w-4 h-4 accent-primary rounded"
+                          />
+                          {label}
+                        </label>
+                      ))}
+                    </div>
+                    <div className="border-t border-border mt-2 pt-2 flex gap-2">
+                      <button
+                        onClick={() => setVisibleColumns(new Set(DEFAULT_VISIBLE))}
+                        className="flex-1 text-xs py-1.5 rounded-lg border border-border hover:bg-secondary transition-colors"
+                      >
+                        すべて表示
+                      </button>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         </div>
 
@@ -455,6 +514,7 @@ export function CategoryView({ category }: CategoryViewProps) {
             isLoading={activeTab === "sources" ? sourcesLoading : demandsLoading}
             onEdit={handleOpenForm}
             onDelete={handleDelete}
+            visibleColumns={visibleColumns}
           />
 
           {/* Pagination controls */}
