@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Layout } from "@/components/Layout";
-import { ResinTable, ALL_COLUMNS, DEFAULT_VISIBLE, ColumnKey } from "@/components/ResinTable";
+import { ResinTable, ALL_COLUMNS, DEFAULT_VISIBLE, ColumnKey, SortConfig, SortKey, sortData } from "@/components/ResinTable";
 import { ResinForm } from "@/components/ResinForm";
 import { 
   useListSources, 
@@ -88,6 +88,7 @@ export function CategoryView({ category }: CategoryViewProps) {
   const [showFilters, setShowFilters] = useState(false);
   const [showColumns, setShowColumns] = useState(false);
   const [visibleColumns, setVisibleColumns] = useState<Set<ColumnKey>>(new Set(DEFAULT_VISIBLE));
+  const [sort, setSort] = useState<SortConfig | null>(null);
   const [pageSize, setPageSize] = useState<number>(50);
   const [page, setPage] = useState(1);
 
@@ -97,6 +98,13 @@ export function CategoryView({ category }: CategoryViewProps) {
       if (next.has(key)) { next.delete(key); } else { next.add(key); }
       return next;
     });
+
+  const handleSort = (key: SortKey) =>
+    setSort(prev =>
+      prev?.key === key
+        ? { key, direction: prev.direction === "asc" ? "desc" : "asc" }
+        : { key, direction: "asc" }
+    );
 
   const { data: sources = [], isLoading: sourcesLoading } = useListSources({ resinCategory: category as ResinCategory });
   const { data: demands = [], isLoading: demandsLoading } = useListDemands({ resinCategory: category as ResinCategory });
@@ -116,16 +124,17 @@ export function CategoryView({ category }: CategoryViewProps) {
 
   const filteredData = useMemo(() => applyFilters(activeData, filters), [activeData, filters]);
 
-  const totalPages = pageSize === 0 ? 1 : Math.max(1, Math.ceil(filteredData.length / pageSize));
+  const sortedData = useMemo(() => sortData(filteredData, sort), [filteredData, sort]);
+  const totalPages = pageSize === 0 ? 1 : Math.max(1, Math.ceil(sortedData.length / pageSize));
   const safePage = Math.min(page, totalPages);
   const pagedData = useMemo(() => {
-    if (pageSize === 0) return filteredData;
+    if (pageSize === 0) return sortedData;
     const start = (safePage - 1) * pageSize;
-    return filteredData.slice(start, start + pageSize);
-  }, [filteredData, safePage, pageSize]);
+    return sortedData.slice(start, start + pageSize);
+  }, [sortedData, safePage, pageSize]);
 
-  // Reset to page 1 when filters or tab changes
-  useEffect(() => { setPage(1); }, [filters, activeTab, pageSize]);
+  // Reset to page 1 when filters, sort or tab changes
+  useEffect(() => { setPage(1); }, [filters, activeTab, pageSize, sort]);
 
   const hasActiveFilters = Object.values(filters).some(v => v !== "");
   const activeFilterCount = Object.values(filters).filter(v => v !== "").length;
@@ -481,13 +490,13 @@ export function CategoryView({ category }: CategoryViewProps) {
             <div className="flex items-center gap-2">
               <span>
                 {pageSize === 0
-                  ? (hasActiveFilters ? `全 ${filteredData.length} 件表示 / 元 ${activeData.length} 件` : `全 ${activeData.length} 件`)
+                  ? (hasActiveFilters ? `全 ${sortedData.length} 件表示 / 元 ${activeData.length} 件` : `全 ${activeData.length} 件`)
                   : (hasActiveFilters
-                      ? `${(safePage - 1) * pageSize + 1}–${Math.min(safePage * pageSize, filteredData.length)} 件表示 / 絞り込み ${filteredData.length} 件 / 全 ${activeData.length} 件`
-                      : `${(safePage - 1) * pageSize + 1}–${Math.min(safePage * pageSize, filteredData.length)} 件表示 / 全 ${activeData.length} 件`)
+                      ? `${(safePage - 1) * pageSize + 1}–${Math.min(safePage * pageSize, sortedData.length)} 件表示 / 絞り込み ${sortedData.length} 件 / 全 ${activeData.length} 件`
+                      : `${(safePage - 1) * pageSize + 1}–${Math.min(safePage * pageSize, sortedData.length)} 件表示 / 全 ${activeData.length} 件`)
                 }
               </span>
-              {hasActiveFilters && filteredData.length === 0 && (
+              {hasActiveFilters && sortedData.length === 0 && (
                 <span className="text-amber-600 font-medium">条件に一致するデータがありません</span>
               )}
             </div>
@@ -515,6 +524,8 @@ export function CategoryView({ category }: CategoryViewProps) {
             onEdit={handleOpenForm}
             onDelete={handleDelete}
             visibleColumns={visibleColumns}
+            sort={sort}
+            onSort={handleSort}
           />
 
           {/* Pagination controls */}

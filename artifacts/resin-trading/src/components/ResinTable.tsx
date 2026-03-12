@@ -1,25 +1,64 @@
 import { ResinEntry } from "@workspace/api-client-react";
-import { Edit2, Trash2, Box, Package } from "lucide-react";
+import { Edit2, Trash2, Box, Package, ArrowUp, ArrowDown, ArrowUpDown } from "lucide-react";
 import { formatCurrency, formatDate, formatNumber, cn } from "@/lib/utils";
 
 export type ColumnKey =
   | "date" | "personInCharge" | "resinType" | "manufacturer"
   | "grade" | "charpy" | "izod" | "specs" | "price" | "quantity";
 
+export type SortKey =
+  | "counterparty" | "date" | "personInCharge" | "resinType"
+  | "manufacturer" | "grade" | "charpy" | "izod" | "price" | "quantity";
+
+export type SortDirection = "asc" | "desc";
+
+export interface SortConfig {
+  key: SortKey;
+  direction: SortDirection;
+}
+
 export const ALL_COLUMNS: { key: ColumnKey; label: string }[] = [
-  { key: "date",          label: "日付" },
-  { key: "personInCharge",label: "担当者" },
-  { key: "resinType",     label: "樹脂" },
-  { key: "manufacturer",  label: "メーカー" },
-  { key: "grade",         label: "グレード" },
-  { key: "charpy",        label: "シャルピー" },
-  { key: "izod",          label: "アイゾッド" },
-  { key: "specs",         label: "仕様 (MFI/密度)" },
-  { key: "price",         label: "価格 (円/kg)" },
-  { key: "quantity",      label: "数量 (kg)" },
+  { key: "date",           label: "日付" },
+  { key: "personInCharge", label: "担当者" },
+  { key: "resinType",      label: "樹脂" },
+  { key: "manufacturer",   label: "メーカー" },
+  { key: "grade",          label: "グレード" },
+  { key: "charpy",         label: "シャルピー" },
+  { key: "izod",           label: "アイゾッド" },
+  { key: "specs",          label: "仕様 (MFI/密度)" },
+  { key: "price",          label: "価格 (円/kg)" },
+  { key: "quantity",       label: "数量 (kg)" },
 ];
 
 export const DEFAULT_VISIBLE: Set<ColumnKey> = new Set(ALL_COLUMNS.map(c => c.key));
+
+export function sortData(data: ResinEntry[], sort: SortConfig | null): ResinEntry[] {
+  if (!sort) return data;
+  const { key, direction } = sort;
+  const mul = direction === "asc" ? 1 : -1;
+
+  return [...data].sort((a, b) => {
+    let av: any = (a as any)[key];
+    let bv: any = (b as any)[key];
+
+    // Numeric columns
+    if (["charpy", "izod", "price", "quantity"].includes(key)) {
+      const an = av == null ? -Infinity : Number(av);
+      const bn = bv == null ? -Infinity : Number(bv);
+      return mul * (an - bn);
+    }
+
+    // Date
+    if (key === "date") {
+      return mul * ((av ?? "").localeCompare(bv ?? ""));
+    }
+
+    // String — Japanese-aware locale compare
+    const as = av ?? "";
+    const bs = bv ?? "";
+    return mul * as.localeCompare(bs, "ja", { sensitivity: "base" });
+  });
+}
 
 interface ResinTableProps {
   data: ResinEntry[];
@@ -27,11 +66,41 @@ interface ResinTableProps {
   onDelete: (id: number) => void;
   isLoading: boolean;
   visibleColumns: Set<ColumnKey>;
+  sort: SortConfig | null;
+  onSort: (key: SortKey) => void;
 }
 
 const dash = <span className="text-border">—</span>;
 
-export function ResinTable({ data, onEdit, onDelete, isLoading, visibleColumns }: ResinTableProps) {
+function SortIcon({ colKey, sort }: { colKey: SortKey; sort: SortConfig | null }) {
+  if (!sort || sort.key !== colKey)
+    return <ArrowUpDown className="w-3.5 h-3.5 opacity-30 ml-1 inline-block" />;
+  return sort.direction === "asc"
+    ? <ArrowUp className="w-3.5 h-3.5 text-primary ml-1 inline-block" />
+    : <ArrowDown className="w-3.5 h-3.5 text-primary ml-1 inline-block" />;
+}
+
+function SortTh({
+  colKey, sort, onSort, className = "", children,
+}: {
+  colKey: SortKey; sort: SortConfig | null; onSort: (k: SortKey) => void;
+  className?: string; children: React.ReactNode;
+}) {
+  const active = sort?.key === colKey;
+  return (
+    <th
+      className={cn("px-4 py-4 cursor-pointer select-none group", active && "text-primary", className)}
+      onClick={() => onSort(colKey)}
+    >
+      <span className="inline-flex items-center gap-0.5 hover:text-primary transition-colors">
+        {children}
+        <SortIcon colKey={colKey} sort={sort} />
+      </span>
+    </th>
+  );
+}
+
+export function ResinTable({ data, onEdit, onDelete, isLoading, visibleColumns, sort, onSort }: ResinTableProps) {
   const col = (key: ColumnKey) => visibleColumns.has(key);
 
   if (isLoading) {
@@ -61,17 +130,21 @@ export function ResinTable({ data, onEdit, onDelete, isLoading, visibleColumns }
         <table className="w-full text-sm text-left whitespace-nowrap">
           <thead className="text-xs text-muted-foreground uppercase bg-secondary/50 font-semibold tracking-wider">
             <tr>
-              <th className="px-4 py-4 table-sticky-col-left bg-secondary/90 backdrop-blur-sm z-20">取引先</th>
-              {col("date")           && <th className="px-4 py-4">日付</th>}
-              {col("personInCharge") && <th className="px-4 py-4">担当者</th>}
-              {col("resinType")      && <th className="px-4 py-4">樹脂</th>}
-              {col("manufacturer")   && <th className="px-4 py-4">メーカー</th>}
-              {col("grade")          && <th className="px-4 py-4">グレード</th>}
-              {col("charpy")         && <th className="px-4 py-4 text-right">シャルピー</th>}
-              {col("izod")           && <th className="px-4 py-4 text-right">アイゾッド</th>}
+              {/* 取引先 always sticky */}
+              <SortTh colKey="counterparty" sort={sort} onSort={onSort}
+                className="table-sticky-col-left bg-secondary/90 backdrop-blur-sm z-20">
+                取引先
+              </SortTh>
+              {col("date")           && <SortTh colKey="date"          sort={sort} onSort={onSort}>日付</SortTh>}
+              {col("personInCharge") && <SortTh colKey="personInCharge" sort={sort} onSort={onSort}>担当者</SortTh>}
+              {col("resinType")      && <SortTh colKey="resinType"      sort={sort} onSort={onSort}>樹脂</SortTh>}
+              {col("manufacturer")   && <SortTh colKey="manufacturer"   sort={sort} onSort={onSort}>メーカー</SortTh>}
+              {col("grade")          && <SortTh colKey="grade"          sort={sort} onSort={onSort}>グレード</SortTh>}
+              {col("charpy")         && <SortTh colKey="charpy"         sort={sort} onSort={onSort} className="text-right">シャルピー</SortTh>}
+              {col("izod")           && <SortTh colKey="izod"           sort={sort} onSort={onSort} className="text-right">アイゾッド</SortTh>}
               {col("specs")          && <th className="px-4 py-4">仕様</th>}
-              {col("price")          && <th className="px-4 py-4 text-right">価格 (円/kg)</th>}
-              {col("quantity")       && <th className="px-4 py-4 text-right">数量 (kg)</th>}
+              {col("price")          && <SortTh colKey="price"    sort={sort} onSort={onSort} className="text-right">価格 (円/kg)</SortTh>}
+              {col("quantity")       && <SortTh colKey="quantity"  sort={sort} onSort={onSort} className="text-right">数量 (kg)</SortTh>}
               <th className="px-4 py-4 table-sticky-col-right bg-secondary/90 backdrop-blur-sm text-center z-20">操作</th>
             </tr>
           </thead>
@@ -81,7 +154,6 @@ export function ResinTable({ data, onEdit, onDelete, isLoading, visibleColumns }
                 <td className="px-4 py-3 table-sticky-col-left bg-card group-hover:bg-secondary/40 font-medium text-foreground z-10 transition-colors">
                   {row.counterparty}
                 </td>
-
                 {col("date") && (
                   <td className="px-4 py-3 text-muted-foreground">{formatDate(row.date)}</td>
                 )}
@@ -99,14 +171,10 @@ export function ResinTable({ data, onEdit, onDelete, isLoading, visibleColumns }
                   </td>
                 )}
                 {col("manufacturer") && (
-                  <td className="px-4 py-3 text-sm text-muted-foreground">
-                    {row.manufacturer || dash}
-                  </td>
+                  <td className="px-4 py-3 text-sm text-muted-foreground">{row.manufacturer || dash}</td>
                 )}
                 {col("grade") && (
-                  <td className="px-4 py-3 text-sm text-muted-foreground">
-                    {row.grade || dash}
-                  </td>
+                  <td className="px-4 py-3 text-sm text-muted-foreground">{row.grade || dash}</td>
                 )}
                 {col("charpy") && (
                   <td className="px-4 py-3 text-sm text-right text-muted-foreground">
@@ -152,7 +220,6 @@ export function ResinTable({ data, onEdit, onDelete, isLoading, visibleColumns }
                     </span>
                   </td>
                 )}
-
                 <td className="px-4 py-3 table-sticky-col-right bg-card group-hover:bg-secondary/40 text-center z-10 transition-colors">
                   <div className="flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button
