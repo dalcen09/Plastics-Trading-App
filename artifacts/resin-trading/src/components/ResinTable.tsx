@@ -44,6 +44,8 @@ export function ResinTable({ data, onEdit, onDelete, isLoading }: ResinTableProp
               <th className="px-4 py-4">樹脂</th>
               <th className="px-4 py-4">メーカー</th>
               <th className="px-4 py-4">グレード</th>
+              <th className="px-4 py-4 text-right">シャルピー</th>
+              <th className="px-4 py-4 text-right">アイゾッド</th>
               <th className="px-4 py-4">仕様</th>
               <th className="px-4 py-4 text-right">価格 (円/kg)</th>
               <th className="px-4 py-4 text-right">数量 (kg)</th>
@@ -78,6 +80,12 @@ export function ResinTable({ data, onEdit, onDelete, isLoading }: ResinTableProp
                 </td>
                 <td className="px-4 py-3 text-sm text-muted-foreground">
                   {row.grade || <span className="text-border">—</span>}
+                </td>
+                <td className="px-4 py-3 text-sm text-right text-muted-foreground">
+                  {row.charpy !== null && row.charpy !== undefined ? formatNumber(row.charpy) : <span className="text-border">—</span>}
+                </td>
+                <td className="px-4 py-3 text-sm text-right text-muted-foreground">
+                  {row.izod !== null && row.izod !== undefined ? formatNumber(row.izod) : <span className="text-border">—</span>}
                 </td>
                 <td className="px-4 py-3">
                   <div className="flex flex-col gap-1 text-xs">
