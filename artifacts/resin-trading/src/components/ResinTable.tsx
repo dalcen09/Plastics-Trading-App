@@ -41,7 +41,9 @@ export function ResinTable({ data, onEdit, onDelete, isLoading }: ResinTableProp
               <th className="px-4 py-4 table-sticky-col-left bg-secondary/90 backdrop-blur-sm z-20">取引先</th>
               <th className="px-4 py-4">日付</th>
               <th className="px-4 py-4">担当者</th>
-              <th className="px-4 py-4">製品</th>
+              <th className="px-4 py-4">樹脂</th>
+              <th className="px-4 py-4">メーカー</th>
+              <th className="px-4 py-4">グレード</th>
               <th className="px-4 py-4">仕様</th>
               <th className="px-4 py-4 text-right">価格 (円/kg)</th>
               <th className="px-4 py-4 text-right">数量 (kg)</th>
@@ -64,15 +66,18 @@ export function ResinTable({ data, onEdit, onDelete, isLoading }: ResinTableProp
                   {row.personInCharge}
                 </td>
                 <td className="px-4 py-3">
-                  <div className="flex flex-col">
-                    <span className="font-semibold text-foreground flex items-center gap-1.5">
-                      {row.resinType} 
-                      {row.ppType && row.ppType !== "N/A" && <span className="text-xs px-1.5 py-0.5 rounded-md bg-secondary text-muted-foreground font-medium">{row.ppType}</span>}
-                    </span>
-                    <span className="text-muted-foreground text-xs mt-0.5">
-                      {row.manufacturer || "メーカー不明"} • {row.grade || "グレード未設定"}
-                    </span>
-                  </div>
+                  <span className="font-semibold text-foreground flex items-center gap-1.5">
+                    {row.resinType}
+                    {row.ppType && row.ppType !== "N/A" && (
+                      <span className="text-xs px-1.5 py-0.5 rounded-md bg-secondary text-muted-foreground font-medium">{row.ppType}</span>
+                    )}
+                  </span>
+                </td>
+                <td className="px-4 py-3 text-sm text-muted-foreground">
+                  {row.manufacturer || <span className="text-border">—</span>}
+                </td>
+                <td className="px-4 py-3 text-sm text-muted-foreground">
+                  {row.grade || <span className="text-border">—</span>}
                 </td>
                 <td className="px-4 py-3">
                   <div className="flex flex-col gap-1 text-xs">
