@@ -451,12 +451,6 @@ export function CategoryView({ category }: CategoryViewProps) {
                       >
                         すべて表示
                       </button>
-                      <button
-                        onClick={() => setVisibleColumns(new Set(DEFAULT_VISIBLE))}
-                        className="flex-1 text-xs py-1.5 rounded-lg border border-border hover:bg-secondary transition-colors"
-                      >
-                        デフォルト
-                      </button>
                     </div>
                   </div>
                 </>
