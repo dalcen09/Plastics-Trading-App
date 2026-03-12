@@ -32,6 +32,9 @@ function serializeEntry(entry: typeof resinEntriesTable.$inferSelect) {
     density: toNumber(entry.density),
     price: toNumber(entry.price),
     quantity: toNumber(entry.quantity),
+    arrivalPrice: toNumber(entry.arrivalPrice),
+    spotPrice: toNumber(entry.spotPrice),
+    sellingPrice: toNumber(entry.sellingPrice),
     createdAt: entry.createdAt.toISOString(),
     updatedAt: entry.updatedAt.toISOString(),
   };

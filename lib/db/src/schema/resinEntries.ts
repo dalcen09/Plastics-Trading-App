@@ -28,6 +28,13 @@ export const resinEntriesTable = pgTable("resin_entries", {
   price: numeric("price", { precision: 12, scale: 2 }),
   quantity: numeric("quantity", { precision: 12, scale: 2 }),
   remarks: text("remarks"),
+  // Extended fields from Japanese spreadsheets
+  storageLocation: text("storage_location"),       // 他県置場
+  arrivalPrice: numeric("arrival_price", { precision: 12, scale: 2 }), // 丸喜着
+  spotPrice: numeric("spot_price", { precision: 12, scale: 2 }),       // スポット
+  prospectiveBuyer: text("prospective_buyer"),     // ワーク希望者
+  proposedTo: text("proposed_to"),                 // 提案先
+  sellingPrice: numeric("selling_price", { precision: 12, scale: 2 }), // 販売価格
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
