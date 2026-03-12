@@ -258,7 +258,7 @@ components:
 
     PPType:
       type: string
-      enum: [Homopolymer, Copolymer, Random, Impact, Terpolymer, N/A]
+      enum: [ホモ, ブロック, ランダム]
 
     QuantityType:
       type: string

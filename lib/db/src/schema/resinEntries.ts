@@ -11,7 +11,7 @@ export const resinTypeEnum = pgEnum("resin_type", [
   "POM", "EPDM", "PEI", "PETG", "AS", "MS", "PVDC",
   "Other",
 ]);
-export const ppTypeEnum = pgEnum("pp_type", ["Homopolymer", "Copolymer", "Random", "Impact", "Terpolymer", "N/A"]);
+export const ppTypeEnum = pgEnum("pp_type", ["ホモ", "ブロック", "ランダム"]);
 export const packagingTypeEnum = pgEnum("packaging_type", ["Bags", "Octabin", "Bulk", "Jumbo_Bag", "Box", "Other"]);
 export const quantityTypeEnum = pgEnum("quantity_type", ["月間", "スポット"]);
 

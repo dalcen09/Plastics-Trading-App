@@ -24,7 +24,7 @@ const formSchema = z.object({
   resinType: z.nativeEnum(ResinType),
   manufacturer: z.string().nullable().optional(),
   grade: z.string().nullable().optional(),
-  ppType: z.nativeEnum(PPType).nullable().optional(),
+  ppType: z.preprocess(v => v === "" ? null : v, z.nativeEnum(PPType).nullable().optional()),
   sampleAvailable: z.boolean().nullable().optional(),
   packaging: z.nativeEnum(PackagingType).nullable().optional(),
   meltFlowIndex: z.coerce.number().nullable().optional(),
@@ -69,7 +69,7 @@ export function ResinForm({
       resinType: initialData?.resinType || ResinType.PP,
       manufacturer: initialData?.manufacturer || "",
       grade: initialData?.grade || "",
-      ppType: initialData?.ppType || PPType.Homopolymer,
+      ppType: initialData?.ppType || null,
       sampleAvailable: initialData?.sampleAvailable || false,
       packaging: initialData?.packaging || PackagingType.Bags,
       meltFlowIndex: initialData?.meltFlowIndex ?? undefined,
@@ -158,6 +158,7 @@ export function ResinForm({
                 {selectedResinType === ResinType.PP && (
                   <FormGroup label="PPタイプ" error={errors.ppType?.message}>
                     <select {...register("ppType")} className="input-field">
+                      <option value="">―</option>
                       {Object.values(PPType).map(t => <option key={t} value={t}>{t}</option>)}
                     </select>
                   </FormGroup>

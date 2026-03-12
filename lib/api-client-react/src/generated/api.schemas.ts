@@ -36,12 +36,9 @@ export const ResinType = {
 export type PPType = (typeof PPType)[keyof typeof PPType];
 
 export const PPType = {
-  Homopolymer: "Homopolymer",
-  Copolymer: "Copolymer",
-  Random: "Random",
-  Impact: "Impact",
-  Terpolymer: "Terpolymer",
-  "N/A": "N/A",
+  ホモ: "ホモ",
+  ブロック: "ブロック",
+  ランダム: "ランダム",
 } as const;
 
 export type QuantityType = (typeof QuantityType)[keyof typeof QuantityType];
