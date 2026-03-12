@@ -19,7 +19,8 @@ import {
   CreateResinEntryEntryType,
   ResinEntry
 } from "@workspace/api-client-react";
-import { Plus, ArrowDownToLine, ArrowUpFromLine, Upload, Search, X, SlidersHorizontal, ChevronLeft, ChevronRight, Columns3 } from "lucide-react";
+import { Plus, ArrowDownToLine, ArrowUpFromLine, Upload, Search, X, SlidersHorizontal, ChevronLeft, ChevronRight, Columns3, Download } from "lucide-react";
+import { exportToExcel } from "@/lib/exportExcel";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
 import { ImportModal } from "@/components/ImportModal";
@@ -279,6 +280,14 @@ export function CategoryView({ category }: CategoryViewProps) {
             >
               <Upload className="w-4 h-4" />
               Excelインポート
+            </button>
+            <button
+              onClick={() => exportToExcel(sortedData, visibleColumns)}
+              className="px-4 py-2.5 rounded-xl font-semibold border border-border text-foreground hover:bg-secondary transition-colors flex items-center gap-2 text-sm"
+              title={`${sortedData.length}件をエクスポート`}
+            >
+              <Download className="w-4 h-4" />
+              Excelエクスポート
             </button>
             <button 
               onClick={() => handleOpenForm()}
