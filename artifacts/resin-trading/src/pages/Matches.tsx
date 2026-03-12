@@ -19,10 +19,10 @@ export function Matches() {
             </div>
             <div>
               <h1 className="text-3xl font-display font-bold text-foreground">
-                Match Intelligence
+                マッチング分析
               </h1>
               <p className="text-muted-foreground mt-1">
-                Automated matching between active sources and demands.
+                仕入れ先と需要の自動マッチングを表示します。
               </p>
             </div>
           </div>
@@ -47,16 +47,16 @@ export function Matches() {
               <div className="w-20 h-20 bg-secondary rounded-full flex items-center justify-center mb-6">
                 <AlertCircle className="w-10 h-10 text-muted-foreground/50" />
               </div>
-              <h3 className="text-xl font-display font-semibold text-foreground mb-2">No Matches Found</h3>
+              <h3 className="text-xl font-display font-semibold text-foreground mb-2">マッチングなし</h3>
               <p className="text-center max-w-md text-sm">
-                We couldn't find any high-confidence matches between your current sources and demands. Add more inventory or requests to see suggestions.
+                現在の仕入れ先と需要の間に有効なマッチングが見つかりませんでした。在庫またはリクエストを追加してください。
               </p>
               <div className="flex gap-4 mt-8">
                 <Link href="/virgin" className="px-5 py-2.5 rounded-xl text-sm font-semibold bg-secondary text-foreground hover:bg-secondary/80 transition-colors">
-                  Add Virgin
+                  バージンを追加
                 </Link>
                 <Link href="/offgrade" className="px-5 py-2.5 rounded-xl text-sm font-semibold bg-secondary text-foreground hover:bg-secondary/80 transition-colors">
-                  Add Offgrade
+                  オフグレードを追加
                 </Link>
               </div>
             </div>
@@ -80,11 +80,11 @@ function MatchCard({ match }: { match: any }) {
         <div className="flex items-center gap-4">
           <div className={cn("flex flex-col items-center justify-center w-16 h-16 rounded-2xl border-2 shadow-inner", scoreColor)}>
             <span className="text-xl font-bold font-display">{match.score}</span>
-            <span className="text-[10px] font-bold uppercase tracking-wider opacity-80">Score</span>
+            <span className="text-[10px] font-bold uppercase tracking-wider opacity-80">スコア</span>
           </div>
           <div>
             <h3 className="text-lg font-bold text-foreground capitalize flex items-center gap-2">
-              {match.source.resinType} {match.source.resinCategory} Match
+              {match.source.resinType} {match.source.resinCategory === "virgin" ? "バージン" : match.source.resinCategory === "offgrade" ? "オフグレード" : "リサイクル"} マッチ
             </h3>
             <div className="flex flex-wrap gap-2 mt-1">
               {match.reasons.map((reason: string, i: number) => (
@@ -96,7 +96,7 @@ function MatchCard({ match }: { match: any }) {
           </div>
         </div>
         <button className="px-4 py-2 bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground font-semibold text-sm rounded-xl transition-colors">
-          Initiate Trade
+          取引開始
         </button>
       </div>
 
@@ -105,7 +105,7 @@ function MatchCard({ match }: { match: any }) {
         {/* Source Panel */}
         <div className="bg-secondary/30 rounded-2xl p-5 border border-border/50">
           <div className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-4 flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-blue-500"></span> Source (Supplier)
+            <span className="w-2 h-2 rounded-full bg-blue-500"></span> 仕入れ先（サプライヤー）
           </div>
           <div className="space-y-4">
             <div>
@@ -118,10 +118,10 @@ function MatchCard({ match }: { match: any }) {
             </div>
             
             <div className="grid grid-cols-2 gap-3 text-sm">
-              <InfoBadge icon={<Gauge className="w-3.5 h-3.5"/>} label="Product" value={`${match.source.manufacturer || 'Unspecified'} ${match.source.grade || ''}`} />
-              <InfoBadge icon={<DollarSign className="w-3.5 h-3.5"/>} label="Price" value={formatCurrency(match.source.price)} />
+              <InfoBadge icon={<Gauge className="w-3.5 h-3.5"/>} label="製品" value={`${match.source.manufacturer || '未指定'} ${match.source.grade || ''}`} />
+              <InfoBadge icon={<DollarSign className="w-3.5 h-3.5"/>} label="価格" value={formatCurrency(match.source.price)} />
               <InfoBadge label="MFI" value={formatNumber(match.source.meltFlowIndex)} />
-              <InfoBadge label="Qty" value={`${formatNumber(match.source.quantity)} MT`} />
+              <InfoBadge label="数量" value={`${formatNumber(match.source.quantity)} MT`} />
             </div>
           </div>
         </div>
@@ -138,7 +138,7 @@ function MatchCard({ match }: { match: any }) {
         <div className="bg-primary/5 rounded-2xl p-5 border border-primary/10 relative overflow-hidden">
           <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-bl-full -z-10"></div>
           <div className="text-xs font-bold uppercase tracking-wider text-primary mb-4 flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span> Demand (Buyer)
+            <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span> 需要（バイヤー）
           </div>
           <div className="space-y-4">
             <div>
@@ -151,10 +151,10 @@ function MatchCard({ match }: { match: any }) {
             </div>
             
             <div className="grid grid-cols-2 gap-3 text-sm">
-              <InfoBadge icon={<Gauge className="w-3.5 h-3.5"/>} label="Product Req." value={`${match.demand.manufacturer || 'Any'} ${match.demand.grade || ''}`} />
-              <InfoBadge icon={<DollarSign className="w-3.5 h-3.5"/>} label="Target Price" value={formatCurrency(match.demand.price)} />
-              <InfoBadge label="Target MFI" value={formatNumber(match.demand.meltFlowIndex) || 'Any'} />
-              <InfoBadge label="Req Qty" value={`${formatNumber(match.demand.quantity)} MT`} />
+              <InfoBadge icon={<Gauge className="w-3.5 h-3.5"/>} label="希望製品" value={`${match.demand.manufacturer || '指定なし'} ${match.demand.grade || ''}`} />
+              <InfoBadge icon={<DollarSign className="w-3.5 h-3.5"/>} label="目標価格" value={formatCurrency(match.demand.price)} />
+              <InfoBadge label="目標MFI" value={formatNumber(match.demand.meltFlowIndex) || '指定なし'} />
+              <InfoBadge label="希望数量" value={`${formatNumber(match.demand.quantity)} MT`} />
             </div>
           </div>
         </div>

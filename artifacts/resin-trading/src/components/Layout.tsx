@@ -19,10 +19,10 @@ export function Layout({ children }: LayoutProps) {
   const [location] = useLocation();
 
   const navItems = [
-    { href: "/", label: "Matches", icon: Network, matchPrefix: false },
-    { href: "/virgin", label: "Virgin Resin", icon: Box, matchPrefix: true },
-    { href: "/offgrade", label: "Offgrade", icon: TrendingUp, matchPrefix: true },
-    { href: "/recycled", label: "Recycled", icon: Recycle, matchPrefix: true },
+    { href: "/", label: "マッチング", icon: Network, matchPrefix: false },
+    { href: "/virgin", label: "バージン樹脂", icon: Box, matchPrefix: true },
+    { href: "/offgrade", label: "オフグレード", icon: TrendingUp, matchPrefix: true },
+    { href: "/recycled", label: "リサイクル", icon: Recycle, matchPrefix: true },
   ];
 
   return (
@@ -40,7 +40,7 @@ export function Layout({ children }: LayoutProps) {
 
         <div className="flex-1 overflow-y-auto py-6 px-4 space-y-1">
           <div className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-4 px-2">
-            Main Menu
+            メインメニュー
           </div>
           {navItems.map((item) => {
             const isActive = item.matchPrefix 
@@ -74,7 +74,6 @@ export function Layout({ children }: LayoutProps) {
         {/* Top Header */}
         <header className="h-16 flex-shrink-0 bg-card/80 backdrop-blur-md border-b border-border/50 flex items-center justify-between px-4 sm:px-8 z-10">
           <div className="flex items-center gap-4">
-            {/* Mobile menu toggle could go here */}
             <h1 className="text-xl font-display font-semibold text-foreground md:hidden">
               ResinFlow
             </h1>
@@ -85,7 +84,7 @@ export function Layout({ children }: LayoutProps) {
               <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
               <input 
                 type="text" 
-                placeholder="Search resources..." 
+                placeholder="検索..." 
                 className="pl-9 pr-4 py-2 bg-secondary/50 border-none rounded-full text-sm w-64 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
               />
             </div>

@@ -27,29 +27,32 @@ interface CategoryViewProps {
   category: "virgin" | "offgrade" | "recycled";
 }
 
+const categoryLabels: Record<string, string> = {
+  virgin: "バージン樹脂",
+  offgrade: "オフグレード",
+  recycled: "リサイクル",
+};
+
 export function CategoryView({ category }: CategoryViewProps) {
   const queryClient = useQueryClient();
   const { toast } = useToast();
   
-  // State
   const [activeTab, setActiveTab] = useState<"sources" | "demands">("sources");
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [editingEntry, setEditingEntry] = useState<ResinEntry | undefined>();
 
-  // Fetching
   const { data: sources, isLoading: sourcesLoading } = useListSources({ resinCategory: category as ResinCategory });
   const { data: demands, isLoading: demandsLoading } = useListDemands({ resinCategory: category as ResinCategory });
 
-  // Mutations - Sources
   const createSource = useCreateSource({
     mutation: {
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: getListSourcesQueryKey({ resinCategory: category as ResinCategory }) });
         queryClient.invalidateQueries({ queryKey: getGetMatchesQueryKey() });
         closeForm();
-        toast({ title: "Success", description: "Source created successfully" });
+        toast({ title: "成功", description: "仕入れ先を登録しました" });
       },
-      onError: (err) => toast({ variant: "destructive", title: "Error", description: "Failed to create source" })
+      onError: () => toast({ variant: "destructive", title: "エラー", description: "仕入れ先の登録に失敗しました" })
     }
   });
 
@@ -59,9 +62,9 @@ export function CategoryView({ category }: CategoryViewProps) {
         queryClient.invalidateQueries({ queryKey: getListSourcesQueryKey({ resinCategory: category as ResinCategory }) });
         queryClient.invalidateQueries({ queryKey: getGetMatchesQueryKey() });
         closeForm();
-        toast({ title: "Success", description: "Source updated successfully" });
+        toast({ title: "成功", description: "仕入れ先を更新しました" });
       },
-      onError: () => toast({ variant: "destructive", title: "Error", description: "Failed to update source" })
+      onError: () => toast({ variant: "destructive", title: "エラー", description: "仕入れ先の更新に失敗しました" })
     }
   });
 
@@ -70,21 +73,20 @@ export function CategoryView({ category }: CategoryViewProps) {
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: getListSourcesQueryKey({ resinCategory: category as ResinCategory }) });
         queryClient.invalidateQueries({ queryKey: getGetMatchesQueryKey() });
-        toast({ title: "Success", description: "Source deleted" });
+        toast({ title: "成功", description: "仕入れ先を削除しました" });
       }
     }
   });
 
-  // Mutations - Demands
   const createDemand = useCreateDemand({
     mutation: {
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: getListDemandsQueryKey({ resinCategory: category as ResinCategory }) });
         queryClient.invalidateQueries({ queryKey: getGetMatchesQueryKey() });
         closeForm();
-        toast({ title: "Success", description: "Demand created successfully" });
+        toast({ title: "成功", description: "需要を登録しました" });
       },
-      onError: () => toast({ variant: "destructive", title: "Error", description: "Failed to create demand" })
+      onError: () => toast({ variant: "destructive", title: "エラー", description: "需要の登録に失敗しました" })
     }
   });
 
@@ -94,9 +96,9 @@ export function CategoryView({ category }: CategoryViewProps) {
         queryClient.invalidateQueries({ queryKey: getListDemandsQueryKey({ resinCategory: category as ResinCategory }) });
         queryClient.invalidateQueries({ queryKey: getGetMatchesQueryKey() });
         closeForm();
-        toast({ title: "Success", description: "Demand updated successfully" });
+        toast({ title: "成功", description: "需要を更新しました" });
       },
-      onError: () => toast({ variant: "destructive", title: "Error", description: "Failed to update demand" })
+      onError: () => toast({ variant: "destructive", title: "エラー", description: "需要の更新に失敗しました" })
     }
   });
 
@@ -105,12 +107,11 @@ export function CategoryView({ category }: CategoryViewProps) {
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: getListDemandsQueryKey({ resinCategory: category as ResinCategory }) });
         queryClient.invalidateQueries({ queryKey: getGetMatchesQueryKey() });
-        toast({ title: "Success", description: "Demand deleted" });
+        toast({ title: "成功", description: "需要を削除しました" });
       }
     }
   });
 
-  // Handlers
   const handleOpenForm = (entry?: ResinEntry) => {
     setEditingEntry(entry);
     setIsFormOpen(true);
@@ -147,7 +148,6 @@ export function CategoryView({ category }: CategoryViewProps) {
 
   const isPending = createSource.isPending || updateSource.isPending || createDemand.isPending || updateDemand.isPending;
 
-  // Render Theme colors based on category
   const categoryTheme = {
     virgin: "text-green-600 bg-green-500/10 border-green-500/20",
     offgrade: "text-amber-600 bg-amber-500/10 border-amber-500/20",
@@ -162,14 +162,14 @@ export function CategoryView({ category }: CategoryViewProps) {
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
           <div>
             <div className="flex items-center gap-3">
-              <h1 className="text-3xl font-display font-bold text-foreground capitalize">
-                {category} Resin
+              <h1 className="text-3xl font-display font-bold text-foreground">
+                {categoryLabels[category]}
               </h1>
               <span className={cn("px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider border", categoryTheme)}>
-                Live Data
+                リアルタイム
               </span>
             </div>
-            <p className="text-muted-foreground mt-1">Manage suppliers and buyers for this material type.</p>
+            <p className="text-muted-foreground mt-1">この素材の仕入れ先と買い手を管理します。</p>
           </div>
           
           <button 
@@ -177,7 +177,7 @@ export function CategoryView({ category }: CategoryViewProps) {
             className="px-5 py-2.5 rounded-xl font-semibold bg-primary text-primary-foreground shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 flex items-center gap-2"
           >
             <Plus className="w-5 h-5" />
-            Add {activeTab === "sources" ? "Source" : "Demand"}
+            {activeTab === "sources" ? "仕入れ先を追加" : "需要を追加"}
           </button>
         </div>
 
@@ -193,7 +193,7 @@ export function CategoryView({ category }: CategoryViewProps) {
             )}
           >
             <ArrowDownToLine className="w-4 h-4" />
-            Sources (Supply)
+            仕入れ先（供給）
           </button>
           <button
             onClick={() => setActiveTab("demands")}
@@ -205,7 +205,7 @@ export function CategoryView({ category }: CategoryViewProps) {
             )}
           >
             <ArrowUpFromLine className="w-4 h-4" />
-            Demands (Buy)
+            需要（買い）
           </button>
         </div>
 

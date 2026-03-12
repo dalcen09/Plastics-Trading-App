@@ -17,9 +17,9 @@ import { format } from "date-fns";
 const formSchema = z.object({
   entryType: z.nativeEnum(CreateResinEntryEntryType),
   resinCategory: z.nativeEnum(ResinCategory),
-  date: z.string().min(1, "Date is required"),
-  counterparty: z.string().min(1, "Counterparty is required"),
-  personInCharge: z.string().min(1, "Person in charge is required"),
+  date: z.string().min(1, "日付は必須です"),
+  counterparty: z.string().min(1, "取引先は必須です"),
+  personInCharge: z.string().min(1, "担当者は必須です"),
   resinType: z.nativeEnum(ResinType),
   manufacturer: z.string().nullable().optional(),
   grade: z.string().nullable().optional(),
@@ -83,7 +83,6 @@ export function ResinForm({
 
   useEffect(() => {
     if (initialData) {
-      // Re-initialize if initialData changes
       reset({
         ...initialData,
         date: initialData.date ? format(new Date(initialData.date), 'yyyy-MM-dd') : format(new Date(), 'yyyy-MM-dd'),
@@ -99,10 +98,10 @@ export function ResinForm({
         <div className="px-6 py-4 border-b border-border/50 flex justify-between items-center bg-secondary/30">
           <div>
             <h2 className="text-xl font-display font-bold text-foreground">
-              {initialData ? "Edit" : "Add"} {entryType === "source" ? "Source" : "Demand"}
+              {initialData ? "編集" : "追加"} — {entryType === "source" ? "仕入れ先" : "需要"}
             </h2>
             <p className="text-sm text-muted-foreground mt-0.5 capitalize">
-              {resinCategory} Resin
+              {resinCategory === "virgin" ? "バージン" : resinCategory === "offgrade" ? "オフグレード" : "リサイクル"} 樹脂
             </p>
           </div>
           <button 
@@ -119,61 +118,61 @@ export function ResinForm({
             
             {/* Section: General Info */}
             <div>
-              <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">General Information</h3>
+              <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4">基本情報</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-5">
-                <FormGroup label="Date" error={errors.date?.message}>
+                <FormGroup label="日付" error={errors.date?.message}>
                   <input type="date" {...register("date")} className="input-field" />
                 </FormGroup>
-                <FormGroup label="Counterparty" error={errors.counterparty?.message}>
-                  <input type="text" placeholder="Company Name" {...register("counterparty")} className="input-field" />
+                <FormGroup label="取引先" error={errors.counterparty?.message}>
+                  <input type="text" placeholder="会社名" {...register("counterparty")} className="input-field" />
                 </FormGroup>
-                <FormGroup label="Person In Charge" error={errors.personInCharge?.message}>
-                  <input type="text" placeholder="John Doe" {...register("personInCharge")} className="input-field" />
+                <FormGroup label="担当者" error={errors.personInCharge?.message}>
+                  <input type="text" placeholder="山田 太郎" {...register("personInCharge")} className="input-field" />
                 </FormGroup>
               </div>
             </div>
 
             {/* Section: Product Specs */}
             <div>
-              <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4 pt-4 border-t border-border/50">Product Specifications</h3>
+              <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4 pt-4 border-t border-border/50">製品仕様</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5">
-                <FormGroup label="Resin Type" error={errors.resinType?.message}>
+                <FormGroup label="樹脂種別" error={errors.resinType?.message}>
                   <select {...register("resinType")} className="input-field">
                     {Object.values(ResinType).map(t => <option key={t} value={t}>{t}</option>)}
                   </select>
                 </FormGroup>
                 
                 {selectedResinType === ResinType.PP && (
-                  <FormGroup label="PP Type" error={errors.ppType?.message}>
+                  <FormGroup label="PPタイプ" error={errors.ppType?.message}>
                     <select {...register("ppType")} className="input-field">
                       {Object.values(PPType).map(t => <option key={t} value={t}>{t}</option>)}
                     </select>
                   </FormGroup>
                 )}
                 
-                <FormGroup label="Manufacturer" error={errors.manufacturer?.message}>
-                  <input type="text" placeholder="ExxonMobil, etc." {...register("manufacturer")} className="input-field" />
+                <FormGroup label="メーカー" error={errors.manufacturer?.message}>
+                  <input type="text" placeholder="ExxonMobil など" {...register("manufacturer")} className="input-field" />
                 </FormGroup>
-                <FormGroup label="Grade" error={errors.grade?.message}>
-                  <input type="text" placeholder="Grade ID" {...register("grade")} className="input-field" />
+                <FormGroup label="グレード" error={errors.grade?.message}>
+                  <input type="text" placeholder="グレードID" {...register("grade")} className="input-field" />
                 </FormGroup>
               </div>
             </div>
 
             {/* Section: Technical Specs */}
             <div>
-              <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4 pt-4 border-t border-border/50">Technical Specs</h3>
+              <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4 pt-4 border-t border-border/50">技術仕様</h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
-                <FormGroup label="Melt Flow Index" error={errors.meltFlowIndex?.message}>
+                <FormGroup label="メルトフローインデックス" error={errors.meltFlowIndex?.message}>
                   <input type="number" step="0.01" placeholder="g/10min" {...register("meltFlowIndex")} className="input-field" />
                 </FormGroup>
-                <FormGroup label="Charpy" error={errors.charpy?.message}>
+                <FormGroup label="シャルピー" error={errors.charpy?.message}>
                   <input type="number" step="0.01" placeholder="kJ/m²" {...register("charpy")} className="input-field" />
                 </FormGroup>
-                <FormGroup label="Izod" error={errors.izod?.message}>
+                <FormGroup label="アイゾット" error={errors.izod?.message}>
                   <input type="number" step="0.01" placeholder="kJ/m²" {...register("izod")} className="input-field" />
                 </FormGroup>
-                <FormGroup label="Density" error={errors.density?.message}>
+                <FormGroup label="密度" error={errors.density?.message}>
                   <input type="number" step="0.001" placeholder="g/cm³" {...register("density")} className="input-field" />
                 </FormGroup>
               </div>
@@ -181,15 +180,15 @@ export function ResinForm({
 
             {/* Section: Commercial Info */}
             <div>
-              <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4 pt-4 border-t border-border/50">Commercial Details</h3>
+              <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4 pt-4 border-t border-border/50">商業情報</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5">
-                <FormGroup label="Quantity (MT)" error={errors.quantity?.message}>
-                  <input type="number" step="0.01" placeholder="Metric Tons" {...register("quantity")} className="input-field" />
+                <FormGroup label="数量 (MT)" error={errors.quantity?.message}>
+                  <input type="number" step="0.01" placeholder="メトリックトン" {...register("quantity")} className="input-field" />
                 </FormGroup>
-                <FormGroup label="Price (USD/MT)" error={errors.price?.message}>
+                <FormGroup label="価格 (USD/MT)" error={errors.price?.message}>
                   <input type="number" step="0.01" placeholder="USD" {...register("price")} className="input-field" />
                 </FormGroup>
-                <FormGroup label="Packaging" error={errors.packaging?.message}>
+                <FormGroup label="梱包形態" error={errors.packaging?.message}>
                   <select {...register("packaging")} className="input-field">
                     {Object.values(PackagingType).map(t => <option key={t} value={t}>{t.replace('_', ' ')}</option>)}
                   </select>
@@ -209,16 +208,16 @@ export function ResinForm({
                         />
                       )}
                     />
-                    <span className="text-sm font-medium text-foreground group-hover:text-primary transition-colors">Sample Available</span>
+                    <span className="text-sm font-medium text-foreground group-hover:text-primary transition-colors">サンプルあり</span>
                   </label>
                 </div>
               </div>
             </div>
 
-            <FormGroup label="Remarks" error={errors.remarks?.message}>
+            <FormGroup label="備考" error={errors.remarks?.message}>
               <textarea 
                 rows={3} 
-                placeholder="Additional notes..." 
+                placeholder="追加メモ..." 
                 {...register("remarks")} 
                 className="input-field resize-none"
               />
@@ -235,7 +234,7 @@ export function ResinForm({
             disabled={isPending}
             className="px-5 py-2.5 rounded-xl font-medium text-foreground hover:bg-secondary transition-colors"
           >
-            Cancel
+            キャンセル
           </button>
           <button 
             type="submit" 
@@ -244,7 +243,7 @@ export function ResinForm({
             className="px-6 py-2.5 rounded-xl font-semibold bg-primary text-primary-foreground shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/30 hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 disabled:pointer-events-none transition-all duration-200 flex items-center gap-2"
           >
             {isPending && <Loader2 className="w-4 h-4 animate-spin" />}
-            {isPending ? "Saving..." : "Save Entry"}
+            {isPending ? "保存中..." : "保存"}
           </button>
         </div>
 
