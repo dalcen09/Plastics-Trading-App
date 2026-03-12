@@ -30,7 +30,9 @@ export const ALL_COLUMNS: { key: ColumnKey; label: string }[] = [
   { key: "quantity",       label: "数量 (kg)" },
 ];
 
-export const DEFAULT_VISIBLE: Set<ColumnKey> = new Set(ALL_COLUMNS.map(c => c.key));
+export const DEFAULT_VISIBLE: Set<ColumnKey> = new Set(
+  ALL_COLUMNS.map(c => c.key).filter(k => k !== "charpy" && k !== "izod")
+);
 
 export function sortData(data: ResinEntry[], sort: SortConfig | null): ResinEntry[] {
   if (!sort) return data;
