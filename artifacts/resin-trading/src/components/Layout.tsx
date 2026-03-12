@@ -20,7 +20,7 @@ export function Layout({ children }: LayoutProps) {
 
   const navItems = [
     { href: "/", label: "マッチング", icon: Network, matchPrefix: false },
-    { href: "/virgin", label: "バージン樹脂", icon: Box, matchPrefix: true },
+    { href: "/virgin", label: "バージン", icon: Box, matchPrefix: true },
     { href: "/offgrade", label: "オフグレード", icon: TrendingUp, matchPrefix: true },
     { href: "/recycled", label: "リサイクル", icon: Recycle, matchPrefix: true },
   ];

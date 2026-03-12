@@ -29,7 +29,7 @@ interface CategoryViewProps {
 }
 
 const categoryLabels: Record<string, string> = {
-  virgin: "バージン樹脂",
+  virgin: "バージン",
   offgrade: "オフグレード",
   recycled: "リサイクル",
 };
