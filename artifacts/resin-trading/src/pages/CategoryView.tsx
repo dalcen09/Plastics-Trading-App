@@ -499,6 +499,15 @@ export function CategoryView({ category }: CategoryViewProps) {
               {hasActiveFilters && sortedData.length === 0 && (
                 <span className="text-amber-600 font-medium">条件に一致するデータがありません</span>
               )}
+              {sort && (
+                <button
+                  onClick={() => setSort(null)}
+                  className="flex items-center gap-1 px-2 py-0.5 rounded-md border border-border text-xs text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
+                >
+                  <X className="w-3 h-3" />
+                  並び順をリセット
+                </button>
+              )}
             </div>
             <div className="flex items-center gap-2 shrink-0">
               <span className="text-xs font-medium">表示件数</span>
