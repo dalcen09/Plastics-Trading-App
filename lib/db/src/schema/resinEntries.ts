@@ -4,7 +4,13 @@ import { z } from "zod/v4";
 
 export const resinCategoryEnum = pgEnum("resin_category", ["virgin", "offgrade", "recycled"]);
 export const entryTypeEnum = pgEnum("entry_type", ["source", "demand"]);
-export const resinTypeEnum = pgEnum("resin_type", ["PP", "PE", "PS", "ABS", "PVC", "PET", "PC", "Nylon", "EVA", "PMMA", "Other"]);
+export const resinTypeEnum = pgEnum("resin_type", [
+  "PP", "PE", "PS", "ABS", "PVC", "PET", "PC", "Nylon", "EVA", "PMMA",
+  "HDPE", "LDPE", "LLDPE",
+  "GPPS", "HIPS",
+  "POM", "EPDM", "PEI", "PETG", "AS", "MS", "PVDC",
+  "Other",
+]);
 export const ppTypeEnum = pgEnum("pp_type", ["Homopolymer", "Copolymer", "Random", "Impact", "Terpolymer", "N/A"]);
 export const packagingTypeEnum = pgEnum("packaging_type", ["Bags", "Octabin", "Bulk", "Jumbo_Bag", "Box", "Other"]);
 

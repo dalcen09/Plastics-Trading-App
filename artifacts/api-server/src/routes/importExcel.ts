@@ -236,7 +236,13 @@ function detectEntryTypeFromSheet(name: string): "source" | "demand" | null {
 // ---------------------------------------------------------------------------
 // Value normalizers
 // ---------------------------------------------------------------------------
-const VALID_RESIN_TYPES = ["PP", "PE", "PS", "ABS", "PVC", "PET", "PC", "Nylon", "EVA", "PMMA", "Other"];
+const VALID_RESIN_TYPES = [
+  "PP", "PE", "PS", "ABS", "PVC", "PET", "PC", "Nylon", "EVA", "PMMA",
+  "HDPE", "LDPE", "LLDPE",
+  "GPPS", "HIPS",
+  "POM", "EPDM", "PEI", "PETG", "AS", "MS", "PVDC",
+  "Other",
+];
 const VALID_PP_TYPES = ["Homopolymer", "Copolymer", "Random", "Impact", "Terpolymer", "N/A"];
 const VALID_PACKAGING = ["Bags", "Octabin", "Bulk", "Jumbo_Bag", "Box", "Other"];
 
@@ -259,9 +265,29 @@ function normalizeCategory(val: string): "virgin" | "offgrade" | "recycled" | nu
   return null;
 }
 
-function normalizeResinType(val: string): string | null {
-  const v = val.trim().toUpperCase();
-  return VALID_RESIN_TYPES.find(t => t.toUpperCase() === v) ?? null;
+function normalizeResinType(raw: string): string | null {
+  // Strip leading/trailing whitespace and normalize
+  let v = raw.trim();
+
+  // Strip parenthetical suffixes: LLDPE(C4) → LLDPE, LLDPE(C6) → LLDPE
+  v = v.replace(/\s*[\(（].*?[\)）]/g, "").trim();
+
+  // Strip Japanese descriptors before/after: 透明ABS → ABS, PE（架橋入り）→ PE
+  v = v.replace(/^透明/i, "").trim();
+
+  // Known aliases that don't match the enum exactly
+  const aliases: Record<string, string> = {
+    "LLC4": "LLDPE",
+    "PVDCパウダー": "PVDC",
+    "PVDCﾊﾟｳﾀﾞｰ": "PVDC",
+    "PET-G": "PETG",
+    "PET-GF": "PETG",
+  };
+  if (aliases[v]) return aliases[v];
+
+  // Case-insensitive exact match against valid list
+  const vUp = v.toUpperCase();
+  return VALID_RESIN_TYPES.find(t => t.toUpperCase() === vUp) ?? null;
 }
 
 function normalizePPType(val: string): string | null {
@@ -350,6 +376,7 @@ router.post("/import", upload.single("file"), async (req, res) => {
 
     for (let ri = 1; ri < rows.length; ri++) {
       const row = rows[ri];
+      // Skip fully empty rows
       if (row.every((c: any) => c === "" || c === null || c === undefined)) continue;
 
       // Collect raw values by field name
@@ -358,13 +385,18 @@ router.post("/import", upload.single("file"), async (req, res) => {
         data[field] = row[parseInt(ci)];
       });
 
+      // Silently skip rows with no date and no counterparty (blank trailing rows)
+      const rawDate = data.date;
+      const rawCounterparty = data.counterparty;
+      if ((!rawDate || rawDate === "") && (!rawCounterparty || String(rawCounterparty).trim() === "")) continue;
+
       // Resolve required fields — fall back to sheet-name detection
       const entryType: "source" | "demand" | null =
         data.entryType ? normalizeEntryType(String(data.entryType)) : sheetEntryType;
       const resinCategory: "virgin" | "offgrade" | "recycled" | null =
         data.resinCategory ? normalizeCategory(String(data.resinCategory)) : sheetCategory;
-      const date = data.date ? parseDate(data.date) : null;
-      const counterparty = data.counterparty ? String(data.counterparty).trim() : null;
+      const date = rawDate ? parseDate(rawDate) : null;
+      const counterparty = rawCounterparty ? String(rawCounterparty).trim() : null;
       const personInCharge = data.personInCharge ? String(data.personInCharge).trim() : null;
       const resinType = data.resinType ? normalizeResinType(String(data.resinType)) : null;
 
