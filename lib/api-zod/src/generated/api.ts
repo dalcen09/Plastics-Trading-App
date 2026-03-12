@@ -58,6 +58,7 @@ export const ListSourcesResponseItem = zod.object({
   quantity: zod.number().nullish(),
   quantityType: zod.enum(["月間", "スポット"]).nullish(),
   remarks: zod.string().nullish(),
+  imageUrl: zod.string().nullish(),
   createdAt: zod.date(),
   updatedAt: zod.date(),
 });
@@ -102,6 +103,7 @@ export const CreateSourceBody = zod.object({
   quantity: zod.number().nullish(),
   quantityType: zod.enum(["月間", "スポット"]).nullish(),
   remarks: zod.string().nullish(),
+  imageUrl: zod.string().nullish(),
 });
 
 /**
@@ -147,6 +149,7 @@ export const UpdateSourceBody = zod.object({
   quantity: zod.number().nullish(),
   quantityType: zod.enum(["月間", "スポット"]).nullish(),
   remarks: zod.string().nullish(),
+  imageUrl: zod.string().nullish(),
 });
 
 export const UpdateSourceResponse = zod.object({
@@ -186,6 +189,7 @@ export const UpdateSourceResponse = zod.object({
   quantity: zod.number().nullish(),
   quantityType: zod.enum(["月間", "スポット"]).nullish(),
   remarks: zod.string().nullish(),
+  imageUrl: zod.string().nullish(),
   createdAt: zod.date(),
   updatedAt: zod.date(),
 });
@@ -241,6 +245,7 @@ export const ListDemandsResponseItem = zod.object({
   quantity: zod.number().nullish(),
   quantityType: zod.enum(["月間", "スポット"]).nullish(),
   remarks: zod.string().nullish(),
+  imageUrl: zod.string().nullish(),
   createdAt: zod.date(),
   updatedAt: zod.date(),
 });
@@ -285,6 +290,7 @@ export const CreateDemandBody = zod.object({
   quantity: zod.number().nullish(),
   quantityType: zod.enum(["月間", "スポット"]).nullish(),
   remarks: zod.string().nullish(),
+  imageUrl: zod.string().nullish(),
 });
 
 /**
@@ -330,6 +336,7 @@ export const UpdateDemandBody = zod.object({
   quantity: zod.number().nullish(),
   quantityType: zod.enum(["月間", "スポット"]).nullish(),
   remarks: zod.string().nullish(),
+  imageUrl: zod.string().nullish(),
 });
 
 export const UpdateDemandResponse = zod.object({
@@ -369,6 +376,7 @@ export const UpdateDemandResponse = zod.object({
   quantity: zod.number().nullish(),
   quantityType: zod.enum(["月間", "スポット"]).nullish(),
   remarks: zod.string().nullish(),
+  imageUrl: zod.string().nullish(),
   createdAt: zod.date(),
   updatedAt: zod.date(),
 });
@@ -426,8 +434,9 @@ export const GetMatchesResponseItem = zod.object({
     density: zod.number().nullish(),
     price: zod.number().nullish(),
     quantity: zod.number().nullish(),
-  quantityType: zod.enum(["月間", "スポット"]).nullish(),
+    quantityType: zod.enum(["月間", "スポット"]).nullish(),
     remarks: zod.string().nullish(),
+    imageUrl: zod.string().nullish(),
     createdAt: zod.date(),
     updatedAt: zod.date(),
   }),
@@ -473,8 +482,9 @@ export const GetMatchesResponseItem = zod.object({
     density: zod.number().nullish(),
     price: zod.number().nullish(),
     quantity: zod.number().nullish(),
-  quantityType: zod.enum(["月間", "スポット"]).nullish(),
+    quantityType: zod.enum(["月間", "スポット"]).nullish(),
     remarks: zod.string().nullish(),
+    imageUrl: zod.string().nullish(),
     createdAt: zod.date(),
     updatedAt: zod.date(),
   }),
@@ -482,3 +492,31 @@ export const GetMatchesResponseItem = zod.object({
   reasons: zod.array(zod.string()),
 });
 export const GetMatchesResponse = zod.array(GetMatchesResponseItem);
+
+/**
+ * @summary Request a presigned URL for file upload
+ */
+export const RequestUploadUrlBody = zod.object({
+  name: zod.string(),
+  size: zod.number(),
+  contentType: zod.string(),
+});
+
+export const RequestUploadUrlResponse = zod.object({
+  uploadURL: zod.string().url(),
+  objectPath: zod.string(),
+  metadata: zod
+    .object({
+      name: zod.string(),
+      size: zod.number(),
+      contentType: zod.string(),
+    })
+    .optional(),
+});
+
+/**
+ * @summary Serve an object entity
+ */
+export const GetObjectParams = zod.object({
+  objectPath: zod.coerce.string(),
+});

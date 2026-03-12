@@ -91,6 +91,14 @@ Generated Zod schemas from the OpenAPI spec (e.g. `HealthCheckResponse`). Used b
 
 Generated React Query hooks and fetch client from the OpenAPI spec (e.g. `useHealthCheck`, `healthCheck`).
 
+### `lib/object-storage-web` (`@workspace/object-storage-web`)
+
+Browser-side upload utilities backed by Replit Object Storage (GCS). Exports:
+- `useUpload()` — React hook for two-step presigned URL uploads (request URL from API, PUT file directly to GCS)
+- `ObjectUploader` — Uppy v5 modal upload component
+
+The API server exposes `POST /api/storage/uploads/request-url` (returns presigned GCS URL) and `GET /api/storage/objects/*` (serves uploaded files). The `image_url` column on `resin_entries` stores the normalized object path served via this endpoint.
+
 ### `scripts` (`@workspace/scripts`)
 
 Utility scripts package. Each script is a `.ts` file in `src/` with a corresponding npm script in `package.json`. Run scripts via `pnpm --filter @workspace/scripts run <script>`. Scripts can import any workspace package (e.g., `@workspace/db`) by adding it as a dependency in `scripts/package.json`.

@@ -44,6 +44,13 @@ export const PPType = {
   "N/A": "N/A",
 } as const;
 
+export type QuantityType = (typeof QuantityType)[keyof typeof QuantityType];
+
+export const QuantityType = {
+  月間: "月間",
+  スポット: "スポット",
+} as const;
+
 export type PackagingType = (typeof PackagingType)[keyof typeof PackagingType];
 
 export const PackagingType = {
@@ -82,8 +89,9 @@ export interface ResinEntry {
   density?: number | null;
   price?: number | null;
   quantity?: number | null;
-  quantityType?: "月間" | "スポット" | null;
+  quantityType?: QuantityType | null;
   remarks?: string | null;
+  imageUrl?: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -114,8 +122,9 @@ export interface CreateResinEntry {
   density?: number | null;
   price?: number | null;
   quantity?: number | null;
-  quantityType?: "月間" | "スポット" | null;
+  quantityType?: QuantityType | null;
   remarks?: string | null;
+  imageUrl?: string | null;
 }
 
 export interface Match {
@@ -124,6 +133,22 @@ export interface Match {
   /** Match score 0-100 */
   score: number;
   reasons: string[];
+}
+
+export interface UploadUrlRequest {
+  name: string;
+  size: number;
+  contentType: string;
+}
+
+export interface UploadUrlResponse {
+  uploadURL: string;
+  objectPath: string;
+  metadata?: UploadUrlRequest;
+}
+
+export interface ErrorEnvelope {
+  error: string;
 }
 
 export type ListSourcesParams = {

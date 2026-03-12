@@ -8,13 +8,17 @@
 
 export * from "./createResinEntry";
 export * from "./createResinEntryEntryType";
+export * from "./errorEnvelope";
 export * from "./healthStatus";
 export * from "./listDemandsParams";
 export * from "./listSourcesParams";
 export * from "./match";
 export * from "./packagingType";
 export * from "./pPType";
+export * from "./quantityType";
 export * from "./resinCategory";
 export * from "./resinEntry";
 export * from "./resinEntryEntryType";
 export * from "./resinType";
+export * from "./uploadUrlRequest";
+export * from "./uploadUrlResponse";

@@ -7,6 +7,7 @@
  */
 import type { PackagingType } from "./packagingType";
 import type { PPType } from "./pPType";
+import type { QuantityType } from "./quantityType";
 import type { ResinCategory } from "./resinCategory";
 import type { ResinEntryEntryType } from "./resinEntryEntryType";
 import type { ResinType } from "./resinType";
@@ -30,7 +31,9 @@ export interface ResinEntry {
   density?: number | null;
   price?: number | null;
   quantity?: number | null;
+  quantityType?: QuantityType | null;
   remarks?: string | null;
+  imageUrl?: string | null;
   createdAt: Date;
   updatedAt: Date;
 }

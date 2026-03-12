@@ -8,6 +8,7 @@
 import type { CreateResinEntryEntryType } from "./createResinEntryEntryType";
 import type { PackagingType } from "./packagingType";
 import type { PPType } from "./pPType";
+import type { QuantityType } from "./quantityType";
 import type { ResinCategory } from "./resinCategory";
 import type { ResinType } from "./resinType";
 
@@ -29,5 +30,7 @@ export interface CreateResinEntry {
   density?: number | null;
   price?: number | null;
   quantity?: number | null;
+  quantityType?: QuantityType | null;
   remarks?: string | null;
+  imageUrl?: string | null;
 }

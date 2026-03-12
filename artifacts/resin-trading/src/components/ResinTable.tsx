@@ -1,10 +1,10 @@
 import { ResinEntry } from "@workspace/api-client-react";
-import { Edit2, Trash2, Box, Package, ArrowUp, ArrowDown, ArrowUpDown } from "lucide-react";
+import { Edit2, Trash2, Box, Package, ArrowUp, ArrowDown, ArrowUpDown, ImageIcon } from "lucide-react";
 import { formatCurrency, formatDate, formatNumber, cn } from "@/lib/utils";
 
 export type ColumnKey =
   | "date" | "personInCharge" | "resinType" | "manufacturer"
-  | "grade" | "charpy" | "izod" | "specs" | "price" | "quantity" | "quantityType";
+  | "grade" | "charpy" | "izod" | "specs" | "price" | "quantity" | "quantityType" | "photo";
 
 export type SortKey =
   | "counterparty" | "date" | "personInCharge" | "resinType"
@@ -29,10 +29,11 @@ export const ALL_COLUMNS: { key: ColumnKey; label: string }[] = [
   { key: "price",          label: "価格 (円/kg)" },
   { key: "quantity",       label: "数量 (kg)" },
   { key: "quantityType",   label: "数量区分" },
+  { key: "photo",          label: "写真" },
 ];
 
 export const DEFAULT_VISIBLE: Set<ColumnKey> = new Set(
-  ALL_COLUMNS.map(c => c.key).filter(k => k !== "charpy" && k !== "izod")
+  ALL_COLUMNS.map(c => c.key).filter(k => k !== "charpy" && k !== "izod" && k !== "photo")
 );
 
 export function sortData(data: ResinEntry[], sort: SortConfig | null): ResinEntry[] {
@@ -166,6 +167,7 @@ export function ResinTable({ data, onEdit, onDelete, isLoading, visibleColumns, 
               {col("price")          && <SortTh colKey="price"    sort={sort} onSort={onSort} className="text-right">価格 (円/kg)</SortTh>}
               {col("quantity")       && <SortTh colKey="quantity"  sort={sort} onSort={onSort} className="text-right">数量 (kg)</SortTh>}
               {col("quantityType")   && <th className="px-4 py-4">数量区分</th>}
+              {col("photo")          && <th className="px-4 py-4 text-center">写真</th>}
               <th className="px-4 py-4 table-sticky-col-right bg-secondary/90 backdrop-blur-sm text-center z-20">操作</th>
             </tr>
           </thead>
@@ -263,6 +265,21 @@ export function ResinTable({ data, onEdit, onDelete, isLoading, visibleColumns, 
                         {row.quantityType}
                       </span>
                     ) : dash}
+                  </td>
+                )}
+                {col("photo") && (
+                  <td className="px-4 py-3 text-center">
+                    {row.imageUrl ? (
+                      <a href={row.imageUrl} target="_blank" rel="noopener noreferrer">
+                        <img
+                          src={row.imageUrl}
+                          alt="写真"
+                          className="w-10 h-10 object-cover rounded-md border border-border/50 hover:scale-110 transition-transform inline-block"
+                        />
+                      </a>
+                    ) : (
+                      <ImageIcon className="w-4 h-4 text-muted-foreground/30 inline-block" />
+                    )}
                   </td>
                 )}
                 <td className="px-4 py-3 table-sticky-col-right bg-card group-hover:bg-secondary/40 text-center z-10 transition-colors">
