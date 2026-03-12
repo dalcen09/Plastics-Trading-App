@@ -15,7 +15,7 @@ import type { ResinType } from "./resinType";
 export interface CreateResinEntry {
   entryType: CreateResinEntryEntryType;
   resinCategory: ResinCategory;
-  date: Date;
+  date: string;
   counterparty: string;
   personInCharge: string;
   resinType: ResinType;

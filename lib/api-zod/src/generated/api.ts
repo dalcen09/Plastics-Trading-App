@@ -25,7 +25,7 @@ export const ListSourcesResponseItem = zod.object({
   id: zod.number(),
   entryType: zod.enum(["source", "demand"]),
   resinCategory: zod.enum(["virgin", "offgrade", "recycled"]),
-  date: zod.date(),
+  date: zod.string().date(),
   counterparty: zod.string(),
   personInCharge: zod.string(),
   resinType: zod.enum([
@@ -59,8 +59,8 @@ export const ListSourcesResponseItem = zod.object({
   quantityType: zod.enum(["月間", "スポット"]).nullish(),
   remarks: zod.string().nullish(),
   imageUrl: zod.string().nullish(),
-  createdAt: zod.date(),
-  updatedAt: zod.date(),
+  createdAt: zod.string().datetime({}),
+  updatedAt: zod.string().datetime({}),
 });
 export const ListSourcesResponse = zod.array(ListSourcesResponseItem);
 
@@ -70,7 +70,7 @@ export const ListSourcesResponse = zod.array(ListSourcesResponseItem);
 export const CreateSourceBody = zod.object({
   entryType: zod.enum(["source", "demand"]),
   resinCategory: zod.enum(["virgin", "offgrade", "recycled"]),
-  date: zod.date(),
+  date: zod.string().date(),
   counterparty: zod.string(),
   personInCharge: zod.string(),
   resinType: zod.enum([
@@ -116,7 +116,7 @@ export const UpdateSourceParams = zod.object({
 export const UpdateSourceBody = zod.object({
   entryType: zod.enum(["source", "demand"]),
   resinCategory: zod.enum(["virgin", "offgrade", "recycled"]),
-  date: zod.date(),
+  date: zod.string().date(),
   counterparty: zod.string(),
   personInCharge: zod.string(),
   resinType: zod.enum([
@@ -156,7 +156,7 @@ export const UpdateSourceResponse = zod.object({
   id: zod.number(),
   entryType: zod.enum(["source", "demand"]),
   resinCategory: zod.enum(["virgin", "offgrade", "recycled"]),
-  date: zod.date(),
+  date: zod.string().date(),
   counterparty: zod.string(),
   personInCharge: zod.string(),
   resinType: zod.enum([
@@ -190,8 +190,8 @@ export const UpdateSourceResponse = zod.object({
   quantityType: zod.enum(["月間", "スポット"]).nullish(),
   remarks: zod.string().nullish(),
   imageUrl: zod.string().nullish(),
-  createdAt: zod.date(),
-  updatedAt: zod.date(),
+  createdAt: zod.string().datetime({}),
+  updatedAt: zod.string().datetime({}),
 });
 
 /**
@@ -212,7 +212,7 @@ export const ListDemandsResponseItem = zod.object({
   id: zod.number(),
   entryType: zod.enum(["source", "demand"]),
   resinCategory: zod.enum(["virgin", "offgrade", "recycled"]),
-  date: zod.date(),
+  date: zod.string().date(),
   counterparty: zod.string(),
   personInCharge: zod.string(),
   resinType: zod.enum([
@@ -246,8 +246,8 @@ export const ListDemandsResponseItem = zod.object({
   quantityType: zod.enum(["月間", "スポット"]).nullish(),
   remarks: zod.string().nullish(),
   imageUrl: zod.string().nullish(),
-  createdAt: zod.date(),
-  updatedAt: zod.date(),
+  createdAt: zod.string().datetime({}),
+  updatedAt: zod.string().datetime({}),
 });
 export const ListDemandsResponse = zod.array(ListDemandsResponseItem);
 
@@ -257,7 +257,7 @@ export const ListDemandsResponse = zod.array(ListDemandsResponseItem);
 export const CreateDemandBody = zod.object({
   entryType: zod.enum(["source", "demand"]),
   resinCategory: zod.enum(["virgin", "offgrade", "recycled"]),
-  date: zod.date(),
+  date: zod.string().date(),
   counterparty: zod.string(),
   personInCharge: zod.string(),
   resinType: zod.enum([
@@ -303,7 +303,7 @@ export const UpdateDemandParams = zod.object({
 export const UpdateDemandBody = zod.object({
   entryType: zod.enum(["source", "demand"]),
   resinCategory: zod.enum(["virgin", "offgrade", "recycled"]),
-  date: zod.date(),
+  date: zod.string().date(),
   counterparty: zod.string(),
   personInCharge: zod.string(),
   resinType: zod.enum([
@@ -343,7 +343,7 @@ export const UpdateDemandResponse = zod.object({
   id: zod.number(),
   entryType: zod.enum(["source", "demand"]),
   resinCategory: zod.enum(["virgin", "offgrade", "recycled"]),
-  date: zod.date(),
+  date: zod.string().date(),
   counterparty: zod.string(),
   personInCharge: zod.string(),
   resinType: zod.enum([
@@ -377,8 +377,8 @@ export const UpdateDemandResponse = zod.object({
   quantityType: zod.enum(["月間", "スポット"]).nullish(),
   remarks: zod.string().nullish(),
   imageUrl: zod.string().nullish(),
-  createdAt: zod.date(),
-  updatedAt: zod.date(),
+  createdAt: zod.string().datetime({}),
+  updatedAt: zod.string().datetime({}),
 });
 
 /**
@@ -396,7 +396,7 @@ export const GetMatchesResponseItem = zod.object({
     id: zod.number(),
     entryType: zod.enum(["source", "demand"]),
     resinCategory: zod.enum(["virgin", "offgrade", "recycled"]),
-    date: zod.date(),
+    date: zod.string().date(),
     counterparty: zod.string(),
     personInCharge: zod.string(),
     resinType: zod.enum([
@@ -437,14 +437,14 @@ export const GetMatchesResponseItem = zod.object({
     quantityType: zod.enum(["月間", "スポット"]).nullish(),
     remarks: zod.string().nullish(),
     imageUrl: zod.string().nullish(),
-    createdAt: zod.date(),
-    updatedAt: zod.date(),
+    createdAt: zod.string().datetime({}),
+    updatedAt: zod.string().datetime({}),
   }),
   demand: zod.object({
     id: zod.number(),
     entryType: zod.enum(["source", "demand"]),
     resinCategory: zod.enum(["virgin", "offgrade", "recycled"]),
-    date: zod.date(),
+    date: zod.string().date(),
     counterparty: zod.string(),
     personInCharge: zod.string(),
     resinType: zod.enum([
@@ -485,8 +485,8 @@ export const GetMatchesResponseItem = zod.object({
     quantityType: zod.enum(["月間", "スポット"]).nullish(),
     remarks: zod.string().nullish(),
     imageUrl: zod.string().nullish(),
-    createdAt: zod.date(),
-    updatedAt: zod.date(),
+    createdAt: zod.string().datetime({}),
+    updatedAt: zod.string().datetime({}),
   }),
   score: zod.number().describe("Match score 0-100"),
   reasons: zod.array(zod.string()),

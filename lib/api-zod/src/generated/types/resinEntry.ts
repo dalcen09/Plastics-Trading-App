@@ -16,7 +16,7 @@ export interface ResinEntry {
   id: number;
   entryType: ResinEntryEntryType;
   resinCategory: ResinCategory;
-  date: Date;
+  date: string;
   counterparty: string;
   personInCharge: string;
   resinType: ResinType;
@@ -34,6 +34,6 @@ export interface ResinEntry {
   quantityType?: QuantityType | null;
   remarks?: string | null;
   imageUrl?: string | null;
-  createdAt: Date;
-  updatedAt: Date;
+  createdAt: string;
+  updatedAt: string;
 }
