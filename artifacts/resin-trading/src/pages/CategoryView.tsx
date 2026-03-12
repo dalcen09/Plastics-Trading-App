@@ -19,7 +19,7 @@ import {
   CreateResinEntryEntryType,
   ResinEntry
 } from "@workspace/api-client-react";
-import { Plus, ArrowDownToLine, ArrowUpFromLine, Upload, Search, X, SlidersHorizontal, ChevronLeft, ChevronRight, Columns3, Download } from "lucide-react";
+import { Plus, ArrowDownToLine, ArrowUpFromLine, Upload, Search, X, SlidersHorizontal, ChevronLeft, ChevronRight, Columns3, Download, Trash2 } from "lucide-react";
 import { exportToExcel } from "@/lib/exportExcel";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
@@ -92,6 +92,8 @@ export function CategoryView({ category }: CategoryViewProps) {
   const [sort, setSort] = useState<SortConfig | null>(null);
   const [pageSize, setPageSize] = useState<number>(50);
   const [page, setPage] = useState(1);
+  const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
+  const [isBulkDeleting, setIsBulkDeleting] = useState(false);
 
   const toggleColumn = (key: ColumnKey) =>
     setVisibleColumns(prev => {
@@ -106,6 +108,47 @@ export function CategoryView({ category }: CategoryViewProps) {
         ? { key, direction: prev.direction === "asc" ? "desc" : "asc" }
         : { key, direction: "asc" }
     );
+
+  const handleToggleSelect = (id: number) =>
+    setSelectedIds(prev => {
+      const next = new Set(prev);
+      if (next.has(id)) { next.delete(id); } else { next.add(id); }
+      return next;
+    });
+
+  const handleToggleSelectAll = (ids: number[]) =>
+    setSelectedIds(prev => {
+      const allSelected = ids.every(id => prev.has(id));
+      const next = new Set(prev);
+      if (allSelected) { ids.forEach(id => next.delete(id)); }
+      else { ids.forEach(id => next.add(id)); }
+      return next;
+    });
+
+  const handleBulkDelete = async () => {
+    const ids = [...selectedIds];
+    if (ids.length === 0) return;
+    if (!window.confirm(`選択した ${ids.length} 件を削除してもよろしいですか？`)) return;
+    setIsBulkDeleting(true);
+    try {
+      const endpoint = activeTab === "sources" ? "sources" : "demands";
+      await fetch(`/api/${endpoint}/batch-delete`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ids }),
+      });
+      setSelectedIds(new Set());
+      queryClient.invalidateQueries({ queryKey: [activeTab === "sources" ? "sources" : "demands"] });
+      toast({ title: `${ids.length} 件を削除しました` });
+    } catch {
+      toast({ title: "削除に失敗しました", variant: "destructive" });
+    } finally {
+      setIsBulkDeleting(false);
+    }
+  };
+
+  // Clear selection when switching tabs or category
+  useEffect(() => { setSelectedIds(new Set()); }, [activeTab, category]);
 
   const { data: sources = [], isLoading: sourcesLoading } = useListSources({ resinCategory: category as ResinCategory });
   const { data: demands = [], isLoading: demandsLoading } = useListDemands({ resinCategory: category as ResinCategory });
@@ -536,6 +579,31 @@ export function CategoryView({ category }: CategoryViewProps) {
 
         {/* Data View */}
         <div className="flex-1 min-h-0 pb-4">
+          {/* Bulk action bar */}
+          {selectedIds.size > 0 && (
+            <div className="flex items-center justify-between gap-3 px-4 py-3 mb-2 rounded-xl bg-primary/10 border border-primary/30 text-sm">
+              <span className="font-medium text-primary">
+                {selectedIds.size} 件選択中
+              </span>
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setSelectedIds(new Set())}
+                  className="px-3 py-1.5 rounded-lg border border-border text-muted-foreground hover:bg-secondary transition-colors text-xs font-medium"
+                >
+                  選択解除
+                </button>
+                <button
+                  onClick={handleBulkDelete}
+                  disabled={isBulkDeleting}
+                  className="px-3 py-1.5 rounded-lg bg-destructive text-destructive-foreground hover:bg-destructive/90 transition-colors text-xs font-semibold disabled:opacity-50 flex items-center gap-1.5"
+                >
+                  <Trash2 className="w-3.5 h-3.5" />
+                  {isBulkDeleting ? "削除中..." : `${selectedIds.size} 件を削除`}
+                </button>
+              </div>
+            </div>
+          )}
+
           <ResinTable 
             data={pagedData}
             isLoading={activeTab === "sources" ? sourcesLoading : demandsLoading}
@@ -544,6 +612,9 @@ export function CategoryView({ category }: CategoryViewProps) {
             visibleColumns={visibleColumns}
             sort={sort}
             onSort={handleSort}
+            selectedIds={selectedIds}
+            onToggleSelect={handleToggleSelect}
+            onToggleSelectAll={handleToggleSelectAll}
           />
 
           {/* Pagination controls */}

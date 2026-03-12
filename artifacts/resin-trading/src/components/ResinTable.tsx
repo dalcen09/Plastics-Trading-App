@@ -68,6 +68,9 @@ interface ResinTableProps {
   visibleColumns: Set<ColumnKey>;
   sort: SortConfig | null;
   onSort: (key: SortKey) => void;
+  selectedIds: Set<number>;
+  onToggleSelect: (id: number) => void;
+  onToggleSelectAll: (ids: number[]) => void;
 }
 
 const dash = <span className="text-border">—</span>;
@@ -100,8 +103,11 @@ function SortTh({
   );
 }
 
-export function ResinTable({ data, onEdit, onDelete, isLoading, visibleColumns, sort, onSort }: ResinTableProps) {
+export function ResinTable({ data, onEdit, onDelete, isLoading, visibleColumns, sort, onSort, selectedIds = new Set(), onToggleSelect, onToggleSelectAll }: ResinTableProps) {
   const col = (key: ColumnKey) => visibleColumns.has(key);
+  const allIds = data.map(r => r.id);
+  const allSelected = allIds.length > 0 && allIds.every(id => selectedIds.has(id));
+  const someSelected = allIds.some(id => selectedIds.has(id)) && !allSelected;
 
   if (isLoading) {
     return (
@@ -130,9 +136,20 @@ export function ResinTable({ data, onEdit, onDelete, isLoading, visibleColumns, 
         <table className="w-full text-sm text-left whitespace-nowrap">
           <thead className="text-xs text-muted-foreground uppercase bg-secondary/50 font-semibold tracking-wider">
             <tr>
+              {/* Checkbox select-all */}
+              <th className="pl-4 pr-2 py-4 table-sticky-col-left bg-secondary/90 backdrop-blur-sm z-20 w-10">
+                <input
+                  type="checkbox"
+                  checked={allSelected}
+                  ref={el => { if (el) el.indeterminate = someSelected; }}
+                  onChange={() => onToggleSelectAll(allIds)}
+                  className="w-4 h-4 rounded border-border accent-primary cursor-pointer"
+                  title="このページをすべて選択"
+                />
+              </th>
               {/* 取引先 always sticky */}
               <SortTh colKey="counterparty" sort={sort} onSort={onSort}
-                className="table-sticky-col-left bg-secondary/90 backdrop-blur-sm z-20">
+                className="bg-secondary/90 backdrop-blur-sm z-20">
                 取引先
               </SortTh>
               {col("date")           && <SortTh colKey="date"          sort={sort} onSort={onSort}>日付</SortTh>}
@@ -149,9 +166,19 @@ export function ResinTable({ data, onEdit, onDelete, isLoading, visibleColumns, 
             </tr>
           </thead>
           <tbody className="divide-y divide-border/50">
-            {data.map((row) => (
-              <tr key={row.id} className="hover:bg-secondary/40 transition-colors group">
-                <td className="px-4 py-3 table-sticky-col-left bg-card group-hover:bg-secondary/40 font-medium text-foreground z-10 transition-colors">
+            {data.map((row) => {
+              const isSelected = selectedIds.has(row.id);
+              return (
+              <tr key={row.id} className={cn("hover:bg-secondary/40 transition-colors group", isSelected && "bg-primary/5")}>
+                <td className={cn("pl-4 pr-2 py-3 table-sticky-col-left z-10 transition-colors", isSelected ? "bg-primary/5" : "bg-card group-hover:bg-secondary/40")}>
+                  <input
+                    type="checkbox"
+                    checked={isSelected}
+                    onChange={() => onToggleSelect(row.id)}
+                    className="w-4 h-4 rounded border-border accent-primary cursor-pointer"
+                  />
+                </td>
+                <td className={cn("px-4 py-3 font-medium text-foreground transition-colors", isSelected ? "bg-primary/5" : "bg-card group-hover:bg-secondary/40")}>
                   {row.counterparty}
                 </td>
                 {col("date") && (
@@ -243,7 +270,8 @@ export function ResinTable({ data, onEdit, onDelete, isLoading, visibleColumns, 
                   </div>
                 </td>
               </tr>
-            ))}
+            );
+            })}
           </tbody>
         </table>
       </div>

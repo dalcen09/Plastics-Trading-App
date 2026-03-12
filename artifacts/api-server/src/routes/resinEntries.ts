@@ -1,7 +1,7 @@
 import { Router, type IRouter } from "express";
 import { db } from "@workspace/db";
 import { resinEntriesTable } from "@workspace/db/schema";
-import { eq, and } from "drizzle-orm";
+import { eq, and, inArray } from "drizzle-orm";
 import {
   CreateSourceBody,
   UpdateSourceBody,
@@ -90,6 +90,13 @@ router.delete("/sources/:id", async (req, res) => {
   res.status(204).end();
 });
 
+router.post("/sources/batch-delete", async (req, res) => {
+  const ids: number[] = Array.isArray(req.body?.ids) ? req.body.ids.map(Number).filter(Number.isFinite) : [];
+  if (ids.length === 0) return res.status(204).end();
+  await db.delete(resinEntriesTable).where(and(inArray(resinEntriesTable.id, ids), eq(resinEntriesTable.entryType, "source")));
+  res.status(204).end();
+});
+
 // ---- DEMANDS ----
 
 router.get("/demands", async (req, res) => {
@@ -137,6 +144,13 @@ router.put("/demands/:id", async (req, res) => {
 router.delete("/demands/:id", async (req, res) => {
   const { id } = DeleteDemandParams.parse(req.params);
   await db.delete(resinEntriesTable).where(and(eq(resinEntriesTable.id, id), eq(resinEntriesTable.entryType, "demand")));
+  res.status(204).end();
+});
+
+router.post("/demands/batch-delete", async (req, res) => {
+  const ids: number[] = Array.isArray(req.body?.ids) ? req.body.ids.map(Number).filter(Number.isFinite) : [];
+  if (ids.length === 0) return res.status(204).end();
+  await db.delete(resinEntriesTable).where(and(inArray(resinEntriesTable.id, ids), eq(resinEntriesTable.entryType, "demand")));
   res.status(204).end();
 });
 
