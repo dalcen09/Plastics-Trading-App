@@ -4,7 +4,7 @@ import { formatCurrency, formatDate, formatNumber, cn } from "@/lib/utils";
 
 export type ColumnKey =
   | "date" | "personInCharge" | "resinType" | "manufacturer"
-  | "grade" | "charpy" | "izod" | "specs" | "price" | "quantity";
+  | "grade" | "charpy" | "izod" | "specs" | "price" | "quantity" | "quantityType";
 
 export type SortKey =
   | "counterparty" | "date" | "personInCharge" | "resinType"
@@ -28,6 +28,7 @@ export const ALL_COLUMNS: { key: ColumnKey; label: string }[] = [
   { key: "specs",          label: "仕様 (MFI/密度)" },
   { key: "price",          label: "価格 (円/kg)" },
   { key: "quantity",       label: "数量 (kg)" },
+  { key: "quantityType",   label: "数量区分" },
 ];
 
 export const DEFAULT_VISIBLE: Set<ColumnKey> = new Set(
@@ -164,6 +165,7 @@ export function ResinTable({ data, onEdit, onDelete, isLoading, visibleColumns, 
               {col("specs")          && <th className="px-4 py-4">仕様</th>}
               {col("price")          && <SortTh colKey="price"    sort={sort} onSort={onSort} className="text-right">価格 (円/kg)</SortTh>}
               {col("quantity")       && <SortTh colKey="quantity"  sort={sort} onSort={onSort} className="text-right">数量 (kg)</SortTh>}
+              {col("quantityType")   && <th className="px-4 py-4">数量区分</th>}
               <th className="px-4 py-4 table-sticky-col-right bg-secondary/90 backdrop-blur-sm text-center z-20">操作</th>
             </tr>
           </thead>
@@ -247,6 +249,20 @@ export function ResinTable({ data, onEdit, onDelete, isLoading, visibleColumns, 
                     <span className="font-medium px-2 py-1 rounded-lg bg-secondary/80">
                       {formatNumber(row.quantity, "kg")}
                     </span>
+                  </td>
+                )}
+                {col("quantityType") && (
+                  <td className="px-4 py-3">
+                    {row.quantityType ? (
+                      <span className={cn(
+                        "inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold",
+                        row.quantityType === "月間"
+                          ? "bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300"
+                          : "bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300"
+                      )}>
+                        {row.quantityType}
+                      </span>
+                    ) : dash}
                   </td>
                 )}
                 <td className="px-4 py-3 table-sticky-col-right bg-card group-hover:bg-secondary/40 text-center z-10 transition-colors">

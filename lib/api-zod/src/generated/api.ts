@@ -56,6 +56,7 @@ export const ListSourcesResponseItem = zod.object({
   density: zod.number().nullish(),
   price: zod.number().nullish(),
   quantity: zod.number().nullish(),
+  quantityType: zod.enum(["月間", "スポット"]).nullish(),
   remarks: zod.string().nullish(),
   createdAt: zod.date(),
   updatedAt: zod.date(),
@@ -99,6 +100,7 @@ export const CreateSourceBody = zod.object({
   density: zod.number().nullish(),
   price: zod.number().nullish(),
   quantity: zod.number().nullish(),
+  quantityType: zod.enum(["月間", "スポット"]).nullish(),
   remarks: zod.string().nullish(),
 });
 
@@ -143,6 +145,7 @@ export const UpdateSourceBody = zod.object({
   density: zod.number().nullish(),
   price: zod.number().nullish(),
   quantity: zod.number().nullish(),
+  quantityType: zod.enum(["月間", "スポット"]).nullish(),
   remarks: zod.string().nullish(),
 });
 
@@ -181,6 +184,7 @@ export const UpdateSourceResponse = zod.object({
   density: zod.number().nullish(),
   price: zod.number().nullish(),
   quantity: zod.number().nullish(),
+  quantityType: zod.enum(["月間", "スポット"]).nullish(),
   remarks: zod.string().nullish(),
   createdAt: zod.date(),
   updatedAt: zod.date(),
@@ -235,6 +239,7 @@ export const ListDemandsResponseItem = zod.object({
   density: zod.number().nullish(),
   price: zod.number().nullish(),
   quantity: zod.number().nullish(),
+  quantityType: zod.enum(["月間", "スポット"]).nullish(),
   remarks: zod.string().nullish(),
   createdAt: zod.date(),
   updatedAt: zod.date(),
@@ -278,6 +283,7 @@ export const CreateDemandBody = zod.object({
   density: zod.number().nullish(),
   price: zod.number().nullish(),
   quantity: zod.number().nullish(),
+  quantityType: zod.enum(["月間", "スポット"]).nullish(),
   remarks: zod.string().nullish(),
 });
 
@@ -322,6 +328,7 @@ export const UpdateDemandBody = zod.object({
   density: zod.number().nullish(),
   price: zod.number().nullish(),
   quantity: zod.number().nullish(),
+  quantityType: zod.enum(["月間", "スポット"]).nullish(),
   remarks: zod.string().nullish(),
 });
 
@@ -360,6 +367,7 @@ export const UpdateDemandResponse = zod.object({
   density: zod.number().nullish(),
   price: zod.number().nullish(),
   quantity: zod.number().nullish(),
+  quantityType: zod.enum(["月間", "スポット"]).nullish(),
   remarks: zod.string().nullish(),
   createdAt: zod.date(),
   updatedAt: zod.date(),
@@ -418,6 +426,7 @@ export const GetMatchesResponseItem = zod.object({
     density: zod.number().nullish(),
     price: zod.number().nullish(),
     quantity: zod.number().nullish(),
+  quantityType: zod.enum(["月間", "スポット"]).nullish(),
     remarks: zod.string().nullish(),
     createdAt: zod.date(),
     updatedAt: zod.date(),
@@ -464,6 +473,7 @@ export const GetMatchesResponseItem = zod.object({
     density: zod.number().nullish(),
     price: zod.number().nullish(),
     quantity: zod.number().nullish(),
+  quantityType: zod.enum(["月間", "スポット"]).nullish(),
     remarks: zod.string().nullish(),
     createdAt: zod.date(),
     updatedAt: zod.date(),

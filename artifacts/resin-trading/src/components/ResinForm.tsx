@@ -32,6 +32,7 @@ const formSchema = z.object({
   density: z.coerce.number().nullable().optional(),
   price: z.coerce.number().nullable().optional(),
   quantity: z.coerce.number().nullable().optional(),
+  quantityType: z.preprocess(v => v === "" ? null : v, z.enum(["月間", "スポット"]).nullable().optional()),
   remarks: z.string().nullable().optional(),
 });
 
@@ -75,6 +76,7 @@ export function ResinForm({
       density: initialData?.density ?? undefined,
       price: initialData?.price ?? undefined,
       quantity: initialData?.quantity ?? undefined,
+      quantityType: initialData?.quantityType ?? null,
       remarks: initialData?.remarks || "",
     }
   });
@@ -182,8 +184,15 @@ export function ResinForm({
             <div>
               <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4 pt-4 border-t border-border/50">商業情報</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5">
-                <FormGroup label="数量 (MT)" error={errors.quantity?.message}>
-                  <input type="number" step="0.01" placeholder="メトリックトン" {...register("quantity")} className="input-field" />
+                <FormGroup label="数量 (kg)" error={errors.quantity?.message}>
+                  <input type="number" step="0.01" placeholder="kg" {...register("quantity")} className="input-field" />
+                </FormGroup>
+                <FormGroup label="数量区分" error={errors.quantityType?.message}>
+                  <select {...register("quantityType")} className="input-field">
+                    <option value="">— 未選択 —</option>
+                    <option value="月間">月間</option>
+                    <option value="スポット">スポット</option>
+                  </select>
                 </FormGroup>
                 <FormGroup label="価格 (USD/MT)" error={errors.price?.message}>
                   <input type="number" step="0.01" placeholder="USD" {...register("price")} className="input-field" />

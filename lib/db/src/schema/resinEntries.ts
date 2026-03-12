@@ -13,6 +13,7 @@ export const resinTypeEnum = pgEnum("resin_type", [
 ]);
 export const ppTypeEnum = pgEnum("pp_type", ["Homopolymer", "Copolymer", "Random", "Impact", "Terpolymer", "N/A"]);
 export const packagingTypeEnum = pgEnum("packaging_type", ["Bags", "Octabin", "Bulk", "Jumbo_Bag", "Box", "Other"]);
+export const quantityTypeEnum = pgEnum("quantity_type", ["月間", "スポット"]);
 
 export const resinEntriesTable = pgTable("resin_entries", {
   id: serial("id").primaryKey(),
@@ -33,6 +34,7 @@ export const resinEntriesTable = pgTable("resin_entries", {
   density: numeric("density", { precision: 10, scale: 4 }),
   price: numeric("price", { precision: 12, scale: 2 }),
   quantity: numeric("quantity", { precision: 12, scale: 2 }),
+  quantityType: quantityTypeEnum("quantity_type"),
   remarks: text("remarks"),
   // Extended fields from Japanese spreadsheets
   storageLocation: text("storage_location"),       // 他県置場

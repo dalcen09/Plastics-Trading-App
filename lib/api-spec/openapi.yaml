@@ -218,6 +218,10 @@ components:
       type: string
       enum: [Homopolymer, Copolymer, Random, Impact, Terpolymer, N/A]
 
+    QuantityType:
+      type: string
+      enum: ["月間", "スポット"]
+
     PackagingType:
       type: string
       enum: [Bags, Octabin, Bulk, Jumbo_Bag, Box, Other]
@@ -273,6 +277,9 @@ components:
           nullable: true
         quantity:
           type: number
+          nullable: true
+        quantityType:
+          $ref: "#/components/schemas/QuantityType"
           nullable: true
         remarks:
           type: string
@@ -343,6 +350,9 @@ components:
           nullable: true
         quantity:
           type: number
+          nullable: true
+        quantityType:
+          $ref: "#/components/schemas/QuantityType"
           nullable: true
         remarks:
           type: string

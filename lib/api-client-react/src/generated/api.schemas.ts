@@ -82,6 +82,7 @@ export interface ResinEntry {
   density?: number | null;
   price?: number | null;
   quantity?: number | null;
+  quantityType?: "月間" | "スポット" | null;
   remarks?: string | null;
   createdAt: string;
   updatedAt: string;
@@ -113,6 +114,7 @@ export interface CreateResinEntry {
   density?: number | null;
   price?: number | null;
   quantity?: number | null;
+  quantityType?: "月間" | "スポット" | null;
   remarks?: string | null;
 }
 
