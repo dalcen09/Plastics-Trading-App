@@ -446,10 +446,16 @@ export function CategoryView({ category }: CategoryViewProps) {
                     </div>
                     <div className="border-t border-border mt-2 pt-2 flex gap-2">
                       <button
-                        onClick={() => setVisibleColumns(new Set(DEFAULT_VISIBLE))}
+                        onClick={() => setVisibleColumns(new Set(ALL_COLUMNS.map(c => c.key)))}
                         className="flex-1 text-xs py-1.5 rounded-lg border border-border hover:bg-secondary transition-colors"
                       >
                         すべて表示
+                      </button>
+                      <button
+                        onClick={() => setVisibleColumns(new Set(DEFAULT_VISIBLE))}
+                        className="flex-1 text-xs py-1.5 rounded-lg border border-border hover:bg-secondary transition-colors"
+                      >
+                        デフォルト
                       </button>
                     </div>
                   </div>
