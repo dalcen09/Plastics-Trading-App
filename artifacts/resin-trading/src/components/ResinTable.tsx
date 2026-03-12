@@ -25,7 +25,7 @@ export const ALL_COLUMNS: { key: ColumnKey; label: string }[] = [
   { key: "grade",          label: "グレード" },
   { key: "charpy",         label: "シャルピー" },
   { key: "izod",           label: "アイゾッド" },
-  { key: "specs",          label: "仕様 (MFI/密度)" },
+  { key: "specs",          label: "仕様 (MI/密度)" },
   { key: "price",          label: "価格 (円/kg)" },
   { key: "quantity",       label: "数量 (kg)" },
   { key: "quantityType",   label: "数量区分" },
@@ -223,7 +223,7 @@ export function ResinTable({ data, onEdit, onDelete, isLoading, visibleColumns, 
                   <td className="px-4 py-3">
                     <div className="flex flex-col gap-1 text-xs">
                       <div className="flex gap-3 text-muted-foreground">
-                        <span title="メルトフローインデックス">MFI: {formatNumber(row.meltFlowIndex)}</span>
+                        <span title="MI">MI: {formatNumber(row.meltFlowIndex)}</span>
                         <span title="密度">密度: {formatNumber(row.density)}</span>
                       </div>
                       <div className="flex gap-2 items-center mt-0.5">

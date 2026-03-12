@@ -12,7 +12,7 @@ const COL_LABEL: Record<string, string> = {
   grade:         "グレード",
   charpy:        "シャルピー",
   izod:          "アイゾッド",
-  meltFlowIndex: "MFI",
+  meltFlowIndex: "MI",
   density:       "密度",
   packaging:     "包装",
   sampleAvailable:"サンプル",

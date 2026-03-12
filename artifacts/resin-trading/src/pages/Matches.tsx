@@ -120,7 +120,7 @@ function MatchCard({ match }: { match: any }) {
             <div className="grid grid-cols-2 gap-3 text-sm">
               <InfoBadge icon={<Gauge className="w-3.5 h-3.5"/>} label="製品" value={`${match.source.manufacturer || '未指定'} ${match.source.grade || ''}`} />
               <InfoBadge icon={<DollarSign className="w-3.5 h-3.5"/>} label="価格" value={formatCurrency(match.source.price)} />
-              <InfoBadge label="MFI" value={formatNumber(match.source.meltFlowIndex)} />
+              <InfoBadge label="MI" value={formatNumber(match.source.meltFlowIndex)} />
               <InfoBadge label="数量" value={`${formatNumber(match.source.quantity)} MT`} />
             </div>
           </div>
@@ -153,7 +153,7 @@ function MatchCard({ match }: { match: any }) {
             <div className="grid grid-cols-2 gap-3 text-sm">
               <InfoBadge icon={<Gauge className="w-3.5 h-3.5"/>} label="希望製品" value={`${match.demand.manufacturer || '指定なし'} ${match.demand.grade || ''}`} />
               <InfoBadge icon={<DollarSign className="w-3.5 h-3.5"/>} label="目標価格" value={formatCurrency(match.demand.price)} />
-              <InfoBadge label="目標MFI" value={formatNumber(match.demand.meltFlowIndex) || '指定なし'} />
+              <InfoBadge label="目標MI" value={formatNumber(match.demand.meltFlowIndex) || '指定なし'} />
               <InfoBadge label="希望数量" value={`${formatNumber(match.demand.quantity)} MT`} />
             </div>
           </div>
