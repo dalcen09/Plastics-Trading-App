@@ -297,6 +297,9 @@ components:
         grade:
           type: string
           nullable: true
+        otherResinType:
+          type: string
+          nullable: true
         ppType:
           $ref: "#/components/schemas/PPType"
           nullable: true
@@ -374,6 +377,9 @@ components:
           type: string
           nullable: true
         grade:
+          type: string
+          nullable: true
+        otherResinType:
           type: string
           nullable: true
         ppType:

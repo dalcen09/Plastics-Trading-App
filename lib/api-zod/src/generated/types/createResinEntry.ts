@@ -22,6 +22,7 @@ export interface CreateResinEntry {
   resinType: ResinType;
   manufacturer?: string | null;
   grade?: string | null;
+  otherResinType?: string | null;
   ppType?: PPType | null;
   peType?: PEType | null;
   sampleAvailable?: boolean | null;

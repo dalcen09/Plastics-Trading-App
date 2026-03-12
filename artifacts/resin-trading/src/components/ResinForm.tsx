@@ -25,6 +25,7 @@ const formSchema = z.object({
   resinType: z.nativeEnum(ResinType),
   manufacturer: z.string().nullable().optional(),
   grade: z.string().nullable().optional(),
+  otherResinType: z.string().nullable().optional(),
   ppType: z.preprocess(v => v === "" ? null : v, z.nativeEnum(PPType).nullable().optional()),
   peType: z.preprocess(v => v === "" ? null : v, z.nativeEnum(PEType).nullable().optional()),
   sampleAvailable: z.boolean().nullable().optional(),
@@ -71,6 +72,7 @@ export function ResinForm({
       resinType: initialData?.resinType || ResinType.PP,
       manufacturer: initialData?.manufacturer || "",
       grade: initialData?.grade || "",
+      otherResinType: initialData?.otherResinType || "",
       ppType: initialData?.ppType || null,
       peType: initialData?.peType || null,
       sampleAvailable: initialData?.sampleAvailable || false,
@@ -157,6 +159,17 @@ export function ResinForm({
                     {Object.values(ResinType).map(t => <option key={t} value={t}>{t}</option>)}
                   </select>
                 </FormGroup>
+
+                {selectedResinType === ResinType.Other && (
+                  <FormGroup label="樹脂タイプ（その他）" error={errors.otherResinType?.message}>
+                    <input
+                      type="text"
+                      placeholder="樹脂タイプを入力..."
+                      {...register("otherResinType")}
+                      className="input-field"
+                    />
+                  </FormGroup>
+                )}
                 
                 {selectedResinType === ResinType.PP && (
                   <FormGroup label="PPタイプ" error={errors.ppType?.message}>

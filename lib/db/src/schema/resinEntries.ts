@@ -26,6 +26,7 @@ export const resinEntriesTable = pgTable("resin_entries", {
   resinType: resinTypeEnum("resin_type").notNull(),
   manufacturer: text("manufacturer"),
   grade: text("grade"),
+  otherResinType: text("other_resin_type"),
   ppType: ppTypeEnum("pp_type"),
   peType: peTypeEnum("pe_type"),
   sampleAvailable: boolean("sample_available"),
