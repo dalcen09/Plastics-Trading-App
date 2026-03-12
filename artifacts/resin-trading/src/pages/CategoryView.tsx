@@ -19,9 +19,10 @@ import {
   CreateResinEntryEntryType,
   ResinEntry
 } from "@workspace/api-client-react";
-import { Plus, ArrowDownToLine, ArrowUpFromLine } from "lucide-react";
+import { Plus, ArrowDownToLine, ArrowUpFromLine, Upload } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
+import { ImportModal } from "@/components/ImportModal";
 
 interface CategoryViewProps {
   category: "virgin" | "offgrade" | "recycled";
@@ -39,6 +40,7 @@ export function CategoryView({ category }: CategoryViewProps) {
   
   const [activeTab, setActiveTab] = useState<"sources" | "demands">("sources");
   const [isFormOpen, setIsFormOpen] = useState(false);
+  const [isImportOpen, setIsImportOpen] = useState(false);
   const [editingEntry, setEditingEntry] = useState<ResinEntry | undefined>();
 
   const { data: sources, isLoading: sourcesLoading } = useListSources({ resinCategory: category as ResinCategory });
@@ -172,13 +174,22 @@ export function CategoryView({ category }: CategoryViewProps) {
             <p className="text-muted-foreground mt-1">この素材の仕入れ先と買い手を管理します。</p>
           </div>
           
-          <button 
-            onClick={() => handleOpenForm()}
-            className="px-5 py-2.5 rounded-xl font-semibold bg-primary text-primary-foreground shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 flex items-center gap-2"
-          >
-            <Plus className="w-5 h-5" />
-            {activeTab === "sources" ? "仕入れ先を追加" : "需要を追加"}
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setIsImportOpen(true)}
+              className="px-4 py-2.5 rounded-xl font-semibold border border-border text-foreground hover:bg-secondary transition-colors flex items-center gap-2 text-sm"
+            >
+              <Upload className="w-4 h-4" />
+              Excelインポート
+            </button>
+            <button 
+              onClick={() => handleOpenForm()}
+              className="px-5 py-2.5 rounded-xl font-semibold bg-primary text-primary-foreground shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 flex items-center gap-2"
+            >
+              <Plus className="w-5 h-5" />
+              {activeTab === "sources" ? "仕入れ先を追加" : "需要を追加"}
+            </button>
+          </div>
         </div>
 
         {/* Custom Tabs */}
@@ -239,6 +250,17 @@ export function CategoryView({ category }: CategoryViewProps) {
           onSubmit={handleSubmit}
           onCancel={closeForm}
           isPending={isPending}
+        />
+      )}
+
+      {isImportOpen && (
+        <ImportModal
+          onClose={() => setIsImportOpen(false)}
+          onSuccess={() => {
+            queryClient.invalidateQueries({ queryKey: getListSourcesQueryKey({ resinCategory: category as ResinCategory }) });
+            queryClient.invalidateQueries({ queryKey: getListDemandsQueryKey({ resinCategory: category as ResinCategory }) });
+            queryClient.invalidateQueries({ queryKey: getGetMatchesQueryKey() });
+          }}
         />
       )}
     </Layout>
