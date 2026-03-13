@@ -392,7 +392,7 @@ export function CategoryView({ category }: CategoryViewProps) {
               )}
             >
               <ArrowUpFromLine className="w-4 h-4" />
-              需要（買い）
+              需要
             </button>
           </div>
 
