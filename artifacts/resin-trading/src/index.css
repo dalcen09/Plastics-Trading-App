@@ -137,12 +137,42 @@
 
   /* Table styling for sticky columns */
   .table-sticky-col-left {
-    @apply sticky left-0 z-10 bg-inherit after:absolute after:inset-y-0 after:right-[-1px] after:w-px after:bg-border;
+    position: sticky;
+    left: 0;
+    z-index: 10;
+  }
+  .table-sticky-col-left::after {
+    content: '';
+    position: absolute;
+    top: 0; bottom: 0;
+    right: -1px;
+    width: 1px;
+    background-color: hsl(var(--border));
   }
   .table-sticky-col-left-2 {
-    @apply sticky left-10 z-10 bg-inherit after:absolute after:inset-y-0 after:right-[-1px] after:w-px after:bg-border;
+    position: sticky;
+    left: 2.5rem; /* 40px = w-10 (checkbox column width) */
+    z-index: 10;
+  }
+  .table-sticky-col-left-2::after {
+    content: '';
+    position: absolute;
+    top: 0; bottom: 0;
+    right: -1px;
+    width: 1px;
+    background-color: hsl(var(--border));
   }
   .table-sticky-col-right {
-    @apply sticky right-0 z-10 bg-inherit after:absolute after:inset-y-0 after:left-[-1px] after:w-px after:bg-border;
+    position: sticky;
+    right: 0;
+    z-index: 10;
+  }
+  .table-sticky-col-right::after {
+    content: '';
+    position: absolute;
+    top: 0; bottom: 0;
+    left: -1px;
+    width: 1px;
+    background-color: hsl(var(--border));
   }
 }
