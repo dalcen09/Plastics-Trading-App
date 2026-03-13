@@ -231,17 +231,7 @@ router.post("/trash/:id/restore", async (req, res) => {
   res.json(serializeEntry(row));
 });
 
-// DELETE /api/trash/:id — permanently delete a single entry
-router.delete("/trash/:id", async (req, res) => {
-  const id = parseInt(req.params.id, 10);
-  if (!Number.isFinite(id)) return res.status(400).json({ error: "Invalid id" });
-  await db.delete(resinEntriesTable)
-    .where(and(eq(resinEntriesTable.id, id), isNotNull(resinEntriesTable.deletedAt)));
-  invalidateMatchCache();
-  res.status(204).end();
-});
-
-// POST /api/trash/batch-restore — restore multiple entries
+// POST /api/trash/batch-restore — restore multiple entries (must be before /:id routes)
 router.post("/trash/batch-restore", async (req, res) => {
   const ids: number[] = Array.isArray(req.body?.ids) ? req.body.ids.map(Number).filter(Number.isFinite) : [];
   if (ids.length === 0) return res.status(204).end();
@@ -252,12 +242,22 @@ router.post("/trash/batch-restore", async (req, res) => {
   res.status(204).end();
 });
 
-// DELETE /api/trash/batch-purge — permanently delete multiple entries
+// DELETE /api/trash/batch-purge — permanently delete multiple entries (must be before /:id)
 router.delete("/trash/batch-purge", async (req, res) => {
   const ids: number[] = Array.isArray(req.body?.ids) ? req.body.ids.map(Number).filter(Number.isFinite) : [];
   if (ids.length === 0) return res.status(204).end();
   await db.delete(resinEntriesTable)
     .where(and(inArray(resinEntriesTable.id, ids), isNotNull(resinEntriesTable.deletedAt)));
+  invalidateMatchCache();
+  res.status(204).end();
+});
+
+// DELETE /api/trash/:id — permanently delete a single entry
+router.delete("/trash/:id", async (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  if (!Number.isFinite(id)) return res.status(400).json({ error: "Invalid id" });
+  await db.delete(resinEntriesTable)
+    .where(and(eq(resinEntriesTable.id, id), isNotNull(resinEntriesTable.deletedAt)));
   invalidateMatchCache();
   res.status(204).end();
 });
