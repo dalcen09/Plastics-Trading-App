@@ -380,7 +380,7 @@ export function CategoryView({ category }: CategoryViewProps) {
               )}
             >
               <ArrowDownToLine className="w-4 h-4" />
-              仕入れ先（供給）
+              仕入
             </button>
             <button
               onClick={() => { setActiveTab("demands"); clearFilters(); }}
