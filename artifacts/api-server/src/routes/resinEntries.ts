@@ -319,10 +319,14 @@ async function getOrComputeAllMatches(): Promise<MatchResult[]> {
 
       const srcLo = toNum(source.meltFlowIndexLower), srcHi = toNum(source.meltFlowIndexUpper);
       const dmLo = toNum(demand.meltFlowIndexLower), dmHi = toNum(demand.meltFlowIndexUpper);
-      const srcMid = srcLo !== null ? (srcHi !== null ? (srcLo + srcHi) / 2 : srcLo) : srcHi;
-      const dmMid = dmLo !== null ? (dmHi !== null ? (dmLo + dmHi) / 2 : dmLo) : dmHi;
-      if (srcMid !== null && dmMid !== null && withinAbs(srcMid, dmMid, 1)) {
-        reasons.push(`MI近似: ${srcMid} ↔ ${dmMid} g/10min (±1)`);
+      const demandHasMI = dmLo !== null || dmHi !== null;
+      const sourceHasMI = srcLo !== null || srcHi !== null;
+      if (demandHasMI && sourceHasMI) {
+        const srcMid = srcLo !== null ? (srcHi !== null ? (srcLo + srcHi) / 2 : srcLo) : srcHi!;
+        const inRange = (dmLo === null || srcMid >= dmLo) && (dmHi === null || srcMid <= dmHi);
+        if (!inRange) continue;
+        const dmRange = dmLo !== null && dmHi !== null ? `${dmLo}〜${dmHi}` : dmLo !== null ? `≥${dmLo}` : `≤${dmHi}`;
+        reasons.push(`MI範囲内: ${srcMid} ∈ ${dmRange} g/10min`);
         score += 15;
       }
 
