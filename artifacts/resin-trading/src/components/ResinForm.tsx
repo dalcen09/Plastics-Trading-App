@@ -125,6 +125,14 @@ export function ResinForm({
       .catch(() => {});
   }, []);
 
+  const [buyerOptions, setBuyerOptions] = useState<string[]>([]);
+  useEffect(() => {
+    fetch("/api/prospective-buyers")
+      .then(r => r.json())
+      .then(setBuyerOptions)
+      .catch(() => {});
+  }, []);
+
   useEffect(() => {
     if (initialData) {
       reset({
@@ -333,7 +341,10 @@ export function ResinForm({
               <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4 pt-4 border-t border-border/50">取引情報</h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
                 <FormGroup label="ワーク希望者" error={errors.prospectiveBuyer?.message}>
-                  <input type="text" placeholder="希望者名" {...register("prospectiveBuyer")} className="input-field" />
+                  <select {...register("prospectiveBuyer")} className="input-field">
+                    <option value="">選択してください</option>
+                    {buyerOptions.map(name => <option key={name} value={name}>{name}</option>)}
+                  </select>
                 </FormGroup>
                 <FormGroup label="希望数量 (kg)" error={errors.desiredQuantity?.message}>
                   <input type="number" step="0.01" placeholder="0" {...register("desiredQuantity")} className="input-field" />

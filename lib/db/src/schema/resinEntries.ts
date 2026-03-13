@@ -66,3 +66,8 @@ export const staffTable = pgTable("staff", {
   id: serial("id").primaryKey(),
   name: text("name").notNull().unique(),
 });
+
+export const prospectiveBuyersTable = pgTable("prospective_buyers", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull().unique(),
+});

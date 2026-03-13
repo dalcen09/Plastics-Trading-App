@@ -1,6 +1,6 @@
 import { Router, type IRouter } from "express";
 import { db } from "@workspace/db";
-import { resinEntriesTable, staffTable } from "@workspace/db/schema";
+import { resinEntriesTable, staffTable, prospectiveBuyersTable } from "@workspace/db/schema";
 import { eq, and, inArray, sql } from "drizzle-orm";
 import {
   CreateSourceBody,
@@ -20,6 +20,12 @@ const router: IRouter = Router();
 // GET /api/persons-in-charge — managed staff list
 router.get("/persons-in-charge", async (_req, res) => {
   const rows = await db.select({ name: staffTable.name }).from(staffTable).orderBy(staffTable.name);
+  res.json(rows.map(r => r.name));
+});
+
+// GET /api/prospective-buyers — managed prospective buyer list
+router.get("/prospective-buyers", async (_req, res) => {
+  const rows = await db.select({ name: prospectiveBuyersTable.name }).from(prospectiveBuyersTable).orderBy(prospectiveBuyersTable.name);
   res.json(rows.map(r => r.name));
 });
 
