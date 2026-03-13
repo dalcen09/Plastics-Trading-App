@@ -205,7 +205,7 @@ export function ResinForm({
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5">
                 <FormGroup label="樹脂種別" error={errors.resinType?.message}>
                   <select {...register("resinType")} className="input-field">
-                    {Object.values(ResinType).map(t => <option key={t} value={t}>{t}</option>)}
+                    {Object.values(ResinType).filter(t => !["LLDPE","HDPE","LDPE","GPPS","HIPS"].includes(t)).map(t => <option key={t} value={t}>{t}</option>)}
                   </select>
                 </FormGroup>
 
