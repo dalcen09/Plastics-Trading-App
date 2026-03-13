@@ -1,8 +1,7 @@
 import { ReactNode } from "react";
 import { Link, useLocation } from "wouter";
 import { 
-  Recycle, 
-  TrendingUp,
+  Recycle,
   Search,
   Bell,
   Trash2,
@@ -53,7 +52,7 @@ export function Layout({ children }: LayoutProps) {
 
   const navItems = [
     { href: "/virgin",   label: "バージン",    badge: "VG", icon: null,       matchPrefix: true },
-    { href: "/offgrade", label: "オフグレード", badge: null, icon: TrendingUp, matchPrefix: true },
+    { href: "/offgrade", label: "オフグレード", badge: "OG", icon: null,       matchPrefix: true },
     { href: "/recycled", label: "リサイクル",   badge: null, icon: Recycle,    matchPrefix: true },
   ];
 
