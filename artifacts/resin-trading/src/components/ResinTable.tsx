@@ -153,7 +153,7 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
           <thead className="text-xs text-muted-foreground uppercase bg-secondary font-semibold tracking-wider sticky top-0 z-20">
             <tr>
               {/* Checkbox select-all */}
-              <th className="pl-4 pr-2 py-4 table-sticky-col-left bg-secondary/90 backdrop-blur-sm z-20 w-10">
+              <th className="pl-4 pr-2 py-4 table-sticky-col-left bg-secondary z-20 w-10">
                 <input
                   type="checkbox"
                   checked={allSelected}
@@ -164,7 +164,7 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
                 />
               </th>
               {/* 操作 sticky second column */}
-              <th className="px-3 py-4 table-sticky-col-left-2 bg-secondary/90 backdrop-blur-sm text-center z-20">操作</th>
+              <th className="px-3 py-4 table-sticky-col-left-2 bg-secondary text-center z-20">操作</th>
               {/* 取引先 */}
               <SortTh colKey="counterparty" sort={sort} onSort={onSort}>
                 取引先
@@ -194,7 +194,7 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
               const isSelected = selectedIds.has(row.id);
               return (
               <tr key={row.id} className={cn("hover:bg-secondary/40 transition-colors group", isSelected && "bg-primary/5", row.isClosed && "opacity-40")}>
-                <td className={cn("pl-4 pr-2 py-3 table-sticky-col-left z-10 transition-colors", isSelected ? "bg-primary/5" : "bg-card group-hover:bg-secondary/40")}>
+                <td className={cn("pl-4 pr-2 py-3 table-sticky-col-left z-10 transition-colors", isSelected ? "bg-primary/10" : "bg-card group-hover:bg-secondary")}>
                   <input
                     type="checkbox"
                     checked={isSelected}
@@ -202,7 +202,7 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
                     className="w-4 h-4 rounded border-border accent-primary cursor-pointer"
                   />
                 </td>
-                <td className={cn("px-3 py-3 table-sticky-col-left-2 text-center z-10 transition-colors", isSelected ? "bg-primary/5" : "bg-card group-hover:bg-secondary/40")}>
+                <td className={cn("px-3 py-3 table-sticky-col-left-2 text-center z-10 transition-colors", isSelected ? "bg-primary/10" : "bg-card group-hover:bg-secondary")}>
                   <div className="flex items-center justify-center gap-1.5">
                     <button
                       onClick={() => onEdit(row)}
