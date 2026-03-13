@@ -2,6 +2,7 @@ import { ResinEntry } from "@workspace/api-client-react";
 import { Edit2, Trash2, Box, Package, ArrowUp, ArrowDown, ArrowUpDown, ImageIcon, Download } from "lucide-react";
 import { formatCurrency, formatDate, formatNumber, cn } from "@/lib/utils";
 import { useState, useRef, useCallback } from "react";
+import { createPortal } from "react-dom";
 
 function PhotoThumbnail({ url, index }: { url: string; index: number }) {
   const [popup, setPopup] = useState<{ top: number; left: number } | null>(null);
@@ -30,7 +31,7 @@ function PhotoThumbnail({ url, index }: { url: string; index: number }) {
         alt={`写真 ${index + 1}`}
         className="w-9 h-9 object-cover rounded-md border border-border/50 cursor-pointer hover:ring-2 hover:ring-primary/50 transition-all"
       />
-      {popup && (
+      {popup && createPortal(
         <div
           className="fixed bg-card border border-border rounded-xl shadow-2xl overflow-hidden flex flex-col"
           style={{ top: popup.top, left: popup.left, width: 256, transform: "translateY(-100%) translateY(-6px)", zIndex: 9999 }}
@@ -48,7 +49,8 @@ function PhotoThumbnail({ url, index }: { url: string; index: number }) {
               ダウンロード
             </a>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
