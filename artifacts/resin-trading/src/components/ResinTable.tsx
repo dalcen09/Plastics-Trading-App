@@ -125,7 +125,9 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
 
   const tableScrollRef = useRef<HTMLDivElement>(null);
   const topScrollRef = useRef<HTMLDivElement>(null);
+  const sentinelRef = useRef<HTMLDivElement>(null);
   const [scrollWidth, setScrollWidth] = useState(0);
+  const [bottomVisible, setBottomVisible] = useState(false);
 
   useEffect(() => {
     const el = tableScrollRef.current;
@@ -136,6 +138,17 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
     ro.observe(el);
     return () => ro.disconnect();
   }, [visibleColumns]);
+
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+    const io = new IntersectionObserver(
+      ([entry]) => setBottomVisible(entry.isIntersecting),
+      { threshold: 0 }
+    );
+    io.observe(sentinel);
+    return () => io.disconnect();
+  }, []);
 
   const onTopScroll = () => {
     if (tableScrollRef.current && topScrollRef.current)
@@ -171,12 +184,12 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
 
   return (
     <div className="w-full bg-card rounded-2xl border border-border shadow-sm flex flex-col relative">
-      {/* Sticky mirror scrollbar at top */}
+      {/* Sticky mirror scrollbar at top — fades out when bottom scrollbar is in view */}
       <div
         ref={topScrollRef}
         onScroll={onTopScroll}
-        className="overflow-x-scroll sticky top-0 z-30"
-        style={{ height: 12 }}
+        className="overflow-x-scroll sticky top-0 z-30 transition-opacity duration-300"
+        style={{ height: 12, opacity: bottomVisible ? 0 : 1, pointerEvents: bottomVisible ? "none" : "auto" }}
       >
         <div style={{ width: scrollWidth, height: 1 }} />
       </div>
@@ -410,6 +423,8 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
           </tbody>
         </table>
       </div>
+      {/* Sentinel: when visible, the native bottom scrollbar is in view */}
+      <div ref={sentinelRef} style={{ height: 1 }} />
     </div>
   );
 }
