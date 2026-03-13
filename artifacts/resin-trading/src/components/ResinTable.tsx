@@ -147,8 +147,8 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
 
   return (
     <div className="w-full bg-card rounded-2xl border border-border shadow-sm flex flex-col relative">
-      <div className="overflow-x-scroll overflow-y-visible">
-        <table className="min-w-full text-sm text-left whitespace-nowrap">
+      <div className="overflow-x-scroll overflow-y-visible" style={{ transform: "rotateX(180deg)" }}>
+        <table className="min-w-full text-sm text-left whitespace-nowrap" style={{ transform: "rotateX(180deg)" }}>
           <thead className="text-xs text-muted-foreground uppercase bg-secondary/50 font-semibold tracking-wider">
             <tr>
               {/* Checkbox select-all */}
