@@ -97,6 +97,7 @@ export function CategoryView({ category }: CategoryViewProps) {
   const [page, setPage] = useState(1);
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
   const [isBulkDeleting, setIsBulkDeleting] = useState(false);
+  const [lastEditedId, setLastEditedId] = useState<number | null>(null);
 
   const toggleColumn = (key: ColumnKey) =>
     setVisibleColumns(prev => {
@@ -227,11 +228,12 @@ export function CategoryView({ category }: CategoryViewProps) {
 
   const updateSource = useUpdateSource({
     mutation: {
-      onSuccess: () => {
+      onSuccess: (_data, variables) => {
         queryClient.invalidateQueries({ queryKey: getListSourcesQueryKey({ resinCategory: category as ResinCategory }) });
         queryClient.invalidateQueries({ queryKey: getGetMatchesQueryKey() });
         queryClient.invalidateQueries({ queryKey: getGetMatchCountByEntryQueryKey() });
         queryClient.invalidateQueries({ queryKey: getGetMatchCountQueryKey() });
+        setLastEditedId(variables.id);
         closeForm();
         toast({ title: "成功", description: "仕入れ先を更新しました" });
       },
@@ -277,11 +279,12 @@ export function CategoryView({ category }: CategoryViewProps) {
 
   const updateDemand = useUpdateDemand({
     mutation: {
-      onSuccess: () => {
+      onSuccess: (_data, variables) => {
         queryClient.invalidateQueries({ queryKey: getListDemandsQueryKey({ resinCategory: category as ResinCategory }) });
         queryClient.invalidateQueries({ queryKey: getGetMatchesQueryKey() });
         queryClient.invalidateQueries({ queryKey: getGetMatchCountByEntryQueryKey() });
         queryClient.invalidateQueries({ queryKey: getGetMatchCountQueryKey() });
+        setLastEditedId(variables.id);
         closeForm();
         toast({ title: "成功", description: "需要を更新しました" });
       },
@@ -697,6 +700,7 @@ export function CategoryView({ category }: CategoryViewProps) {
               onToggleSelect={handleToggleSelect}
               onToggleSelectAll={handleToggleSelectAll}
               matchCounts={matchCounts}
+              lastEditedId={lastEditedId}
             />
           </div>
 
