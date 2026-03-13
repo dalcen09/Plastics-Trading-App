@@ -4,7 +4,7 @@ import { formatCurrency, formatDate, formatNumber, cn } from "@/lib/utils";
 
 export type ColumnKey =
   | "date" | "personInCharge" | "resinType" | "manufacturer"
-  | "grade" | "charpy" | "izod" | "specs" | "price" | "quantity" | "quantityType" | "photo" | "isClosed";
+  | "grade" | "charpy" | "izod" | "specs" | "price" | "quantity" | "quantityType" | "photo" | "isClosed" | "sampleAvailable";
 
 export type SortKey =
   | "counterparty" | "date" | "personInCharge" | "resinType"
@@ -30,11 +30,12 @@ export const ALL_COLUMNS: { key: ColumnKey; label: string }[] = [
   { key: "quantity",       label: "数量 (kg)" },
   { key: "quantityType",   label: "数量区分" },
   { key: "photo",          label: "写真" },
+  { key: "sampleAvailable", label: "サンプルあり" },
   { key: "isClosed",       label: "クローズ" },
 ];
 
 export const DEFAULT_VISIBLE: Set<ColumnKey> = new Set(
-  ALL_COLUMNS.map(c => c.key).filter(k => k !== "charpy" && k !== "izod" && k !== "photo")
+  ALL_COLUMNS.map(c => c.key).filter(k => k !== "charpy" && k !== "izod" && k !== "photo" && k !== "sampleAvailable")
 );
 
 export function sortData(data: ResinEntry[], sort: SortConfig | null): ResinEntry[] {
@@ -170,6 +171,7 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
               {col("quantity")       && <SortTh colKey="quantity"  sort={sort} onSort={onSort} className="text-right">数量 (kg)</SortTh>}
               {col("quantityType")   && <th className="px-4 py-4">数量区分</th>}
               {col("photo")          && <th className="px-4 py-4 text-center">写真</th>}
+              {col("sampleAvailable") && <th className="px-4 py-4 text-center">サンプル</th>}
               {col("isClosed")       && <th className="px-4 py-4 text-center">クローズ</th>}
               <th className="px-4 py-4 table-sticky-col-right bg-secondary/90 backdrop-blur-sm text-center z-20">操作</th>
             </tr>
@@ -295,6 +297,14 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
                     ) : (
                       <ImageIcon className="w-4 h-4 text-muted-foreground/30 inline-block" />
                     )}
+                  </td>
+                )}
+                {col("sampleAvailable") && (
+                  <td className="px-4 py-3 text-center">
+                    {row.sampleAvailable
+                      ? <span className="inline-flex items-center px-1.5 py-0.5 rounded-md bg-primary/10 text-primary text-xs font-bold">✓</span>
+                      : <span className="text-muted-foreground/40">―</span>
+                    }
                   </td>
                 )}
                 {col("isClosed") && (
