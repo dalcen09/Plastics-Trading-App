@@ -453,22 +453,26 @@ export function CategoryView({ category }: CategoryViewProps) {
                 <>
                   {/* backdrop */}
                   <div className="fixed inset-0 z-30" onClick={() => setShowColumns(false)} />
-                  <div className="absolute right-0 top-full mt-2 z-40 bg-card border border-border rounded-xl shadow-xl p-3 min-w-[180px]">
+                  <div className="absolute right-0 top-full mt-2 z-40 bg-card border border-border rounded-xl shadow-xl p-3 w-[360px]">
                     <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 px-1">表示する列</p>
-                    <div className="flex flex-col gap-0.5">
-                      {ALL_COLUMNS.map(({ key, label }) => (
-                        <label
-                          key={key}
-                          className="flex items-center gap-2.5 px-2 py-1.5 rounded-lg hover:bg-secondary cursor-pointer text-sm"
-                        >
-                          <input
-                            type="checkbox"
-                            checked={visibleColumns.has(key)}
-                            onChange={() => toggleColumn(key)}
-                            className="w-4 h-4 accent-primary rounded"
-                          />
-                          {label}
-                        </label>
+                    <div className="grid grid-cols-2 gap-x-2">
+                      {[ALL_COLUMNS.slice(0, 10), ALL_COLUMNS.slice(10)].map((colGroup, gi) => (
+                        <div key={gi} className="flex flex-col gap-0.5">
+                          {colGroup.map(({ key, label }) => (
+                            <label
+                              key={key}
+                              className="flex items-center gap-2.5 px-2 py-1.5 rounded-lg hover:bg-secondary cursor-pointer text-sm"
+                            >
+                              <input
+                                type="checkbox"
+                                checked={visibleColumns.has(key)}
+                                onChange={() => toggleColumn(key)}
+                                className="w-4 h-4 accent-primary rounded"
+                              />
+                              {label}
+                            </label>
+                          ))}
+                        </div>
                       ))}
                     </div>
                     <div className="border-t border-border mt-2 pt-2 flex gap-2">
@@ -477,6 +481,12 @@ export function CategoryView({ category }: CategoryViewProps) {
                         className="flex-1 text-xs py-1.5 rounded-lg border border-border hover:bg-secondary transition-colors"
                       >
                         すべて表示
+                      </button>
+                      <button
+                        onClick={() => setVisibleColumns(new Set())}
+                        className="flex-1 text-xs py-1.5 rounded-lg border border-border hover:bg-secondary transition-colors"
+                      >
+                        すべて非表示
                       </button>
                     </div>
                   </div>
