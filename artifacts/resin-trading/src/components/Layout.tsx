@@ -26,6 +26,20 @@ export function Layout({ children }: LayoutProps) {
   const { data: countData } = useGetMatchCount({ query: { refetchInterval: 60000 } });
   const matchCount = countData?.count ?? 0;
 
+  const { data: virginCount }   = useGetMatchCount({ resinCategory: "virgin" },   { query: { refetchInterval: 60000 } });
+  const { data: offgradeCount } = useGetMatchCount({ resinCategory: "offgrade" }, { query: { refetchInterval: 60000 } });
+  const { data: recycledCount } = useGetMatchCount({ resinCategory: "recycled" }, { query: { refetchInterval: 60000 } });
+
+  const matchCategoryParam = location.startsWith("/matches")
+    ? new URLSearchParams(window.location.search).get("resinCategory")
+    : null;
+
+  const categoryMatchItems = [
+    { cat: "virgin",   label: "バージン",     count: virginCount?.count   ?? 0, color: "bg-green-500" },
+    { cat: "offgrade", label: "オフグレード",  count: offgradeCount?.count ?? 0, color: "bg-amber-500" },
+    { cat: "recycled", label: "リサイクル",    count: recycledCount?.count ?? 0, color: "bg-teal-500"  },
+  ];
+
   const { data: trashItems = [] } = useQuery<unknown[]>({
     queryKey: ["trash"],
     queryFn: async () => {
@@ -82,27 +96,57 @@ export function Layout({ children }: LayoutProps) {
           })}
         </div>
 
-        {/* Matches link */}
-        <div className="px-4 pb-2">
+        {/* Matches section */}
+        <div className="px-4 pb-2 space-y-0.5">
           <Link
             href="/matches"
             className={cn(
               "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 group",
-              location === "/matches" || location.startsWith("/matches")
+              location.startsWith("/matches") && !matchCategoryParam
                 ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
                 : "text-foreground/70 hover:bg-secondary hover:text-foreground active:scale-[0.98]"
             )}
           >
             <Network className={cn("w-5 h-5 flex-shrink-0 transition-colors",
-              location.startsWith("/matches") ? "text-primary-foreground" : "text-muted-foreground group-hover:text-foreground"
+              location.startsWith("/matches") && !matchCategoryParam ? "text-primary-foreground" : "text-muted-foreground group-hover:text-foreground"
             )} />
-            <span className="flex-1">マッチング</span>
+            <span className="flex-1">マッチング分析</span>
             {matchCount > 0 && (
               <span className="inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 rounded-full bg-emerald-500 text-white text-xs font-semibold">
                 {matchCount}
               </span>
             )}
           </Link>
+
+          {/* Per-category sub-links */}
+          <div className="ml-4 space-y-0.5">
+            {categoryMatchItems.map(({ cat, label, count, color }) => {
+              const isActive = location.startsWith("/matches") && matchCategoryParam === cat;
+              return (
+                <Link
+                  key={cat}
+                  href={`/matches?resinCategory=${cat}`}
+                  className={cn(
+                    "flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium transition-all duration-200 group",
+                    isActive
+                      ? "bg-primary text-primary-foreground shadow-sm shadow-primary/20"
+                      : "text-foreground/60 hover:bg-secondary hover:text-foreground"
+                  )}
+                >
+                  <span className={cn("w-1.5 h-1.5 flex-shrink-0 rounded-full", color)} />
+                  <span className="flex-1">{label}</span>
+                  {count > 0 && (
+                    <span className={cn(
+                      "inline-flex items-center justify-center min-w-[1.25rem] h-4 px-1 rounded-full text-[10px] font-semibold",
+                      isActive ? "bg-white/20 text-white" : "bg-secondary text-muted-foreground"
+                    )}>
+                      {count}
+                    </span>
+                  )}
+                </Link>
+              );
+            })}
+          </div>
         </div>
 
         {/* Trash link pinned to bottom */}

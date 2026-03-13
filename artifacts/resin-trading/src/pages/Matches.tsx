@@ -21,6 +21,18 @@ function useSearchParam(name: string): string | null {
   return new URLSearchParams(window.location.search).get(name);
 }
 
+const CATEGORY_LABEL: Record<string, string> = {
+  virgin: "バージン",
+  offgrade: "オフグレード",
+  recycled: "リサイクル",
+};
+
+const CATEGORY_THEME: Record<string, string> = {
+  virgin:   "text-green-600 bg-green-500/10 border-green-500/20",
+  offgrade: "text-amber-600 bg-amber-500/10 border-amber-500/20",
+  recycled: "text-teal-600  bg-teal-500/10  border-teal-500/20",
+};
+
 export function Matches() {
   const [page, setPage] = useState(0);
   const [, navigate] = useLocation();
@@ -28,16 +40,20 @@ export function Matches() {
   const entryIdStr = useSearchParam("entryId");
   const entryId = entryIdStr ? parseInt(entryIdStr, 10) : undefined;
   const entryName = useSearchParam("name");
+  const resinCategory = useSearchParam("resinCategory") ?? undefined;
 
-  const { data, isLoading } = useGetMatches(
-    { limit: PAGE_SIZE, offset: page * PAGE_SIZE, ...(entryId ? { entryId } : {}) }
-  );
+  const { data, isLoading } = useGetMatches({
+    limit: PAGE_SIZE,
+    offset: page * PAGE_SIZE,
+    ...(entryId ? { entryId } : {}),
+    ...(resinCategory ? { resinCategory } : {}),
+  });
 
   const items = data?.items ?? [];
   const total = data?.total ?? 0;
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
-  const isFiltered = !!entryId;
+  const isFiltered = !!entryId || !!resinCategory;
 
   return (
     <Layout>
@@ -51,16 +67,30 @@ export function Matches() {
                 <Network className="w-8 h-8" />
               </div>
               <div>
-                <h1 className="text-3xl font-display font-bold text-foreground">
-                  マッチング分析
-                </h1>
-                {isFiltered ? (
+                <div className="flex items-center gap-2 flex-wrap">
+                  <h1 className="text-3xl font-display font-bold text-foreground">
+                    マッチング分析
+                  </h1>
+                  {resinCategory && (
+                    <span className={cn("px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider border flex items-center gap-1.5", CATEGORY_THEME[resinCategory])}>
+                      {CATEGORY_LABEL[resinCategory] ?? resinCategory}
+                      <button
+                        onClick={() => navigate(entryId ? `/matches?entryId=${entryId}&name=${encodeURIComponent(entryName ?? "")}` : "/matches")}
+                        className="hover:opacity-70 rounded-full transition-opacity"
+                        title="カテゴリフィルター解除"
+                      >
+                        <X className="w-3 h-3" />
+                      </button>
+                    </span>
+                  )}
+                </div>
+                {entryId ? (
                   <div className="flex items-center gap-2 mt-1 flex-wrap">
                     <span className="text-muted-foreground text-sm">絞り込み中:</span>
                     <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-primary/10 text-primary rounded-full text-sm font-semibold">
                       {entryName ?? `ID ${entryId}`}
                       <button
-                        onClick={() => navigate("/matches")}
+                        onClick={() => navigate(resinCategory ? `/matches?resinCategory=${resinCategory}` : "/matches")}
                         className="hover:bg-primary/20 rounded-full p-0.5 transition-colors"
                         title="フィルター解除"
                       >
@@ -148,8 +178,10 @@ export function Matches() {
               </div>
               <h3 className="text-xl font-display font-semibold text-foreground mb-2">マッチングなし</h3>
               <p className="text-center max-w-md text-sm">
-                {isFiltered
+                {entryId
                   ? "この取引先に対するマッチングが見つかりませんでした。"
+                  : resinCategory
+                  ? `${CATEGORY_LABEL[resinCategory] ?? resinCategory}カテゴリに有効なマッチングが見つかりませんでした。`
                   : "現在の仕入れ先と需要の間に有効なマッチングが見つかりませんでした。"}
               </p>
               {isFiltered ? (
