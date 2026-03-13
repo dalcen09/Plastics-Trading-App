@@ -1,4 +1,5 @@
 import { ResinEntry } from "@workspace/api-client-react";
+import { useRef, useEffect, useState } from "react";
 import { Edit2, Trash2, Box, Package, ArrowUp, ArrowDown, ArrowUpDown, ImageIcon } from "lucide-react";
 import { formatCurrency, formatDate, formatNumber, cn } from "@/lib/utils";
 
@@ -121,6 +122,29 @@ function SortTh({
 export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, visibleColumns, sort, onSort, selectedIds = new Set(), onToggleSelect, onToggleSelectAll }: ResinTableProps) {
   const col = (key: ColumnKey) => visibleColumns.has(key);
   const allIds = data.map(r => r.id);
+
+  const tableScrollRef = useRef<HTMLDivElement>(null);
+  const topScrollRef = useRef<HTMLDivElement>(null);
+  const [scrollWidth, setScrollWidth] = useState(0);
+
+  useEffect(() => {
+    const el = tableScrollRef.current;
+    if (!el) return;
+    const update = () => setScrollWidth(el.scrollWidth);
+    update();
+    const ro = new ResizeObserver(update);
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [visibleColumns]);
+
+  const onTopScroll = () => {
+    if (tableScrollRef.current && topScrollRef.current)
+      tableScrollRef.current.scrollLeft = topScrollRef.current.scrollLeft;
+  };
+  const onTableScroll = () => {
+    if (tableScrollRef.current && topScrollRef.current)
+      topScrollRef.current.scrollLeft = tableScrollRef.current.scrollLeft;
+  };
   const allSelected = allIds.length > 0 && allIds.every(id => selectedIds.has(id));
   const someSelected = allIds.some(id => selectedIds.has(id)) && !allSelected;
 
@@ -147,8 +171,17 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
 
   return (
     <div className="w-full bg-card rounded-2xl border border-border shadow-sm flex flex-col relative">
-      <div className="overflow-x-scroll overflow-y-visible" style={{ transform: "rotateX(180deg)" }}>
-        <table className="min-w-full text-sm text-left whitespace-nowrap" style={{ transform: "rotateX(180deg)" }}>
+      {/* Sticky mirror scrollbar at top */}
+      <div
+        ref={topScrollRef}
+        onScroll={onTopScroll}
+        className="overflow-x-scroll sticky top-0 z-30"
+        style={{ height: 12 }}
+      >
+        <div style={{ width: scrollWidth, height: 1 }} />
+      </div>
+      <div ref={tableScrollRef} onScroll={onTableScroll} className="overflow-x-scroll overflow-y-visible">
+        <table className="min-w-full text-sm text-left whitespace-nowrap">
           <thead className="text-xs text-muted-foreground uppercase bg-secondary/50 font-semibold tracking-wider">
             <tr>
               {/* Checkbox select-all */}
