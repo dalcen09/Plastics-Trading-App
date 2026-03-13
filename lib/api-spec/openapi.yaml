@@ -352,6 +352,18 @@ components:
         remarks:
           type: string
           nullable: true
+        prospectiveBuyer:
+          type: string
+          nullable: true
+        desiredQuantity:
+          type: number
+          nullable: true
+        proposedTo:
+          type: string
+          nullable: true
+        sellingPrice:
+          type: number
+          nullable: true
         imageUrl:
           type: string
           nullable: true
@@ -441,6 +453,18 @@ components:
           nullable: true
         remarks:
           type: string
+          nullable: true
+        prospectiveBuyer:
+          type: string
+          nullable: true
+        desiredQuantity:
+          type: number
+          nullable: true
+        proposedTo:
+          type: string
+          nullable: true
+        sellingPrice:
+          type: number
           nullable: true
         imageUrl:
           type: string

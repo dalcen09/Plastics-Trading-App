@@ -42,6 +42,10 @@ const formSchema = z.object({
   price: z.coerce.number().nullable().optional(),
   quantity: z.coerce.number().nullable().optional(),
   quantityType: z.preprocess(v => v === "" ? null : v, z.enum(["月間", "スポット"]).nullable().optional()),
+  prospectiveBuyer: z.string().nullable().optional(),
+  desiredQuantity: z.coerce.number().nullable().optional(),
+  proposedTo: z.string().nullable().optional(),
+  sellingPrice: z.coerce.number().nullable().optional(),
   remarks: z.string().nullable().optional(),
   imageUrl: z.string().nullable().optional(),
 });
@@ -92,6 +96,10 @@ export function ResinForm({
       price: initialData?.price ?? undefined,
       quantity: initialData?.quantity ?? undefined,
       quantityType: initialData?.quantityType ?? null,
+      prospectiveBuyer: initialData?.prospectiveBuyer || "",
+      desiredQuantity: initialData?.desiredQuantity ?? undefined,
+      proposedTo: initialData?.proposedTo || "",
+      sellingPrice: initialData?.sellingPrice ?? undefined,
       remarks: initialData?.remarks || "",
       imageUrl: initialData?.imageUrl ?? null,
     }
@@ -301,6 +309,25 @@ export function ResinForm({
                     <span className="text-sm font-medium text-foreground group-hover:text-primary transition-colors">サンプルあり</span>
                   </label>
                 </div>
+              </div>
+            </div>
+
+            {/* Section: Deal Info */}
+            <div>
+              <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4 pt-4 border-t border-border/50">取引情報</h3>
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
+                <FormGroup label="ワーク希望者" error={errors.prospectiveBuyer?.message}>
+                  <input type="text" placeholder="希望者名" {...register("prospectiveBuyer")} className="input-field" />
+                </FormGroup>
+                <FormGroup label="希望数量 (kg)" error={errors.desiredQuantity?.message}>
+                  <input type="number" step="0.01" placeholder="0" {...register("desiredQuantity")} className="input-field" />
+                </FormGroup>
+                <FormGroup label="提案先" error={errors.proposedTo?.message}>
+                  <input type="text" placeholder="提案先" {...register("proposedTo")} className="input-field" />
+                </FormGroup>
+                <FormGroup label="販売価格 (円/kg)" error={errors.sellingPrice?.message}>
+                  <input type="number" step="0.01" placeholder="0" {...register("sellingPrice")} className="input-field" />
+                </FormGroup>
               </div>
             </div>
 

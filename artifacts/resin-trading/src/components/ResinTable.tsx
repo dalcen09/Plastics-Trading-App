@@ -4,7 +4,8 @@ import { formatCurrency, formatDate, formatNumber, cn } from "@/lib/utils";
 
 export type ColumnKey =
   | "date" | "personInCharge" | "resinType" | "manufacturer"
-  | "grade" | "charpy" | "izod" | "specs" | "price" | "quantity" | "quantityType" | "photo" | "isClosed" | "sampleAvailable";
+  | "grade" | "charpy" | "izod" | "specs" | "price" | "quantity" | "quantityType" | "photo" | "isClosed" | "sampleAvailable"
+  | "prospectiveBuyer" | "desiredQuantity" | "proposedTo" | "sellingPrice";
 
 export type SortKey =
   | "counterparty" | "date" | "personInCharge" | "resinType"
@@ -29,13 +30,20 @@ export const ALL_COLUMNS: { key: ColumnKey; label: string }[] = [
   { key: "price",          label: "価格 (円/kg)" },
   { key: "quantity",       label: "数量 (kg)" },
   { key: "quantityType",   label: "数量区分" },
-  { key: "photo",          label: "写真" },
-  { key: "sampleAvailable", label: "サンプルあり" },
-  { key: "isClosed",       label: "クローズ" },
+  { key: "photo",            label: "写真" },
+  { key: "sampleAvailable",  label: "サンプルあり" },
+  { key: "prospectiveBuyer", label: "ワーク希望者" },
+  { key: "desiredQuantity",  label: "希望数量 (kg)" },
+  { key: "proposedTo",       label: "提案先" },
+  { key: "sellingPrice",     label: "販売価格 (円/kg)" },
+  { key: "isClosed",         label: "クローズ" },
 ];
 
 export const DEFAULT_VISIBLE: Set<ColumnKey> = new Set(
-  ALL_COLUMNS.map(c => c.key).filter(k => k !== "charpy" && k !== "izod" && k !== "photo" && k !== "sampleAvailable")
+  ALL_COLUMNS.map(c => c.key).filter(k =>
+    k !== "charpy" && k !== "izod" && k !== "photo" && k !== "sampleAvailable" &&
+    k !== "prospectiveBuyer" && k !== "desiredQuantity" && k !== "proposedTo" && k !== "sellingPrice"
+  )
 );
 
 export function sortData(data: ResinEntry[], sort: SortConfig | null): ResinEntry[] {
@@ -171,8 +179,12 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
               {col("quantity")       && <SortTh colKey="quantity"  sort={sort} onSort={onSort} className="text-right">数量 (kg)</SortTh>}
               {col("quantityType")   && <th className="px-4 py-4">数量区分</th>}
               {col("photo")          && <th className="px-4 py-4 text-center">写真</th>}
-              {col("sampleAvailable") && <th className="px-4 py-4 text-center">サンプル</th>}
-              {col("isClosed")       && <th className="px-4 py-4 text-center">クローズ</th>}
+              {col("sampleAvailable")  && <th className="px-4 py-4 text-center">サンプル</th>}
+              {col("prospectiveBuyer") && <th className="px-4 py-4">ワーク希望者</th>}
+              {col("desiredQuantity")  && <th className="px-4 py-4 text-right">希望数量 (kg)</th>}
+              {col("proposedTo")       && <th className="px-4 py-4">提案先</th>}
+              {col("sellingPrice")     && <th className="px-4 py-4 text-right">販売価格 (円/kg)</th>}
+              {col("isClosed")         && <th className="px-4 py-4 text-center">クローズ</th>}
               <th className="px-4 py-4 table-sticky-col-right bg-secondary/90 backdrop-blur-sm text-center z-20">操作</th>
             </tr>
           </thead>
@@ -305,6 +317,22 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
                       ? <span className="inline-flex items-center px-1.5 py-0.5 rounded-md bg-primary/10 text-primary text-xs font-bold">✓</span>
                       : <span className="text-muted-foreground/40">―</span>
                     }
+                  </td>
+                )}
+                {col("prospectiveBuyer") && (
+                  <td className="px-4 py-3 text-sm text-muted-foreground">{row.prospectiveBuyer || dash}</td>
+                )}
+                {col("desiredQuantity") && (
+                  <td className="px-4 py-3 text-right text-sm text-muted-foreground">
+                    {row.desiredQuantity != null ? formatNumber(row.desiredQuantity) : dash}
+                  </td>
+                )}
+                {col("proposedTo") && (
+                  <td className="px-4 py-3 text-sm text-muted-foreground">{row.proposedTo || dash}</td>
+                )}
+                {col("sellingPrice") && (
+                  <td className="px-4 py-3 text-right font-medium text-foreground">
+                    {row.sellingPrice != null ? formatCurrency(row.sellingPrice) : dash}
                   </td>
                 )}
                 {col("isClosed") && (

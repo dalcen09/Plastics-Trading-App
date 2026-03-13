@@ -49,6 +49,7 @@ export const resinEntriesTable = pgTable("resin_entries", {
   arrivalPrice: numeric("arrival_price", { precision: 12, scale: 2 }), // 丸喜着
   spotPrice: numeric("spot_price", { precision: 12, scale: 2 }),       // スポット
   prospectiveBuyer: text("prospective_buyer"),     // ワーク希望者
+  desiredQuantity: numeric("desired_quantity", { precision: 12, scale: 2 }), // 希望数量
   proposedTo: text("proposed_to"),                 // 提案先
   sellingPrice: numeric("selling_price", { precision: 12, scale: 2 }), // 販売価格
   imageUrl: text("image_url"),
