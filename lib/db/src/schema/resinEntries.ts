@@ -5,7 +5,7 @@ import { z } from "zod/v4";
 export const resinCategoryEnum = pgEnum("resin_category", ["virgin", "offgrade", "recycled"]);
 export const entryTypeEnum = pgEnum("entry_type", ["source", "demand"]);
 export const resinTypeEnum = pgEnum("resin_type", [
-  "PP", "PE", "PS", "ABS", "PVC", "PET", "PC", "Nylon", "EVA", "PMMA",
+  "PP", "PE", "PS", "ABS", "PVC", "PET", "PC", "PA6", "PA66", "EVA", "PMMA",
   "HDPE", "LDPE", "LLDPE",
   "GPPS", "HIPS",
   "POM", "EPDM", "PEI", "PETG", "AS", "MS", "PVDC",

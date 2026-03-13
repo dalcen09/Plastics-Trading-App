@@ -254,7 +254,7 @@ components:
 
     ResinType:
       type: string
-      enum: [PP, PE, PS, ABS, PVC, PET, PC, Nylon, EVA, PMMA, Other]
+      enum: [PP, PE, PS, ABS, PVC, PET, PC, PA6, PA66, EVA, PMMA, Other]
 
     PPType:
       type: string
