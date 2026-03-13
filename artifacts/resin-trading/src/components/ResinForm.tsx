@@ -116,6 +116,7 @@ export function ResinForm({
   const selectedResinType = watch("resinType");
   const currentImageUrls = watch("imageUrls") ?? [];
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
 
   const { uploadFile, isUploading } = useUpload({
     onSuccess: (response: { objectPath: string }) => {
@@ -378,44 +379,61 @@ export function ResinForm({
                 ref={fileInputRef}
                 type="file"
                 accept="image/*"
+                multiple
                 className="hidden"
                 onChange={async (e) => {
-                  const file = e.target.files?.[0];
-                  if (file) await uploadFile(file);
+                  const files = Array.from(e.target.files ?? []);
+                  for (const file of files) await uploadFile(file);
                   e.target.value = "";
                 }}
               />
-              <div className="flex flex-wrap gap-3">
-                {currentImageUrls.map((url, i) => (
-                  <div key={url} className="relative group w-32 h-32 rounded-xl overflow-hidden border border-border/50 bg-secondary/20 flex-shrink-0">
-                    <img src={url} alt={`写真 ${i + 1}`} className="w-full h-full object-cover" />
-                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/50 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
-                      <button
-                        type="button"
-                        onClick={() => formSetValue("imageUrls", currentImageUrls.filter((_, idx) => idx !== i))}
-                        className="p-2 rounded-full bg-red-500/90 text-white hover:bg-red-500 transition-colors"
-                        title="削除"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
+              <div
+                className={`rounded-xl border-2 border-dashed p-3 transition-all ${isDragging ? "border-primary bg-primary/5 scale-[1.01]" : "border-border/50 bg-transparent"}`}
+                onDragEnter={(e) => { e.preventDefault(); setIsDragging(true); }}
+                onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
+                onDragLeave={(e) => { if (!e.currentTarget.contains(e.relatedTarget as Node)) setIsDragging(false); }}
+                onDrop={async (e) => {
+                  e.preventDefault();
+                  setIsDragging(false);
+                  const files = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith("image/"));
+                  for (const file of files) await uploadFile(file);
+                }}
+              >
+                <div className="flex flex-wrap gap-3">
+                  {currentImageUrls.map((url, i) => (
+                    <div key={url} className="relative group w-28 h-28 rounded-lg overflow-hidden border border-border/50 bg-secondary/20 flex-shrink-0">
+                      <img src={url} alt={`写真 ${i + 1}`} className="w-full h-full object-cover" />
+                      <div className="absolute inset-0 bg-black/0 group-hover:bg-black/50 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
+                        <button
+                          type="button"
+                          onClick={() => formSetValue("imageUrls", currentImageUrls.filter((_, idx) => idx !== i))}
+                          className="p-2 rounded-full bg-red-500/90 text-white hover:bg-red-500 transition-colors"
+                          title="削除"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                ))}
-                <button
-                  type="button"
-                  onClick={() => fileInputRef.current?.click()}
-                  disabled={isUploading}
-                  className="w-32 h-32 flex flex-col items-center justify-center gap-1.5 rounded-xl border-2 border-dashed border-border hover:border-primary/50 hover:bg-secondary/30 transition-all text-muted-foreground hover:text-foreground disabled:opacity-50 disabled:pointer-events-none flex-shrink-0"
-                >
-                  {isUploading ? (
-                    <Loader2 className="w-5 h-5 animate-spin" />
-                  ) : (
-                    <>
-                      <Upload className="w-5 h-5" />
-                      <span className="text-xs">写真を追加</span>
-                    </>
-                  )}
-                </button>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={isUploading}
+                    className="w-28 h-28 flex flex-col items-center justify-center gap-1.5 rounded-lg border border-dashed border-border hover:border-primary/50 hover:bg-secondary/30 transition-all text-muted-foreground hover:text-foreground disabled:opacity-50 disabled:pointer-events-none flex-shrink-0"
+                  >
+                    {isUploading ? (
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                    ) : (
+                      <>
+                        <Upload className="w-5 h-5" />
+                        <span className="text-xs">写真を追加</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+                <p className="text-xs text-muted-foreground mt-2 text-center">
+                  {isDragging ? "ここにドロップ" : "ここにドラッグ＆ドロップ、または「写真を追加」をクリック"}
+                </p>
               </div>
             </div>
 
