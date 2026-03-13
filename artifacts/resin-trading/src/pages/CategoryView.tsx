@@ -130,15 +130,21 @@ export function CategoryView({ category }: CategoryViewProps) {
     if (ids.length === 0) return;
     if (!window.confirm(`選択した ${ids.length} 件を削除してもよろしいですか？`)) return;
     setIsBulkDeleting(true);
+    const base = import.meta.env.BASE_URL.replace(/\/$/, "");
     try {
       const endpoint = activeTab === "sources" ? "sources" : "demands";
-      await fetch(`/api/${endpoint}/batch-delete`, {
+      await fetch(`${base}/api/${endpoint}/batch-delete`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ ids }),
       });
       setSelectedIds(new Set());
-      queryClient.invalidateQueries({ queryKey: [activeTab === "sources" ? "sources" : "demands"] });
+      if (activeTab === "sources") {
+        queryClient.invalidateQueries({ queryKey: getListSourcesQueryKey({ resinCategory: category as ResinCategory }) });
+      } else {
+        queryClient.invalidateQueries({ queryKey: getListDemandsQueryKey({ resinCategory: category as ResinCategory }) });
+      }
+      queryClient.invalidateQueries({ queryKey: ["trash"] });
       toast({ title: `${ids.length} 件を削除しました` });
     } catch {
       toast({ title: "削除に失敗しました", variant: "destructive" });
@@ -226,6 +232,7 @@ export function CategoryView({ category }: CategoryViewProps) {
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: getListSourcesQueryKey({ resinCategory: category as ResinCategory }) });
         queryClient.invalidateQueries({ queryKey: getGetMatchesQueryKey() });
+        queryClient.invalidateQueries({ queryKey: ["trash"] });
         toast({ title: "成功", description: "仕入れ先を削除しました" });
       }
     }
@@ -269,6 +276,7 @@ export function CategoryView({ category }: CategoryViewProps) {
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: getListDemandsQueryKey({ resinCategory: category as ResinCategory }) });
         queryClient.invalidateQueries({ queryKey: getGetMatchesQueryKey() });
+        queryClient.invalidateQueries({ queryKey: ["trash"] });
         toast({ title: "成功", description: "需要を削除しました" });
       }
     }
