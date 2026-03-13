@@ -31,6 +31,18 @@ export const ResinType = {
   PA66: "PA66",
   EVA: "EVA",
   PMMA: "PMMA",
+  HDPE: "HDPE",
+  LDPE: "LDPE",
+  LLDPE: "LLDPE",
+  GPPS: "GPPS",
+  HIPS: "HIPS",
+  POM: "POM",
+  EPDM: "EPDM",
+  PEI: "PEI",
+  PETG: "PETG",
+  AS: "AS",
+  MS: "MS",
+  PVDC: "PVDC",
   Other: "Other",
 } as const;
 
