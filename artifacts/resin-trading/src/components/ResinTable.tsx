@@ -4,7 +4,7 @@ import { formatCurrency, formatDate, formatNumber, cn } from "@/lib/utils";
 
 export type ColumnKey =
   | "date" | "personInCharge" | "resinType" | "manufacturer"
-  | "grade" | "charpy" | "izod" | "specs" | "price" | "quantity" | "quantityType" | "photo" | "isClosed" | "sampleAvailable"
+  | "grade" | "charpy" | "izod" | "specs" | "price" | "storageLocation" | "quantity" | "quantityType" | "photo" | "isClosed" | "sampleAvailable"
   | "prospectiveBuyer" | "desiredQuantity" | "proposedTo" | "sellingPrice";
 
 export type SortKey =
@@ -27,8 +27,9 @@ export const ALL_COLUMNS: { key: ColumnKey; label: string }[] = [
   { key: "charpy",         label: "シャルピー" },
   { key: "izod",           label: "アイゾッド" },
   { key: "specs",          label: "仕様 (MI/密度)" },
-  { key: "price",          label: "価格 (円/kg)" },
-  { key: "quantity",       label: "数量 (kg)" },
+  { key: "price",           label: "価格 (円/kg)" },
+  { key: "storageLocation", label: "置場" },
+  { key: "quantity",        label: "数量 (kg)" },
   { key: "quantityType",   label: "数量区分" },
   { key: "photo",            label: "写真" },
   { key: "sampleAvailable",  label: "サンプルあり" },
@@ -178,6 +179,7 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
               {col("izod")           && <SortTh colKey="izod"           sort={sort} onSort={onSort} className="text-right">アイゾッド</SortTh>}
               {col("specs")          && <th className="px-4 py-4">仕様</th>}
               {col("price")          && <SortTh colKey="price"    sort={sort} onSort={onSort} className="text-right">価格 (円/kg)</SortTh>}
+              {col("storageLocation") && <th className="px-4 py-4">置場</th>}
               {col("quantity")       && <SortTh colKey="quantity"  sort={sort} onSort={onSort} className="text-right">数量 (kg)</SortTh>}
               {col("quantityType")   && <th className="px-4 py-4">数量区分</th>}
               {col("photo")          && <th className="px-4 py-4 text-center">写真</th>}
@@ -302,6 +304,9 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
                   <td className="px-4 py-3 text-right font-medium text-foreground">
                     {formatCurrency(row.price)}
                   </td>
+                )}
+                {col("storageLocation") && (
+                  <td className="px-4 py-3 text-muted-foreground">{row.storageLocation ?? dash}</td>
                 )}
                 {col("quantity") && (
                   <td className="px-4 py-3 text-right">
