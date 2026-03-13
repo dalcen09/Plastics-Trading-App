@@ -253,7 +253,12 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
                   <td className="px-4 py-3">
                     <div className="flex flex-col gap-1 text-xs">
                       <div className="flex gap-3 text-muted-foreground">
-                        <span title="MI">MI: {formatNumber(row.meltFlowIndex)}</span>
+                        <span title="MI">MI: {
+                          row.meltFlowIndexLower != null || row.meltFlowIndexUpper != null
+                            ? [formatNumber(row.meltFlowIndexLower), formatNumber(row.meltFlowIndexUpper)]
+                                .filter(v => v !== "-").join("〜")
+                            : "-"
+                        }</span>
                         <span title="密度">密度: {formatNumber(row.density)}</span>
                       </div>
                       <div className="flex gap-2 items-center mt-0.5">

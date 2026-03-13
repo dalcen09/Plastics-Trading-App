@@ -54,7 +54,8 @@ export const ListSourcesResponseItem = zod.object({
   packaging: zod
     .enum(["Bags", "Octabin", "Bulk", "Jumbo_Bag", "Box", "Other"])
     .nullish(),
-  meltFlowIndex: zod.number().nullish(),
+  meltFlowIndexLower: zod.number().nullish(),
+  meltFlowIndexUpper: zod.number().nullish(),
   charpy: zod.number().nullish(),
   izod: zod.number().nullish(),
   density: zod.number().nullish(),
@@ -107,7 +108,8 @@ export const CreateSourceBody = zod.object({
   packaging: zod
     .enum(["Bags", "Octabin", "Bulk", "Jumbo_Bag", "Box", "Other"])
     .nullish(),
-  meltFlowIndex: zod.number().nullish(),
+  meltFlowIndexLower: zod.number().nullish(),
+  meltFlowIndexUpper: zod.number().nullish(),
   charpy: zod.number().nullish(),
   izod: zod.number().nullish(),
   density: zod.number().nullish(),
@@ -161,7 +163,8 @@ export const UpdateSourceBody = zod.object({
   packaging: zod
     .enum(["Bags", "Octabin", "Bulk", "Jumbo_Bag", "Box", "Other"])
     .nullish(),
-  meltFlowIndex: zod.number().nullish(),
+  meltFlowIndexLower: zod.number().nullish(),
+  meltFlowIndexUpper: zod.number().nullish(),
   charpy: zod.number().nullish(),
   izod: zod.number().nullish(),
   density: zod.number().nullish(),
@@ -209,7 +212,8 @@ export const UpdateSourceResponse = zod.object({
   packaging: zod
     .enum(["Bags", "Octabin", "Bulk", "Jumbo_Bag", "Box", "Other"])
     .nullish(),
-  meltFlowIndex: zod.number().nullish(),
+  meltFlowIndexLower: zod.number().nullish(),
+  meltFlowIndexUpper: zod.number().nullish(),
   charpy: zod.number().nullish(),
   izod: zod.number().nullish(),
   density: zod.number().nullish(),
@@ -273,7 +277,8 @@ export const ListDemandsResponseItem = zod.object({
   packaging: zod
     .enum(["Bags", "Octabin", "Bulk", "Jumbo_Bag", "Box", "Other"])
     .nullish(),
-  meltFlowIndex: zod.number().nullish(),
+  meltFlowIndexLower: zod.number().nullish(),
+  meltFlowIndexUpper: zod.number().nullish(),
   charpy: zod.number().nullish(),
   izod: zod.number().nullish(),
   density: zod.number().nullish(),
@@ -326,7 +331,8 @@ export const CreateDemandBody = zod.object({
   packaging: zod
     .enum(["Bags", "Octabin", "Bulk", "Jumbo_Bag", "Box", "Other"])
     .nullish(),
-  meltFlowIndex: zod.number().nullish(),
+  meltFlowIndexLower: zod.number().nullish(),
+  meltFlowIndexUpper: zod.number().nullish(),
   charpy: zod.number().nullish(),
   izod: zod.number().nullish(),
   density: zod.number().nullish(),
@@ -380,7 +386,8 @@ export const UpdateDemandBody = zod.object({
   packaging: zod
     .enum(["Bags", "Octabin", "Bulk", "Jumbo_Bag", "Box", "Other"])
     .nullish(),
-  meltFlowIndex: zod.number().nullish(),
+  meltFlowIndexLower: zod.number().nullish(),
+  meltFlowIndexUpper: zod.number().nullish(),
   charpy: zod.number().nullish(),
   izod: zod.number().nullish(),
   density: zod.number().nullish(),
@@ -428,7 +435,8 @@ export const UpdateDemandResponse = zod.object({
   packaging: zod
     .enum(["Bags", "Octabin", "Bulk", "Jumbo_Bag", "Box", "Other"])
     .nullish(),
-  meltFlowIndex: zod.number().nullish(),
+  meltFlowIndexLower: zod.number().nullish(),
+  meltFlowIndexUpper: zod.number().nullish(),
   charpy: zod.number().nullish(),
   izod: zod.number().nullish(),
   density: zod.number().nullish(),
@@ -489,7 +497,8 @@ export const GetMatchesResponseItem = zod.object({
     packaging: zod
       .enum(["Bags", "Octabin", "Bulk", "Jumbo_Bag", "Box", "Other"])
       .nullish(),
-    meltFlowIndex: zod.number().nullish(),
+    meltFlowIndexLower: zod.number().nullish(),
+    meltFlowIndexUpper: zod.number().nullish(),
     charpy: zod.number().nullish(),
     izod: zod.number().nullish(),
     density: zod.number().nullish(),
@@ -538,7 +547,8 @@ export const GetMatchesResponseItem = zod.object({
     packaging: zod
       .enum(["Bags", "Octabin", "Bulk", "Jumbo_Bag", "Box", "Other"])
       .nullish(),
-    meltFlowIndex: zod.number().nullish(),
+    meltFlowIndexLower: zod.number().nullish(),
+    meltFlowIndexUpper: zod.number().nullish(),
     charpy: zod.number().nullish(),
     izod: zod.number().nullish(),
     density: zod.number().nullish(),

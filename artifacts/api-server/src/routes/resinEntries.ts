@@ -26,7 +26,8 @@ function toNumber(val: string | null | undefined): number | null {
 function serializeEntry(entry: typeof resinEntriesTable.$inferSelect) {
   return {
     ...entry,
-    meltFlowIndex: toNumber(entry.meltFlowIndex),
+    meltFlowIndexLower: toNumber(entry.meltFlowIndexLower),
+    meltFlowIndexUpper: toNumber(entry.meltFlowIndexUpper),
     charpy: toNumber(entry.charpy),
     izod: toNumber(entry.izod),
     density: toNumber(entry.density),
@@ -58,7 +59,8 @@ router.post("/sources", async (req, res) => {
   const [row] = await db.insert(resinEntriesTable).values({
     ...body,
     entryType: "source",
-    meltFlowIndex: body.meltFlowIndex?.toString(),
+    meltFlowIndexLower: body.meltFlowIndexLower?.toString(),
+    meltFlowIndexUpper: body.meltFlowIndexUpper?.toString(),
     charpy: body.charpy?.toString(),
     izod: body.izod?.toString(),
     density: body.density?.toString(),
@@ -73,7 +75,8 @@ router.put("/sources/:id", async (req, res) => {
   const body = UpdateSourceBody.parse(req.body);
   const [row] = await db.update(resinEntriesTable).set({
     ...body,
-    meltFlowIndex: body.meltFlowIndex?.toString(),
+    meltFlowIndexLower: body.meltFlowIndexLower?.toString(),
+    meltFlowIndexUpper: body.meltFlowIndexUpper?.toString(),
     charpy: body.charpy?.toString(),
     izod: body.izod?.toString(),
     density: body.density?.toString(),
@@ -115,7 +118,8 @@ router.post("/demands", async (req, res) => {
   const [row] = await db.insert(resinEntriesTable).values({
     ...body,
     entryType: "demand",
-    meltFlowIndex: body.meltFlowIndex?.toString(),
+    meltFlowIndexLower: body.meltFlowIndexLower?.toString(),
+    meltFlowIndexUpper: body.meltFlowIndexUpper?.toString(),
     charpy: body.charpy?.toString(),
     izod: body.izod?.toString(),
     density: body.density?.toString(),
@@ -130,7 +134,8 @@ router.put("/demands/:id", async (req, res) => {
   const body = UpdateDemandBody.parse(req.body);
   const [row] = await db.update(resinEntriesTable).set({
     ...body,
-    meltFlowIndex: body.meltFlowIndex?.toString(),
+    meltFlowIndexLower: body.meltFlowIndexLower?.toString(),
+    meltFlowIndexUpper: body.meltFlowIndexUpper?.toString(),
     charpy: body.charpy?.toString(),
     izod: body.izod?.toString(),
     density: body.density?.toString(),
@@ -204,11 +209,13 @@ router.get("/matches", async (req, res) => {
         }
       }
 
-      // MFI match (within 20%)
-      const srcMFI = toNum(source.meltFlowIndex);
-      const dmMFI = toNum(demand.meltFlowIndex);
-      if (withinTolerance(srcMFI, dmMFI, 0.2)) {
-        reasons.push(`Compatible MFI: ${srcMFI} vs ${dmMFI} g/10min`);
+      // MFI range overlap check
+      const srcLo = toNum(source.meltFlowIndexLower), srcHi = toNum(source.meltFlowIndexUpper);
+      const dmLo = toNum(demand.meltFlowIndexLower), dmHi = toNum(demand.meltFlowIndexUpper);
+      const srcMid = srcLo !== null ? (srcHi !== null ? (srcLo + srcHi) / 2 : srcLo) : srcHi;
+      const dmMid = dmLo !== null ? (dmHi !== null ? (dmLo + dmHi) / 2 : dmLo) : dmHi;
+      if (srcMid !== null && dmMid !== null && withinTolerance(srcMid, dmMid, 0.2)) {
+        reasons.push(`Compatible MFI: ${srcMid} vs ${dmMid} g/10min`);
         score += 10;
       }
 

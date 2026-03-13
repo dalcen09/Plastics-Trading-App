@@ -328,7 +328,10 @@ components:
         packaging:
           $ref: "#/components/schemas/PackagingType"
           nullable: true
-        meltFlowIndex:
+        meltFlowIndexLower:
+          type: number
+          nullable: true
+        meltFlowIndexUpper:
           type: number
           nullable: true
         charpy:
@@ -430,7 +433,10 @@ components:
         packaging:
           $ref: "#/components/schemas/PackagingType"
           nullable: true
-        meltFlowIndex:
+        meltFlowIndexLower:
+          type: number
+          nullable: true
+        meltFlowIndexUpper:
           type: number
           nullable: true
         charpy:

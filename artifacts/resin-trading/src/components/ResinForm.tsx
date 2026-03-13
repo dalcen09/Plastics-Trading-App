@@ -35,7 +35,8 @@ const formSchema = z.object({
   isClosed: z.boolean(),
   sampleAvailable: z.boolean().nullable().optional(),
   packaging: z.nativeEnum(PackagingType).nullable().optional(),
-  meltFlowIndex: z.coerce.number().nullable().optional(),
+  meltFlowIndexLower: z.coerce.number().nullable().optional(),
+  meltFlowIndexUpper: z.coerce.number().nullable().optional(),
   charpy: z.coerce.number().nullable().optional(),
   izod: z.coerce.number().nullable().optional(),
   density: z.coerce.number().nullable().optional(),
@@ -89,7 +90,8 @@ export function ResinForm({
       isClosed: initialData?.isClosed ?? false,
       sampleAvailable: initialData?.sampleAvailable || false,
       packaging: initialData?.packaging || PackagingType.Bags,
-      meltFlowIndex: initialData?.meltFlowIndex ?? undefined,
+      meltFlowIndexLower: initialData?.meltFlowIndexLower ?? undefined,
+      meltFlowIndexUpper: initialData?.meltFlowIndexUpper ?? undefined,
       charpy: initialData?.charpy ?? undefined,
       izod: initialData?.izod ?? undefined,
       density: initialData?.density ?? undefined,
@@ -236,8 +238,11 @@ export function ResinForm({
             <div>
               <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4 pt-4 border-t border-border/50">技術仕様</h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
-                <FormGroup label="MI" error={errors.meltFlowIndex?.message}>
-                  <input type="number" step="0.01" placeholder="g/10min" {...register("meltFlowIndex")} className="input-field" />
+                <FormGroup label="MI 下限" error={errors.meltFlowIndexLower?.message}>
+                  <input type="number" step="0.01" placeholder="g/10min" {...register("meltFlowIndexLower")} className="input-field" />
+                </FormGroup>
+                <FormGroup label="MI 上限" error={errors.meltFlowIndexUpper?.message}>
+                  <input type="number" step="0.01" placeholder="g/10min" {...register("meltFlowIndexUpper")} className="input-field" />
                 </FormGroup>
                 <FormGroup label="シャルピー" error={errors.charpy?.message}>
                   <input type="number" step="0.01" placeholder="kJ/m²" {...register("charpy")} className="input-field" />
