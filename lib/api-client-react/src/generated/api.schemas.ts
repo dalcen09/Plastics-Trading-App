@@ -57,6 +57,12 @@ export const PSType = {
   GP: "GP",
 } as const;
 
+export type ABSType = (typeof ABSType)[keyof typeof ABSType];
+
+export const ABSType = {
+  難燃: "難燃",
+} as const;
+
 export type QuantityType = (typeof QuantityType)[keyof typeof QuantityType];
 
 export const QuantityType = {
@@ -97,6 +103,7 @@ export interface ResinEntry {
   ppType?: PPType | null;
   peType?: PEType | null;
   psType?: PSType | null;
+  absType?: ABSType | null;
   sampleAvailable?: boolean | null;
   packaging?: PackagingType | null;
   meltFlowIndex?: number | null;
@@ -133,6 +140,7 @@ export interface CreateResinEntry {
   ppType?: PPType | null;
   peType?: PEType | null;
   psType?: PSType | null;
+  absType?: ABSType | null;
   sampleAvailable?: boolean | null;
   packaging?: PackagingType | null;
   meltFlowIndex?: number | null;

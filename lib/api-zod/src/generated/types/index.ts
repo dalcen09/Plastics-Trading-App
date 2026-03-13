@@ -6,6 +6,7 @@
  * OpenAPI spec version: 0.1.0
  */
 
+export * from "./aBSType";
 export * from "./createResinEntry";
 export * from "./createResinEntryEntryType";
 export * from "./errorEnvelope";

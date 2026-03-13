@@ -5,6 +5,7 @@
  * Resin Trading Manager API
  * OpenAPI spec version: 0.1.0
  */
+import type { ABSType } from "./aBSType";
 import type { CreateResinEntryEntryType } from "./createResinEntryEntryType";
 import type { PackagingType } from "./packagingType";
 import type { PEType } from "./pEType";
@@ -27,6 +28,7 @@ export interface CreateResinEntry {
   ppType?: PPType | null;
   peType?: PEType | null;
   psType?: PSType | null;
+  absType?: ABSType | null;
   sampleAvailable?: boolean | null;
   packaging?: PackagingType | null;
   meltFlowIndex?: number | null;
