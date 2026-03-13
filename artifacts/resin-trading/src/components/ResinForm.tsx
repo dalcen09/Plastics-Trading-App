@@ -345,7 +345,7 @@ export function ResinForm({
                         />
                       )}
                     />
-                    <span className="text-sm font-medium text-foreground group-hover:text-primary transition-colors">サンプルあり</span>
+                    <span className="text-sm font-medium text-foreground group-hover:text-primary transition-colors">{entryType === "demand" ? "サンプル要" : "サンプルあり"}</span>
                   </label>
                 </div>
               </div>
