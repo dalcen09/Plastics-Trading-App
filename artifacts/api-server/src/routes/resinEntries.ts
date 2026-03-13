@@ -48,7 +48,7 @@ router.get("/sources", async (req, res) => {
   if (query.resinCategory) {
     conditions.push(eq(resinEntriesTable.resinCategory, query.resinCategory));
   }
-  const rows = await db.select().from(resinEntriesTable).where(and(...conditions)).orderBy(resinEntriesTable.date);
+  const rows = await db.select().from(resinEntriesTable).where(and(...conditions)).orderBy(resinEntriesTable.date, resinEntriesTable.id);
   res.json(rows.map(serializeEntry));
 });
 
@@ -105,7 +105,7 @@ router.get("/demands", async (req, res) => {
   if (query.resinCategory) {
     conditions.push(eq(resinEntriesTable.resinCategory, query.resinCategory));
   }
-  const rows = await db.select().from(resinEntriesTable).where(and(...conditions)).orderBy(resinEntriesTable.date);
+  const rows = await db.select().from(resinEntriesTable).where(and(...conditions)).orderBy(resinEntriesTable.date, resinEntriesTable.id);
   res.json(rows.map(serializeEntry));
 });
 
