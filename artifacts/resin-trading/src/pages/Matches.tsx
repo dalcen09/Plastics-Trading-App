@@ -101,7 +101,7 @@ export function Matches() {
                   </div>
                 ) : (
                   <p className="text-muted-foreground mt-1 text-sm">
-                    仕入れ先と需要の自動マッチングを表示します。
+                    仕入先と販売先の自動マッチングを表示します。
                     {total > 0 && <span className="ml-2 font-semibold text-primary">{total.toLocaleString()}件</span>}
                   </p>
                 )}
@@ -182,7 +182,7 @@ export function Matches() {
                   ? "この取引先に対するマッチングが見つかりませんでした。"
                   : resinCategory
                   ? `${CATEGORY_LABEL[resinCategory] ?? resinCategory}カテゴリに有効なマッチングが見つかりませんでした。`
-                  : "現在の仕入れ先と需要の間に有効なマッチングが見つかりませんでした。"}
+                  : "現在の仕入先と販売先の間に有効なマッチングが見つかりませんでした。"}
               </p>
               {isFiltered ? (
                 <button
@@ -255,7 +255,7 @@ function MatchCard({ match, highlightEntryId }: { match: any; highlightEntryId?:
             : "bg-secondary/30 border-border/50 hover:border-border"
         )}>
           <div className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-4 flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-blue-500"></span> 仕入れ先（サプライヤー）
+            <span className="w-2 h-2 rounded-full bg-blue-500"></span> 仕入先（サプライヤー）
             {sourceIsHighlight && <span className="text-primary text-[10px] bg-primary/10 px-1.5 py-0.5 rounded">選択中</span>}
             <span className="ml-auto text-[10px] text-muted-foreground/60 flex items-center gap-0.5"><ExternalLink className="w-3 h-3" />テーブルで確認</span>
           </div>
@@ -294,7 +294,7 @@ function MatchCard({ match, highlightEntryId }: { match: any; highlightEntryId?:
         )}>
           <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-bl-full -z-10"></div>
           <div className="text-xs font-bold uppercase tracking-wider text-primary mb-4 flex items-center gap-2">
-            <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span> 需要（バイヤー）
+            <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span> 販売先（バイヤー）
             {demandIsHighlight && <span className="text-primary text-[10px] bg-primary/20 px-1.5 py-0.5 rounded">選択中</span>}
             <span className="ml-auto text-[10px] text-primary/40 flex items-center gap-0.5"><ExternalLink className="w-3 h-3" />テーブルで確認</span>
           </div>
