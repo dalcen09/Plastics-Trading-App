@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Layout } from "@/components/Layout";
 import { useGetMatches } from "@workspace/api-client-react";
-import { Network, ArrowRightLeft, AlertCircle, Building2, User, Gauge, DollarSign, ChevronLeft, ChevronRight, X, ExternalLink } from "lucide-react";
+import { Handshake, ArrowRightLeft, AlertCircle, Building2, User, Gauge, DollarSign, ChevronLeft, ChevronRight, X, ExternalLink } from "lucide-react";
 import { formatCurrency, formatNumber, cn } from "@/lib/utils";
 import { Link, useLocation } from "wouter";
 
@@ -64,7 +64,7 @@ export function Matches() {
           <div className="flex items-start justify-between gap-4">
             <div className="flex items-center gap-3">
               <div className="p-3 bg-primary/10 text-primary rounded-2xl">
-                <Network className="w-8 h-8" />
+                <Handshake className="w-8 h-8" />
               </div>
               <div>
                 <div className="flex items-center gap-2 flex-wrap">

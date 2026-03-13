@@ -4,7 +4,7 @@ import {
   Search,
   Bell,
   Trash2,
-  Network,
+  Handshake,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import marukiLogo from "@/assets/maruki-logo.png";
@@ -113,7 +113,7 @@ export function Layout({ children }: LayoutProps) {
                 : "text-foreground/70 hover:bg-secondary hover:text-foreground active:scale-[0.98]"
             )}
           >
-            <Network className={cn("w-5 h-5 flex-shrink-0 transition-colors",
+            <Handshake className={cn("w-5 h-5 flex-shrink-0 transition-colors",
               location.startsWith("/matches") && !matchCategoryParam ? "text-primary-foreground" : "text-muted-foreground group-hover:text-foreground"
             )} />
             <span className="flex-1">マッチング分析</span>
