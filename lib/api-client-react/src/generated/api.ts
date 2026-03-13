@@ -18,10 +18,15 @@ import type {
 
 import type {
   CreateResinEntry,
+  GetMatchCount200,
+  GetMatchCountByEntry200,
+  GetMatchCountByEntryParams,
+  GetMatchCountParams,
+  GetMatches200,
+  GetMatchesParams,
   HealthStatus,
   ListDemandsParams,
   ListSourcesParams,
-  Match,
   ResinEntry,
   UploadUrlRequest,
   UploadUrlResponse,
@@ -814,41 +819,59 @@ export const useDeleteDemand = <
 };
 
 /**
- * @summary Get potential source-demand matches
+ * @summary Get potential source-demand matches (paginated)
  */
-export const getGetMatchesUrl = () => {
-  return `/api/matches`;
+export const getGetMatchesUrl = (params?: GetMatchesParams) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? "null" : value.toString());
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0
+    ? `/api/matches?${stringifiedParams}`
+    : `/api/matches`;
 };
 
-export const getMatches = async (options?: RequestInit): Promise<Match[]> => {
-  return customFetch<Match[]>(getGetMatchesUrl(), {
+export const getMatches = async (
+  params?: GetMatchesParams,
+  options?: RequestInit,
+): Promise<GetMatches200> => {
+  return customFetch<GetMatches200>(getGetMatchesUrl(params), {
     ...options,
     method: "GET",
   });
 };
 
-export const getGetMatchesQueryKey = () => {
-  return [`/api/matches`] as const;
+export const getGetMatchesQueryKey = (params?: GetMatchesParams) => {
+  return [`/api/matches`, ...(params ? [params] : [])] as const;
 };
 
 export const getGetMatchesQueryOptions = <
   TData = Awaited<ReturnType<typeof getMatches>>,
   TError = ErrorType<unknown>,
->(options?: {
-  query?: UseQueryOptions<
-    Awaited<ReturnType<typeof getMatches>>,
-    TError,
-    TData
-  >;
-  request?: SecondParameter<typeof customFetch>;
-}) => {
+>(
+  params?: GetMatchesParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getMatches>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
   const { query: queryOptions, request: requestOptions } = options ?? {};
 
-  const queryKey = queryOptions?.queryKey ?? getGetMatchesQueryKey();
+  const queryKey = queryOptions?.queryKey ?? getGetMatchesQueryKey(params);
 
   const queryFn: QueryFunction<Awaited<ReturnType<typeof getMatches>>> = ({
     signal,
-  }) => getMatches({ signal, ...requestOptions });
+  }) => getMatches(params, { signal, ...requestOptions });
 
   return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
     Awaited<ReturnType<typeof getMatches>>,
@@ -863,21 +886,221 @@ export type GetMatchesQueryResult = NonNullable<
 export type GetMatchesQueryError = ErrorType<unknown>;
 
 /**
- * @summary Get potential source-demand matches
+ * @summary Get potential source-demand matches (paginated)
  */
 
 export function useGetMatches<
   TData = Awaited<ReturnType<typeof getMatches>>,
   TError = ErrorType<unknown>,
->(options?: {
-  query?: UseQueryOptions<
-    Awaited<ReturnType<typeof getMatches>>,
+>(
+  params?: GetMatchesParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getMatches>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetMatchesQueryOptions(params, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Get total match count (fast, uses cache)
+ */
+export const getGetMatchCountUrl = (params?: GetMatchCountParams) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? "null" : value.toString());
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0
+    ? `/api/matches/count?${stringifiedParams}`
+    : `/api/matches/count`;
+};
+
+export const getMatchCount = async (
+  params?: GetMatchCountParams,
+  options?: RequestInit,
+): Promise<GetMatchCount200> => {
+  return customFetch<GetMatchCount200>(getGetMatchCountUrl(params), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getGetMatchCountQueryKey = (params?: GetMatchCountParams) => {
+  return [`/api/matches/count`, ...(params ? [params] : [])] as const;
+};
+
+export const getGetMatchCountQueryOptions = <
+  TData = Awaited<ReturnType<typeof getMatchCount>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: GetMatchCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getMatchCount>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetMatchCountQueryKey(params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getMatchCount>>> = ({
+    signal,
+  }) => getMatchCount(params, { signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getMatchCount>>,
     TError,
     TData
-  >;
-  request?: SecondParameter<typeof customFetch>;
-}): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
-  const queryOptions = getGetMatchesQueryOptions(options);
+  > & { queryKey: QueryKey };
+};
+
+export type GetMatchCountQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getMatchCount>>
+>;
+export type GetMatchCountQueryError = ErrorType<unknown>;
+
+/**
+ * @summary Get total match count (fast, uses cache)
+ */
+
+export function useGetMatchCount<
+  TData = Awaited<ReturnType<typeof getMatchCount>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: GetMatchCountParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getMatchCount>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetMatchCountQueryOptions(params, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Get per-entry match counts for row badges
+ */
+export const getGetMatchCountByEntryUrl = (
+  params?: GetMatchCountByEntryParams,
+) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? "null" : value.toString());
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0
+    ? `/api/matches/count-by-entry?${stringifiedParams}`
+    : `/api/matches/count-by-entry`;
+};
+
+export const getMatchCountByEntry = async (
+  params?: GetMatchCountByEntryParams,
+  options?: RequestInit,
+): Promise<GetMatchCountByEntry200> => {
+  return customFetch<GetMatchCountByEntry200>(
+    getGetMatchCountByEntryUrl(params),
+    {
+      ...options,
+      method: "GET",
+    },
+  );
+};
+
+export const getGetMatchCountByEntryQueryKey = (
+  params?: GetMatchCountByEntryParams,
+) => {
+  return [`/api/matches/count-by-entry`, ...(params ? [params] : [])] as const;
+};
+
+export const getGetMatchCountByEntryQueryOptions = <
+  TData = Awaited<ReturnType<typeof getMatchCountByEntry>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: GetMatchCountByEntryParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getMatchCountByEntry>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey =
+    queryOptions?.queryKey ?? getGetMatchCountByEntryQueryKey(params);
+
+  const queryFn: QueryFunction<
+    Awaited<ReturnType<typeof getMatchCountByEntry>>
+  > = ({ signal }) =>
+    getMatchCountByEntry(params, { signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getMatchCountByEntry>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetMatchCountByEntryQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getMatchCountByEntry>>
+>;
+export type GetMatchCountByEntryQueryError = ErrorType<unknown>;
+
+/**
+ * @summary Get per-entry match counts for row badges
+ */
+
+export function useGetMatchCountByEntry<
+  TData = Awaited<ReturnType<typeof getMatchCountByEntry>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: GetMatchCountByEntryParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof getMatchCountByEntry>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetMatchCountByEntryQueryOptions(params, options);
 
   const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
     queryKey: QueryKey;

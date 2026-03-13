@@ -1,47 +1,110 @@
+import { useState } from "react";
 import { Layout } from "@/components/Layout";
 import { useGetMatches } from "@workspace/api-client-react";
-import { Network, ArrowRightLeft, AlertCircle, Building2, User, Gauge, DollarSign } from "lucide-react";
+import { Network, ArrowRightLeft, AlertCircle, Building2, User, Gauge, DollarSign, ChevronLeft, ChevronRight } from "lucide-react";
 import { formatCurrency, formatNumber, cn } from "@/lib/utils";
 import { Link } from "wouter";
 
+const PAGE_SIZE = 30;
+
 export function Matches() {
-  const { data: matches, isLoading } = useGetMatches();
+  const [page, setPage] = useState(0);
+
+  const { data, isLoading } = useGetMatches(
+    { limit: PAGE_SIZE, offset: page * PAGE_SIZE },
+    { query: { staleTime: 60000 } }
+  );
+
+  const items = data?.items ?? [];
+  const total = data?.total ?? 0;
+  const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
   return (
     <Layout>
-      <div className="flex flex-col h-full space-y-8 max-w-6xl mx-auto">
-        
+      <div className="flex flex-col h-full max-w-6xl mx-auto">
+
         {/* Header */}
-        <div>
-          <div className="flex items-center gap-3">
-            <div className="p-3 bg-primary/10 text-primary rounded-2xl">
-              <Network className="w-8 h-8" />
+        <div className="flex-shrink-0 mb-6">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="p-3 bg-primary/10 text-primary rounded-2xl">
+                <Network className="w-8 h-8" />
+              </div>
+              <div>
+                <h1 className="text-3xl font-display font-bold text-foreground">
+                  マッチング分析
+                </h1>
+                <p className="text-muted-foreground mt-1">
+                  仕入れ先と需要の自動マッチングを表示します。
+                  {total > 0 && <span className="ml-2 font-semibold text-primary">{total.toLocaleString()}件</span>}
+                </p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-3xl font-display font-bold text-foreground">
-                マッチング分析
-              </h1>
-              <p className="text-muted-foreground mt-1">
-                仕入れ先と需要の自動マッチングを表示します。
-              </p>
-            </div>
+
+            {/* Pagination top */}
+            {total > PAGE_SIZE && (
+              <div className="flex items-center gap-2">
+                <span className="text-sm text-muted-foreground">
+                  {page * PAGE_SIZE + 1}–{Math.min((page + 1) * PAGE_SIZE, total)} / {total.toLocaleString()}
+                </span>
+                <button
+                  onClick={() => setPage(p => Math.max(0, p - 1))}
+                  disabled={page === 0}
+                  className="p-1.5 rounded-lg border border-border disabled:opacity-30 hover:bg-secondary transition-colors"
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                </button>
+                <button
+                  onClick={() => setPage(p => Math.min(totalPages - 1, p + 1))}
+                  disabled={page >= totalPages - 1}
+                  className="p-1.5 rounded-lg border border-border disabled:opacity-30 hover:bg-secondary transition-colors"
+                >
+                  <ChevronRight className="w-4 h-4" />
+                </button>
+              </div>
+            )}
           </div>
         </div>
 
         {/* Content */}
-        <div className="flex-1 pb-10">
+        <div className="flex-1 overflow-y-auto pb-6">
           {isLoading ? (
             <div className="grid grid-cols-1 gap-6">
               {[1, 2, 3].map(i => (
                 <div key={i} className="h-48 bg-card rounded-2xl border border-border shadow-sm animate-pulse" />
               ))}
             </div>
-          ) : matches && matches.length > 0 ? (
-            <div className="grid grid-cols-1 gap-6">
-              {matches.sort((a, b) => b.score - a.score).map((match, idx) => (
-                <MatchCard key={idx} match={match} />
-              ))}
-            </div>
+          ) : items.length > 0 ? (
+            <>
+              <div className="grid grid-cols-1 gap-6">
+                {items.map((match, idx) => (
+                  <MatchCard key={`${page}-${idx}`} match={match} />
+                ))}
+              </div>
+
+              {/* Pagination bottom */}
+              {totalPages > 1 && (
+                <div className="flex items-center justify-center gap-3 mt-8">
+                  <button
+                    onClick={() => { setPage(p => Math.max(0, p - 1)); window.scrollTo(0, 0); }}
+                    disabled={page === 0}
+                    className="flex items-center gap-1.5 px-4 py-2 rounded-xl border border-border text-sm font-medium disabled:opacity-30 hover:bg-secondary transition-colors"
+                  >
+                    <ChevronLeft className="w-4 h-4" /> 前へ
+                  </button>
+                  <span className="text-sm text-muted-foreground font-medium">
+                    {page + 1} / {totalPages}
+                  </span>
+                  <button
+                    onClick={() => { setPage(p => Math.min(totalPages - 1, p + 1)); window.scrollTo(0, 0); }}
+                    disabled={page >= totalPages - 1}
+                    className="flex items-center gap-1.5 px-4 py-2 rounded-xl border border-border text-sm font-medium disabled:opacity-30 hover:bg-secondary transition-colors"
+                  >
+                    次へ <ChevronRight className="w-4 h-4" />
+                  </button>
+                </div>
+              )}
+            </>
           ) : (
             <div className="w-full h-96 flex flex-col items-center justify-center text-muted-foreground bg-card rounded-3xl border border-border shadow-sm border-dashed">
               <div className="w-20 h-20 bg-secondary rounded-full flex items-center justify-center mb-6">
@@ -69,13 +132,13 @@ export function Matches() {
 
 function MatchCard({ match }: { match: any }) {
   const isHighMatch = match.score >= 80;
-  const scoreColor = isHighMatch 
-    ? "text-emerald-600 bg-emerald-50 border-emerald-200" 
+  const scoreColor = isHighMatch
+    ? "text-emerald-600 bg-emerald-50 border-emerald-200"
     : "text-amber-600 bg-amber-50 border-amber-200";
 
   return (
     <div className="bg-card rounded-3xl p-6 sm:p-8 shadow-lg shadow-black/5 border border-border/60 hover:shadow-xl hover:border-primary/20 transition-all duration-300">
-      
+
       <div className="flex items-center justify-between mb-8">
         <div className="flex items-center gap-4">
           <div className={cn("flex flex-col items-center justify-center w-16 h-16 rounded-2xl border-2 shadow-inner", scoreColor)}>
@@ -101,7 +164,7 @@ function MatchCard({ match }: { match: any }) {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-6 items-stretch relative">
-        
+
         {/* Source Panel */}
         <div className="bg-secondary/30 rounded-2xl p-5 border border-border/50">
           <div className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-4 flex items-center gap-2">
@@ -116,7 +179,6 @@ function MatchCard({ match }: { match: any }) {
                 <User className="w-4 h-4" /> {match.source.personInCharge}
               </div>
             </div>
-            
             <div className="grid grid-cols-2 gap-3 text-sm">
               <InfoBadge icon={<Gauge className="w-3.5 h-3.5"/>} label="製品" value={`${match.source.manufacturer || '未指定'} ${match.source.grade || ''}`} />
               <InfoBadge icon={<DollarSign className="w-3.5 h-3.5"/>} label="価格" value={formatCurrency(match.source.price)} />
@@ -149,7 +211,6 @@ function MatchCard({ match }: { match: any }) {
                 <User className="w-4 h-4" /> {match.demand.personInCharge}
               </div>
             </div>
-            
             <div className="grid grid-cols-2 gap-3 text-sm">
               <InfoBadge icon={<Gauge className="w-3.5 h-3.5"/>} label="希望製品" value={`${match.demand.manufacturer || '指定なし'} ${match.demand.grade || ''}`} />
               <InfoBadge icon={<DollarSign className="w-3.5 h-3.5"/>} label="目標価格" value={formatCurrency(match.demand.price)} />

@@ -185,16 +185,84 @@ paths:
     get:
       operationId: getMatches
       tags: [matches]
-      summary: Get potential source-demand matches
+      summary: Get potential source-demand matches (paginated)
+      parameters:
+        - name: limit
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 50
+        - name: offset
+          in: query
+          required: false
+          schema:
+            type: integer
+            default: 0
+        - name: resinCategory
+          in: query
+          required: false
+          schema:
+            type: string
       responses:
         "200":
-          description: List of matches
+          description: Paginated list of matches
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/Match"
+                type: object
+                required: [items, total]
+                properties:
+                  total:
+                    type: integer
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Match"
+
+  /matches/count:
+    get:
+      operationId: getMatchCount
+      tags: [matches]
+      summary: Get total match count (fast, uses cache)
+      parameters:
+        - name: resinCategory
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Match count
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [count]
+                properties:
+                  count:
+                    type: integer
+
+  /matches/count-by-entry:
+    get:
+      operationId: getMatchCountByEntry
+      tags: [matches]
+      summary: Get per-entry match counts for row badges
+      parameters:
+        - name: resinCategory
+          in: query
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Map of entry ID to match count
+          content:
+            application/json:
+              schema:
+                type: object
+                additionalProperties:
+                  type: integer
 
   /storage/uploads/request-url:
     post:

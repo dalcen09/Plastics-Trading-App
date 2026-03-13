@@ -12,7 +12,7 @@ import {
 import { cn } from "@/lib/utils";
 import marukiLogo from "@/assets/maruki-logo.png";
 import { useQuery } from "@tanstack/react-query";
-import { useGetMatches } from "@workspace/api-client-react";
+import { useGetMatchCount } from "@workspace/api-client-react";
 
 interface LayoutProps {
   children: ReactNode;
@@ -23,8 +23,8 @@ const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
 export function Layout({ children }: LayoutProps) {
   const [location] = useLocation();
 
-  const { data: matches = [] } = useGetMatches({ query: { staleTime: 30000, refetchInterval: 30000 } });
-  const matchCount = matches.length;
+  const { data: countData } = useGetMatchCount({ query: { staleTime: 60000, refetchInterval: 60000 } });
+  const matchCount = countData?.count ?? 0;
 
   const { data: trashItems = [] } = useQuery<unknown[]>({
     queryKey: ["trash"],

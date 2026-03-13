@@ -212,3 +212,28 @@ export type ListSourcesParams = {
 export type ListDemandsParams = {
   resinCategory?: ResinCategory;
 };
+
+export type GetMatchesParams = {
+  limit?: number;
+  offset?: number;
+  resinCategory?: string;
+};
+
+export type GetMatches200 = {
+  total: number;
+  items: Match[];
+};
+
+export type GetMatchCountParams = {
+  resinCategory?: string;
+};
+
+export type GetMatchCount200 = {
+  count: number;
+};
+
+export type GetMatchCountByEntryParams = {
+  resinCategory?: string;
+};
+
+export type GetMatchCountByEntry200 = { [key: string]: number };

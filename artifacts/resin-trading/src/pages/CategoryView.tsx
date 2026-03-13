@@ -15,7 +15,9 @@ import {
   getListSourcesQueryKey,
   getListDemandsQueryKey,
   getGetMatchesQueryKey,
-  useGetMatches,
+  getGetMatchCountByEntryQueryKey,
+  getGetMatchCountQueryKey,
+  useGetMatchCountByEntry,
   ResinCategory,
   CreateResinEntryEntryType,
   ResinEntry
@@ -160,16 +162,17 @@ export function CategoryView({ category }: CategoryViewProps) {
   const { data: sources = [], isLoading: sourcesLoading } = useListSources({ resinCategory: category as ResinCategory });
   const { data: demands = [], isLoading: demandsLoading } = useListDemands({ resinCategory: category as ResinCategory });
 
-  const { data: allMatches = [] } = useGetMatches({ query: { staleTime: 30000 } });
+  const { data: countByEntry = {} } = useGetMatchCountByEntry(
+    { resinCategory: category },
+    { query: { staleTime: 60000 } }
+  );
   const matchCounts = useMemo(() => {
     const map = new Map<number, number>();
-    for (const m of allMatches as Array<{ source: { id: number; resinCategory: string }; demand: { id: number; resinCategory: string } }>) {
-      if (m.source.resinCategory !== category && m.demand.resinCategory !== category) continue;
-      map.set(m.source.id, (map.get(m.source.id) ?? 0) + 1);
-      map.set(m.demand.id, (map.get(m.demand.id) ?? 0) + 1);
+    for (const [id, count] of Object.entries(countByEntry)) {
+      map.set(Number(id), count as number);
     }
     return map;
-  }, [allMatches, category]);
+  }, [countByEntry]);
 
   const activeData = activeTab === "sources" ? sources : demands;
 
@@ -211,6 +214,8 @@ export function CategoryView({ category }: CategoryViewProps) {
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: getListSourcesQueryKey({ resinCategory: category as ResinCategory }) });
         queryClient.invalidateQueries({ queryKey: getGetMatchesQueryKey() });
+        queryClient.invalidateQueries({ queryKey: getGetMatchCountByEntryQueryKey() });
+        queryClient.invalidateQueries({ queryKey: getGetMatchCountQueryKey() });
         closeForm();
         toast({ title: "成功", description: "仕入れ先を登録しました" });
       },
@@ -223,6 +228,8 @@ export function CategoryView({ category }: CategoryViewProps) {
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: getListSourcesQueryKey({ resinCategory: category as ResinCategory }) });
         queryClient.invalidateQueries({ queryKey: getGetMatchesQueryKey() });
+        queryClient.invalidateQueries({ queryKey: getGetMatchCountByEntryQueryKey() });
+        queryClient.invalidateQueries({ queryKey: getGetMatchCountQueryKey() });
         closeForm();
         toast({ title: "成功", description: "仕入れ先を更新しました" });
       },
@@ -244,6 +251,8 @@ export function CategoryView({ category }: CategoryViewProps) {
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: getListSourcesQueryKey({ resinCategory: category as ResinCategory }) });
         queryClient.invalidateQueries({ queryKey: getGetMatchesQueryKey() });
+        queryClient.invalidateQueries({ queryKey: getGetMatchCountByEntryQueryKey() });
+        queryClient.invalidateQueries({ queryKey: getGetMatchCountQueryKey() });
         queryClient.invalidateQueries({ queryKey: ["trash"] });
         toast({ title: "成功", description: "仕入れ先を削除しました" });
       }
@@ -255,6 +264,8 @@ export function CategoryView({ category }: CategoryViewProps) {
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: getListDemandsQueryKey({ resinCategory: category as ResinCategory }) });
         queryClient.invalidateQueries({ queryKey: getGetMatchesQueryKey() });
+        queryClient.invalidateQueries({ queryKey: getGetMatchCountByEntryQueryKey() });
+        queryClient.invalidateQueries({ queryKey: getGetMatchCountQueryKey() });
         closeForm();
         toast({ title: "成功", description: "需要を登録しました" });
       },
@@ -267,6 +278,8 @@ export function CategoryView({ category }: CategoryViewProps) {
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: getListDemandsQueryKey({ resinCategory: category as ResinCategory }) });
         queryClient.invalidateQueries({ queryKey: getGetMatchesQueryKey() });
+        queryClient.invalidateQueries({ queryKey: getGetMatchCountByEntryQueryKey() });
+        queryClient.invalidateQueries({ queryKey: getGetMatchCountQueryKey() });
         closeForm();
         toast({ title: "成功", description: "需要を更新しました" });
       },
@@ -288,6 +301,8 @@ export function CategoryView({ category }: CategoryViewProps) {
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: getListDemandsQueryKey({ resinCategory: category as ResinCategory }) });
         queryClient.invalidateQueries({ queryKey: getGetMatchesQueryKey() });
+        queryClient.invalidateQueries({ queryKey: getGetMatchCountByEntryQueryKey() });
+        queryClient.invalidateQueries({ queryKey: getGetMatchCountQueryKey() });
         queryClient.invalidateQueries({ queryKey: ["trash"] });
         toast({ title: "成功", description: "需要を削除しました" });
       }
@@ -752,6 +767,8 @@ export function CategoryView({ category }: CategoryViewProps) {
             queryClient.invalidateQueries({ queryKey: getListSourcesQueryKey({ resinCategory: category as ResinCategory }) });
             queryClient.invalidateQueries({ queryKey: getListDemandsQueryKey({ resinCategory: category as ResinCategory }) });
             queryClient.invalidateQueries({ queryKey: getGetMatchesQueryKey() });
+        queryClient.invalidateQueries({ queryKey: getGetMatchCountByEntryQueryKey() });
+        queryClient.invalidateQueries({ queryKey: getGetMatchCountQueryKey() });
           }}
         />
       )}

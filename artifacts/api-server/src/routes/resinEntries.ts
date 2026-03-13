@@ -86,6 +86,7 @@ router.post("/sources", async (req, res) => {
       tdsUrl: body.tdsUrl ?? null,
     quantity: body.quantity?.toString(),
   }).returning();
+  invalidateMatchCache();
   res.status(201).json(serializeEntry(row));
 });
 
@@ -107,6 +108,7 @@ router.put("/sources/:id", async (req, res) => {
     updatedAt: new Date(),
   }).where(and(eq(resinEntriesTable.id, id), eq(resinEntriesTable.entryType, "source"), isNull(resinEntriesTable.deletedAt))).returning();
   if (!row) return res.status(404).json({ error: "Not found" });
+  invalidateMatchCache();
   res.json(serializeEntry(row));
 });
 
@@ -116,6 +118,7 @@ router.delete("/sources/:id", async (req, res) => {
   await db.update(resinEntriesTable)
     .set({ deletedAt: new Date() })
     .where(and(eq(resinEntriesTable.id, id), eq(resinEntriesTable.entryType, "source"), isNull(resinEntriesTable.deletedAt)));
+  invalidateMatchCache();
   res.status(204).end();
 });
 
@@ -126,6 +129,7 @@ router.post("/sources/batch-delete", async (req, res) => {
   await db.update(resinEntriesTable)
     .set({ deletedAt: new Date() })
     .where(and(inArray(resinEntriesTable.id, ids), eq(resinEntriesTable.entryType, "source"), isNull(resinEntriesTable.deletedAt)));
+  invalidateMatchCache();
   res.status(204).end();
 });
 
@@ -157,6 +161,7 @@ router.post("/demands", async (req, res) => {
       tdsUrl: body.tdsUrl ?? null,
     quantity: body.quantity?.toString(),
   }).returning();
+  invalidateMatchCache();
   res.status(201).json(serializeEntry(row));
 });
 
@@ -178,6 +183,7 @@ router.put("/demands/:id", async (req, res) => {
     updatedAt: new Date(),
   }).where(and(eq(resinEntriesTable.id, id), eq(resinEntriesTable.entryType, "demand"), isNull(resinEntriesTable.deletedAt))).returning();
   if (!row) return res.status(404).json({ error: "Not found" });
+  invalidateMatchCache();
   res.json(serializeEntry(row));
 });
 
@@ -187,6 +193,7 @@ router.delete("/demands/:id", async (req, res) => {
   await db.update(resinEntriesTable)
     .set({ deletedAt: new Date() })
     .where(and(eq(resinEntriesTable.id, id), eq(resinEntriesTable.entryType, "demand"), isNull(resinEntriesTable.deletedAt)));
+  invalidateMatchCache();
   res.status(204).end();
 });
 
@@ -197,6 +204,7 @@ router.post("/demands/batch-delete", async (req, res) => {
   await db.update(resinEntriesTable)
     .set({ deletedAt: new Date() })
     .where(and(inArray(resinEntriesTable.id, ids), eq(resinEntriesTable.entryType, "demand"), isNull(resinEntriesTable.deletedAt)));
+  invalidateMatchCache();
   res.status(204).end();
 });
 
@@ -219,6 +227,7 @@ router.post("/trash/:id/restore", async (req, res) => {
     .where(and(eq(resinEntriesTable.id, id), isNotNull(resinEntriesTable.deletedAt)))
     .returning();
   if (!row) return res.status(404).json({ error: "Not found in trash" });
+  invalidateMatchCache();
   res.json(serializeEntry(row));
 });
 
@@ -228,6 +237,7 @@ router.delete("/trash/:id", async (req, res) => {
   if (!Number.isFinite(id)) return res.status(400).json({ error: "Invalid id" });
   await db.delete(resinEntriesTable)
     .where(and(eq(resinEntriesTable.id, id), isNotNull(resinEntriesTable.deletedAt)));
+  invalidateMatchCache();
   res.status(204).end();
 });
 
@@ -238,6 +248,7 @@ router.post("/trash/batch-restore", async (req, res) => {
   await db.update(resinEntriesTable)
     .set({ deletedAt: null })
     .where(and(inArray(resinEntriesTable.id, ids), isNotNull(resinEntriesTable.deletedAt)));
+  invalidateMatchCache();
   res.status(204).end();
 });
 
@@ -247,6 +258,7 @@ router.delete("/trash/batch-purge", async (req, res) => {
   if (ids.length === 0) return res.status(204).end();
   await db.delete(resinEntriesTable)
     .where(and(inArray(resinEntriesTable.id, ids), isNotNull(resinEntriesTable.deletedAt)));
+  invalidateMatchCache();
   res.status(204).end();
 });
 
@@ -267,36 +279,42 @@ const CATEGORY_LABEL: Record<string, string> = {
   virgin: "バージン", offgrade: "オフグレード", recycled: "リサイクル",
 };
 
-router.get("/matches", async (req, res) => {
+// ── In-memory match cache (invalidated on any mutation) ──────────────────────
+type MatchResult = { source: ReturnType<typeof serializeEntry>; demand: ReturnType<typeof serializeEntry>; score: number; reasons: string[] };
+let _matchCache: MatchResult[] | null = null;
+let _matchCacheAt = 0;
+const MATCH_CACHE_TTL = 60_000;
+
+function invalidateMatchCache() { _matchCache = null; }
+
+async function getOrComputeAllMatches(): Promise<MatchResult[]> {
+  if (_matchCache && Date.now() - _matchCacheAt < MATCH_CACHE_TTL) return _matchCache;
+
   const sources = await db.select().from(resinEntriesTable).where(and(eq(resinEntriesTable.entryType, "source"), isNull(resinEntriesTable.deletedAt)));
   const demands = await db.select().from(resinEntriesTable).where(and(eq(resinEntriesTable.entryType, "demand"), isNull(resinEntriesTable.deletedAt)));
 
-  const matches: Array<{ source: object; demand: object; score: number; reasons: string[] }> = [];
+  const matches: MatchResult[] = [];
 
   for (const source of sources) {
     for (const demand of demands) {
-      const reasons: string[] = [];
-      let score = 0;
-
       if (source.resinCategory !== demand.resinCategory) continue;
       if (source.resinType !== demand.resinType) continue;
+
+      const reasons: string[] = [];
+      let score = 0;
 
       reasons.push(`カテゴリ一致: ${CATEGORY_LABEL[source.resinCategory] ?? source.resinCategory}`);
       reasons.push(`樹脂種別一致: ${source.resinType}`);
       score += 40;
 
-      if (source.grade && demand.grade) {
-        if (source.grade.toLowerCase() === demand.grade.toLowerCase()) {
-          reasons.push(`グレード一致: ${source.grade}`);
-          score += 20;
-        }
+      if (source.grade && demand.grade && source.grade.toLowerCase() === demand.grade.toLowerCase()) {
+        reasons.push(`グレード一致: ${source.grade}`);
+        score += 20;
       }
 
-      if (source.manufacturer && demand.manufacturer) {
-        if (source.manufacturer.toLowerCase() === demand.manufacturer.toLowerCase()) {
-          reasons.push(`メーカー一致: ${source.manufacturer}`);
-          score += 10;
-        }
+      if (source.manufacturer && demand.manufacturer && source.manufacturer.toLowerCase() === demand.manufacturer.toLowerCase()) {
+        reasons.push(`メーカー一致: ${source.manufacturer}`);
+        score += 10;
       }
 
       const srcLo = toNum(source.meltFlowIndexLower), srcHi = toNum(source.meltFlowIndexUpper);
@@ -308,33 +326,71 @@ router.get("/matches", async (req, res) => {
         score += 15;
       }
 
-      const srcDen = toNum(source.density);
-      const dmDen = toNum(demand.density);
+      const srcDen = toNum(source.density), dmDen = toNum(demand.density);
       if (withinAbs(srcDen, dmDen, 0.5)) {
         reasons.push(`密度近似: ${srcDen} ↔ ${dmDen} g/cm³ (±0.5)`);
         score += 15;
       }
 
-      if (source.resinType === "PP" && source.ppType && demand.ppType) {
-        if (source.ppType === demand.ppType) {
-          reasons.push(`PPタイプ一致: ${source.ppType}`);
-          score += 10;
-        }
+      if (source.resinType === "PP" && source.ppType && demand.ppType && source.ppType === demand.ppType) {
+        reasons.push(`PPタイプ一致: ${source.ppType}`);
+        score += 10;
       }
 
       if (score >= 40) {
-        matches.push({
-          source: serializeEntry(source),
-          demand: serializeEntry(demand),
-          score: Math.min(score, 100),
-          reasons,
-        });
+        matches.push({ source: serializeEntry(source), demand: serializeEntry(demand), score: Math.min(score, 100), reasons });
       }
     }
   }
 
   matches.sort((a, b) => b.score - a.score);
-  res.json(matches);
+  _matchCache = matches;
+  _matchCacheAt = Date.now();
+  return matches;
+}
+
+// GET /matches/count  (must be before /matches to avoid route shadowing)
+router.get("/matches/count", async (req, res) => {
+  const { resinCategory } = req.query as { resinCategory?: string };
+  const all = await getOrComputeAllMatches();
+  const filtered = resinCategory ? all.filter(m => (m.source as any).resinCategory === resinCategory) : all;
+  // Deduplicate by entry id for badge counts
+  const seenIds = new Set<number>();
+  let count = 0;
+  for (const m of filtered) {
+    const sid = (m.source as any).id as number;
+    const did = (m.demand as any).id as number;
+    if (!seenIds.has(sid)) { seenIds.add(sid); count++; }
+    if (!seenIds.has(did)) { seenIds.add(did); count++; }
+  }
+  res.json({ count: filtered.length });
+});
+
+// GET /matches/count-by-entry
+router.get("/matches/count-by-entry", async (req, res) => {
+  const { resinCategory } = req.query as { resinCategory?: string };
+  const all = await getOrComputeAllMatches();
+  const filtered = resinCategory ? all.filter(m => (m.source as any).resinCategory === resinCategory) : all;
+  const counts: Record<number, number> = {};
+  for (const m of filtered) {
+    const sid = (m.source as any).id as number;
+    const did = (m.demand as any).id as number;
+    counts[sid] = (counts[sid] ?? 0) + 1;
+    counts[did] = (counts[did] ?? 0) + 1;
+  }
+  res.json(counts);
+});
+
+// GET /matches (paginated)
+router.get("/matches", async (req, res) => {
+  const { resinCategory } = req.query as { resinCategory?: string };
+  const limit = Math.min(parseInt((req.query.limit as string) ?? "50", 10), 200);
+  const offset = parseInt((req.query.offset as string) ?? "0", 10);
+
+  const all = await getOrComputeAllMatches();
+  const filtered = resinCategory ? all.filter(m => (m.source as any).resinCategory === resinCategory) : all;
+  const items = filtered.slice(offset, offset + limit);
+  res.json({ total: filtered.length, items });
 });
 
 export default router;
