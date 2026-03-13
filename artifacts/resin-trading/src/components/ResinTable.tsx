@@ -203,7 +203,7 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
                   />
                 </td>
                 <td className={cn("px-3 py-3 table-sticky-col-left-2 text-center z-10 transition-colors", isSelected ? "bg-primary/5" : "bg-card group-hover:bg-secondary/40")}>
-                  <div className="flex items-center justify-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <div className="flex items-center justify-center gap-1.5">
                     <button
                       onClick={() => onEdit(row)}
                       className="p-1.5 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-lg transition-colors"
