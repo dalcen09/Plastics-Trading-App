@@ -332,9 +332,12 @@ async function getOrComputeAllMatches(): Promise<MatchResult[]> {
         score += 15;
       }
 
-      if (source.resinType === "PP" && source.ppType && demand.ppType && source.ppType === demand.ppType) {
-        reasons.push(`PPタイプ一致: ${source.ppType}`);
-        score += 10;
+      if (source.resinType === "PP") {
+        if (source.ppType && demand.ppType) {
+          if (source.ppType !== demand.ppType) continue;
+          reasons.push(`PPタイプ一致: ${source.ppType}`);
+          score += 10;
+        }
       }
 
       if (score >= 40) {
