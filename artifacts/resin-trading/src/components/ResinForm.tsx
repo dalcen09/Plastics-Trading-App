@@ -117,6 +117,14 @@ export function ResinForm({
     },
   });
 
+  const [personOptions, setPersonOptions] = useState<string[]>([]);
+  useEffect(() => {
+    fetch("/api/persons-in-charge")
+      .then(r => r.json())
+      .then(setPersonOptions)
+      .catch(() => {});
+  }, []);
+
   useEffect(() => {
     if (initialData) {
       reset({
@@ -163,7 +171,16 @@ export function ResinForm({
                   <input type="text" placeholder="会社名" {...register("counterparty")} className="input-field" />
                 </FormGroup>
                 <FormGroup label="担当者" error={errors.personInCharge?.message}>
-                  <input type="text" placeholder="山田 太郎" {...register("personInCharge")} className="input-field" />
+                  <input
+                    type="text"
+                    list="person-in-charge-list"
+                    placeholder="山田 太郎"
+                    {...register("personInCharge")}
+                    className="input-field"
+                  />
+                  <datalist id="person-in-charge-list">
+                    {personOptions.map(name => <option key={name} value={name} />)}
+                  </datalist>
                 </FormGroup>
               </div>
             </div>
