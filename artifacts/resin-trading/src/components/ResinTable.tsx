@@ -200,8 +200,20 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
                   <td className="px-4 py-3">
                     <span className="font-semibold text-foreground flex items-center gap-1.5">
                       {row.resinType}
-                      {row.ppType && row.ppType !== "N/A" && (
+                      {row.ppType && (
                         <span className="text-xs px-1.5 py-0.5 rounded-md bg-secondary text-muted-foreground font-medium">{row.ppType}</span>
+                      )}
+                      {row.peType && (
+                        <span className="text-xs px-1.5 py-0.5 rounded-md bg-secondary text-muted-foreground font-medium">{row.peType}</span>
+                      )}
+                      {row.psType && (
+                        <span className="text-xs px-1.5 py-0.5 rounded-md bg-secondary text-muted-foreground font-medium">{row.psType}</span>
+                      )}
+                      {row.absType && (
+                        <span className="text-xs px-1.5 py-0.5 rounded-md bg-secondary text-muted-foreground font-medium">{row.absType}</span>
+                      )}
+                      {row.otherResinType && (
+                        <span className="text-xs px-1.5 py-0.5 rounded-md bg-secondary text-muted-foreground font-medium">{row.otherResinType}</span>
                       )}
                     </span>
                   </td>
