@@ -270,8 +270,8 @@ export function ResinForm({
                     <option value="スポット">スポット</option>
                   </select>
                 </FormGroup>
-                <FormGroup label="価格 (USD/MT)" error={errors.price?.message}>
-                  <input type="number" step="0.01" placeholder="USD" {...register("price")} className="input-field" />
+                <FormGroup label="価格 (円/kg)" error={errors.price?.message}>
+                  <input type="number" step="0.01" placeholder="円" {...register("price")} className="input-field" />
                 </FormGroup>
                 <FormGroup label="梱包形態" error={errors.packaging?.message}>
                   <select {...register("packaging")} className="input-field">
