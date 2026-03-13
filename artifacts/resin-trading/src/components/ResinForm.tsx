@@ -32,6 +32,7 @@ const formSchema = z.object({
   peType: z.preprocess(v => v === "" ? null : v, z.nativeEnum(PEType).nullable().optional()),
   psType: z.preprocess(v => v === "" ? null : v, z.nativeEnum(PSType).nullable().optional()),
   absType: z.preprocess(v => v === "" ? null : v, z.nativeEnum(ABSType).nullable().optional()),
+  isClosed: z.boolean(),
   sampleAvailable: z.boolean().nullable().optional(),
   packaging: z.nativeEnum(PackagingType).nullable().optional(),
   meltFlowIndex: z.coerce.number().nullable().optional(),
@@ -81,6 +82,7 @@ export function ResinForm({
       peType: initialData?.peType || null,
       psType: initialData?.psType || null,
       absType: initialData?.absType || null,
+      isClosed: initialData?.isClosed ?? false,
       sampleAvailable: initialData?.sampleAvailable || false,
       packaging: initialData?.packaging || PackagingType.Bags,
       meltFlowIndex: initialData?.meltFlowIndex ?? undefined,
@@ -264,6 +266,24 @@ export function ResinForm({
                   </select>
                 </FormGroup>
                 
+                <div className="flex flex-col justify-end pb-2">
+                  <label className="flex items-center gap-2 cursor-pointer group">
+                    <Controller
+                      name="isClosed"
+                      control={control}
+                      render={({ field }) => (
+                        <input
+                          type="checkbox"
+                          className="w-5 h-5 rounded border-border text-primary focus:ring-primary/20 transition-colors cursor-pointer"
+                          checked={field.value || false}
+                          onChange={(e) => field.onChange(e.target.checked)}
+                        />
+                      )}
+                    />
+                    <span className="text-sm font-medium text-foreground group-hover:text-primary transition-colors">クローズ</span>
+                  </label>
+                </div>
+
                 <div className="flex flex-col justify-end pb-2">
                   <label className="flex items-center gap-2 cursor-pointer group">
                     <Controller

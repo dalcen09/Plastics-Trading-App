@@ -320,6 +320,8 @@ components:
         absType:
           $ref: "#/components/schemas/ABSType"
           nullable: true
+        isClosed:
+          type: boolean
         sampleAvailable:
           type: boolean
           nullable: true
@@ -408,6 +410,8 @@ components:
         absType:
           $ref: "#/components/schemas/ABSType"
           nullable: true
+        isClosed:
+          type: boolean
         sampleAvailable:
           type: boolean
           nullable: true

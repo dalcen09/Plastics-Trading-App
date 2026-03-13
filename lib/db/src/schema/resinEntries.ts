@@ -33,6 +33,7 @@ export const resinEntriesTable = pgTable("resin_entries", {
   peType: peTypeEnum("pe_type"),
   psType: psTypeEnum("ps_type"),
   absType: absTypeEnum("abs_type"),
+  isClosed: boolean("is_closed").default(false).notNull(),
   sampleAvailable: boolean("sample_available"),
   packaging: packagingTypeEnum("packaging"),
   meltFlowIndex: numeric("melt_flow_index", { precision: 10, scale: 4 }),

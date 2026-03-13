@@ -4,7 +4,7 @@ import { formatCurrency, formatDate, formatNumber, cn } from "@/lib/utils";
 
 export type ColumnKey =
   | "date" | "personInCharge" | "resinType" | "manufacturer"
-  | "grade" | "charpy" | "izod" | "specs" | "price" | "quantity" | "quantityType" | "photo";
+  | "grade" | "charpy" | "izod" | "specs" | "price" | "quantity" | "quantityType" | "photo" | "isClosed";
 
 export type SortKey =
   | "counterparty" | "date" | "personInCharge" | "resinType"
@@ -30,6 +30,7 @@ export const ALL_COLUMNS: { key: ColumnKey; label: string }[] = [
   { key: "quantity",       label: "数量 (kg)" },
   { key: "quantityType",   label: "数量区分" },
   { key: "photo",          label: "写真" },
+  { key: "isClosed",       label: "クローズ" },
 ];
 
 export const DEFAULT_VISIBLE: Set<ColumnKey> = new Set(
@@ -168,6 +169,7 @@ export function ResinTable({ data, onEdit, onDelete, isLoading, visibleColumns, 
               {col("quantity")       && <SortTh colKey="quantity"  sort={sort} onSort={onSort} className="text-right">数量 (kg)</SortTh>}
               {col("quantityType")   && <th className="px-4 py-4">数量区分</th>}
               {col("photo")          && <th className="px-4 py-4 text-center">写真</th>}
+              {col("isClosed")       && <th className="px-4 py-4 text-center">クローズ</th>}
               <th className="px-4 py-4 table-sticky-col-right bg-secondary/90 backdrop-blur-sm text-center z-20">操作</th>
             </tr>
           </thead>
@@ -175,7 +177,7 @@ export function ResinTable({ data, onEdit, onDelete, isLoading, visibleColumns, 
             {data.map((row) => {
               const isSelected = selectedIds.has(row.id);
               return (
-              <tr key={row.id} className={cn("hover:bg-secondary/40 transition-colors group", isSelected && "bg-primary/5")}>
+              <tr key={row.id} className={cn("hover:bg-secondary/40 transition-colors group", isSelected && "bg-primary/5", row.isClosed && "opacity-40")}>
                 <td className={cn("pl-4 pr-2 py-3 table-sticky-col-left z-10 transition-colors", isSelected ? "bg-primary/5" : "bg-card group-hover:bg-secondary/40")}>
                   <input
                     type="checkbox"
@@ -280,6 +282,14 @@ export function ResinTable({ data, onEdit, onDelete, isLoading, visibleColumns, 
                     ) : (
                       <ImageIcon className="w-4 h-4 text-muted-foreground/30 inline-block" />
                     )}
+                  </td>
+                )}
+                {col("isClosed") && (
+                  <td className="px-4 py-3 text-center">
+                    {row.isClosed
+                      ? <span className="text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground font-medium">クローズ</span>
+                      : <span className="text-xs px-2 py-0.5 rounded-full bg-green-100 text-green-700 font-medium dark:bg-green-900/30 dark:text-green-400">オープン</span>
+                    }
                   </td>
                 )}
                 <td className="px-4 py-3 table-sticky-col-right bg-card group-hover:bg-secondary/40 text-center z-10 transition-colors">

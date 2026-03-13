@@ -29,6 +29,7 @@ export interface CreateResinEntry {
   peType?: PEType | null;
   psType?: PSType | null;
   absType?: ABSType | null;
+  isClosed?: boolean;
   sampleAvailable?: boolean | null;
   packaging?: PackagingType | null;
   meltFlowIndex?: number | null;
