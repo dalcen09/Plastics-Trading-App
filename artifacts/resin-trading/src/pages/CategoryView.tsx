@@ -327,33 +327,30 @@ export function CategoryView({ category }: CategoryViewProps) {
 
   return (
     <Layout>
-      <div className="flex flex-col h-full space-y-4">
+      <div className="flex flex-col h-full space-y-2">
         
         {/* Header Section */}
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
-          <div>
-            <div className="flex items-center gap-3">
-              <h1 className="text-3xl font-display font-bold text-foreground">
-                {categoryLabels[category]}
-              </h1>
-              <span className={cn("px-2.5 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider border", categoryTheme)}>
-                リアルタイム
-              </span>
-            </div>
-            <p className="text-muted-foreground mt-1">この素材の仕入れ先と買い手を管理します。</p>
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2">
+          <div className="flex items-center gap-2">
+            <h1 className="text-xl font-display font-bold text-foreground">
+              {categoryLabels[category]}
+            </h1>
+            <span className={cn("px-2 py-0.5 rounded-full text-xs font-bold uppercase tracking-wider border", categoryTheme)}>
+              リアルタイム
+            </span>
           </div>
           
           <div className="flex items-center gap-2">
             <button
               onClick={() => setIsImportOpen(true)}
-              className="px-4 py-2.5 rounded-xl font-semibold border border-border text-foreground hover:bg-secondary transition-colors flex items-center gap-2 text-sm"
+              className="px-3 py-1.5 rounded-xl font-semibold border border-border text-foreground hover:bg-secondary transition-colors flex items-center gap-2 text-sm"
             >
               <Upload className="w-4 h-4" />
               Excelインポート
             </button>
             <button
               onClick={() => exportToExcel(sortedData, visibleColumns)}
-              className="px-4 py-2.5 rounded-xl font-semibold border border-border text-foreground hover:bg-secondary transition-colors flex items-center gap-2 text-sm"
+              className="px-3 py-1.5 rounded-xl font-semibold border border-border text-foreground hover:bg-secondary transition-colors flex items-center gap-2 text-sm"
               title={`${sortedData.length}件をエクスポート`}
             >
               <Download className="w-4 h-4" />
@@ -361,22 +358,22 @@ export function CategoryView({ category }: CategoryViewProps) {
             </button>
             <button 
               onClick={() => handleOpenForm()}
-              className="px-5 py-2.5 rounded-xl font-semibold bg-primary text-primary-foreground shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 flex items-center gap-2"
+              className="px-4 py-1.5 rounded-xl font-semibold bg-primary text-primary-foreground shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 flex items-center gap-2 text-sm"
             >
-              <Plus className="w-5 h-5" />
+              <Plus className="w-4 h-4" />
               {activeTab === "sources" ? "仕入れ先を追加" : "需要を追加"}
             </button>
           </div>
         </div>
 
         {/* Tabs + Search row */}
-        <div className="flex flex-col sm:flex-row gap-3 items-start sm:items-center">
+        <div className="flex flex-col sm:flex-row gap-2 items-start sm:items-center">
           {/* Custom Tabs */}
           <div className="flex p-1 bg-secondary/50 rounded-xl w-full max-w-sm border border-border/50 shadow-inner shrink-0">
             <button
               onClick={() => { setActiveTab("sources"); clearFilters(); }}
               className={cn(
-                "flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-lg text-sm font-semibold transition-all duration-200",
+                "flex-1 flex items-center justify-center gap-2 py-1.5 px-3 rounded-lg text-sm font-semibold transition-all duration-200",
                 activeTab === "sources" 
                   ? "bg-card text-foreground shadow-sm ring-1 ring-border/50" 
                   : "text-muted-foreground hover:text-foreground hover:bg-secondary"
@@ -388,7 +385,7 @@ export function CategoryView({ category }: CategoryViewProps) {
             <button
               onClick={() => { setActiveTab("demands"); clearFilters(); }}
               className={cn(
-                "flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-lg text-sm font-semibold transition-all duration-200",
+                "flex-1 flex items-center justify-center gap-2 py-1.5 px-3 rounded-lg text-sm font-semibold transition-all duration-200",
                 activeTab === "demands" 
                   ? "bg-card text-foreground shadow-sm ring-1 ring-border/50" 
                   : "text-muted-foreground hover:text-foreground hover:bg-secondary"
@@ -408,7 +405,7 @@ export function CategoryView({ category }: CategoryViewProps) {
                 placeholder="取引先・メーカー・グレード・担当者で検索..."
                 value={filters.search}
                 onChange={e => setFilter("search", e.target.value)}
-                className="w-full pl-9 pr-8 py-2.5 rounded-xl border border-border bg-card text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
+                className="w-full pl-9 pr-8 py-1.5 rounded-xl border border-border bg-card text-sm placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/40"
               />
               {filters.search && (
                 <button onClick={() => setFilter("search", "")} className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
@@ -419,7 +416,7 @@ export function CategoryView({ category }: CategoryViewProps) {
             <button
               onClick={() => setShowFilters(v => !v)}
               className={cn(
-                "px-3.5 py-2.5 rounded-xl border text-sm font-semibold flex items-center gap-1.5 transition-colors shrink-0",
+                "px-3 py-1.5 rounded-xl border text-sm font-semibold flex items-center gap-1.5 transition-colors shrink-0",
                 showFilters || activeFilterCount > 0
                   ? "border-primary bg-primary/10 text-primary"
                   : "border-border bg-card text-foreground hover:bg-secondary"
@@ -439,7 +436,7 @@ export function CategoryView({ category }: CategoryViewProps) {
               <button
                 onClick={() => setShowColumns(v => !v)}
                 className={cn(
-                  "px-3.5 py-2.5 rounded-xl border text-sm font-semibold flex items-center gap-1.5 transition-colors",
+                  "px-3 py-1.5 rounded-xl border text-sm font-semibold flex items-center gap-1.5 transition-colors",
                   showColumns
                     ? "border-primary bg-primary/10 text-primary"
                     : "border-border bg-card text-foreground hover:bg-secondary"
@@ -615,7 +612,7 @@ export function CategoryView({ category }: CategoryViewProps) {
         )}
 
         {/* Data View */}
-        <div className="flex-1 min-h-0 pb-4">
+        <div className="flex-1 min-h-0 flex flex-col gap-2">
           {/* Bulk action bar */}
           {selectedIds.size > 0 && (
             <div className="flex items-center justify-between gap-3 px-4 py-3 mb-2 rounded-xl bg-primary/10 border border-primary/30 text-sm">
@@ -641,23 +638,25 @@ export function CategoryView({ category }: CategoryViewProps) {
             </div>
           )}
 
-          <ResinTable 
-            data={pagedData}
-            isLoading={activeTab === "sources" ? sourcesLoading : demandsLoading}
-            onEdit={handleOpenForm}
-            onDelete={handleDelete}
-            onToggleClosed={handleToggleClosed}
-            visibleColumns={visibleColumns}
-            sort={sort}
-            onSort={handleSort}
-            selectedIds={selectedIds}
-            onToggleSelect={handleToggleSelect}
-            onToggleSelectAll={handleToggleSelectAll}
-          />
+          <div className="flex-1 min-h-0">
+            <ResinTable 
+              data={pagedData}
+              isLoading={activeTab === "sources" ? sourcesLoading : demandsLoading}
+              onEdit={handleOpenForm}
+              onDelete={handleDelete}
+              onToggleClosed={handleToggleClosed}
+              visibleColumns={visibleColumns}
+              sort={sort}
+              onSort={handleSort}
+              selectedIds={selectedIds}
+              onToggleSelect={handleToggleSelect}
+              onToggleSelectAll={handleToggleSelectAll}
+            />
+          </div>
 
           {/* Pagination controls */}
           {pageSize > 0 && totalPages > 1 && (
-            <div className="flex items-center justify-center gap-2 mt-4 pb-6">
+            <div className="flex items-center justify-center gap-2 pb-1">
               <button
                 onClick={() => setPage(p => Math.max(1, p - 1))}
                 disabled={safePage === 1}

@@ -98,8 +98,8 @@ export function Layout({ children }: LayoutProps) {
           </div>
         </header>
 
-        {/* Page Content - scrollable */}
-        <main className="flex-1 overflow-auto p-4 sm:p-8 relative">
+        {/* Page Content - fixed, no outer scroll */}
+        <main className="flex-1 overflow-hidden p-3 sm:p-4 relative">
           <div className="max-w-[1600px] mx-auto w-full h-full">
             {children}
           </div>

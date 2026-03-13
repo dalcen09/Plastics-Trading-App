@@ -147,8 +147,8 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
   }
 
   return (
-    <div className="w-full bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
-      <div className="overflow-auto max-h-[70vh]">
+    <div className="w-full h-full bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
+      <div className="overflow-auto h-full">
         <table className="min-w-full text-sm text-left whitespace-nowrap">
           <thead className="text-xs text-muted-foreground uppercase bg-secondary font-semibold tracking-wider sticky top-0 z-20">
             <tr>
