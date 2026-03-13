@@ -48,6 +48,7 @@ export interface ResinEntry {
   proposedTo?: string | null;
   sellingPrice?: number | null;
   imageUrl?: string | null;
+  imageUrls?: string[] | null;
   createdAt: string;
   updatedAt: string;
 }

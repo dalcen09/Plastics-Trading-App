@@ -15,7 +15,7 @@ import {
   CreateResinEntryEntryType
 } from "@workspace/api-client-react";
 import { useUpload } from "@workspace/object-storage-web";
-import { X, Loader2, Upload, ImageIcon, Trash2 } from "lucide-react";
+import { X, Loader2, Upload, Trash2 } from "lucide-react";
 import { format } from "date-fns";
 
 const formSchema = z.object({
@@ -50,6 +50,7 @@ const formSchema = z.object({
   sellingPrice: z.coerce.number().nullable().optional(),
   remarks: z.string().nullable().optional(),
   imageUrl: z.string().nullable().optional(),
+  imageUrls: z.array(z.string()).optional(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -106,16 +107,20 @@ export function ResinForm({
       sellingPrice: initialData?.sellingPrice ?? undefined,
       remarks: initialData?.remarks || "",
       imageUrl: initialData?.imageUrl ?? null,
+      imageUrls: initialData?.imageUrls?.length
+        ? initialData.imageUrls
+        : initialData?.imageUrl ? [initialData.imageUrl] : [],
     }
   });
 
   const selectedResinType = watch("resinType");
-  const currentImageUrl = watch("imageUrl");
+  const currentImageUrls = watch("imageUrls") ?? [];
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const { uploadFile, isUploading } = useUpload({
-    onSuccess: (response) => {
-      formSetValue("imageUrl", `/api/storage${response.objectPath}`);
+    onSuccess: (response: { objectPath: string }) => {
+      const url = `/api/storage${response.objectPath}`;
+      formSetValue("imageUrls", [...(watch("imageUrls") ?? []), url]);
     },
   });
 
@@ -366,7 +371,7 @@ export function ResinForm({
             </FormGroup>
 
             {/* Image Upload */}
-            <div className="flex flex-col gap-1.5">
+            <div className="flex flex-col gap-2">
               <label className="text-sm font-medium text-foreground">写真</label>
               <input type="hidden" {...register("imageUrl")} />
               <input
@@ -380,52 +385,38 @@ export function ResinForm({
                   e.target.value = "";
                 }}
               />
-              {currentImageUrl ? (
-                <div className="relative group rounded-xl overflow-hidden border border-border/50 bg-secondary/20">
-                  <img
-                    src={currentImageUrl}
-                    alt="アップロード済み"
-                    className="w-full max-h-64 object-contain"
-                  />
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/40 transition-all flex items-center justify-center gap-3 opacity-0 group-hover:opacity-100">
-                    <button
-                      type="button"
-                      onClick={() => fileInputRef.current?.click()}
-                      className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-white/90 text-sm font-medium text-gray-900 hover:bg-white transition-colors"
-                    >
-                      <Upload className="w-4 h-4" />
-                      変更
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => formSetValue("imageUrl", null)}
-                      className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-red-500/90 text-sm font-medium text-white hover:bg-red-500 transition-colors"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                      削除
-                    </button>
+              <div className="flex flex-wrap gap-3">
+                {currentImageUrls.map((url, i) => (
+                  <div key={url} className="relative group w-32 h-32 rounded-xl overflow-hidden border border-border/50 bg-secondary/20 flex-shrink-0">
+                    <img src={url} alt={`写真 ${i + 1}`} className="w-full h-full object-cover" />
+                    <div className="absolute inset-0 bg-black/0 group-hover:bg-black/50 transition-all flex items-center justify-center opacity-0 group-hover:opacity-100">
+                      <button
+                        type="button"
+                        onClick={() => formSetValue("imageUrls", currentImageUrls.filter((_, idx) => idx !== i))}
+                        className="p-2 rounded-full bg-red-500/90 text-white hover:bg-red-500 transition-colors"
+                        title="削除"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
                   </div>
-                </div>
-              ) : (
+                ))}
                 <button
                   type="button"
                   onClick={() => fileInputRef.current?.click()}
                   disabled={isUploading}
-                  className="flex flex-col items-center justify-center gap-2 w-full py-8 rounded-xl border-2 border-dashed border-border hover:border-primary/50 hover:bg-secondary/30 transition-all text-muted-foreground hover:text-foreground disabled:opacity-50 disabled:pointer-events-none"
+                  className="w-32 h-32 flex flex-col items-center justify-center gap-1.5 rounded-xl border-2 border-dashed border-border hover:border-primary/50 hover:bg-secondary/30 transition-all text-muted-foreground hover:text-foreground disabled:opacity-50 disabled:pointer-events-none flex-shrink-0"
                 >
                   {isUploading ? (
-                    <>
-                      <Loader2 className="w-6 h-6 animate-spin" />
-                      <span className="text-sm">アップロード中...</span>
-                    </>
+                    <Loader2 className="w-5 h-5 animate-spin" />
                   ) : (
                     <>
-                      <ImageIcon className="w-6 h-6" />
-                      <span className="text-sm">クリックして写真をアップロード</span>
+                      <Upload className="w-5 h-5" />
+                      <span className="text-xs">写真を追加</span>
                     </>
                   )}
                 </button>
-              )}
+              </div>
             </div>
 
           </form>

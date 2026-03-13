@@ -67,6 +67,7 @@ export const ListSourcesResponseItem = zod.object({
   proposedTo: zod.string().nullish(),
   sellingPrice: zod.number().nullish(),
   imageUrl: zod.string().nullish(),
+  imageUrls: zod.array(zod.string()).nullish(),
   createdAt: zod.string().datetime({}),
   updatedAt: zod.string().datetime({}),
 });
@@ -120,6 +121,7 @@ export const CreateSourceBody = zod.object({
   proposedTo: zod.string().nullish(),
   sellingPrice: zod.number().nullish(),
   imageUrl: zod.string().nullish(),
+  imageUrls: zod.array(zod.string()).nullish(),
 });
 
 /**
@@ -174,6 +176,7 @@ export const UpdateSourceBody = zod.object({
   proposedTo: zod.string().nullish(),
   sellingPrice: zod.number().nullish(),
   imageUrl: zod.string().nullish(),
+  imageUrls: zod.array(zod.string()).nullish(),
 });
 
 export const UpdateSourceResponse = zod.object({
@@ -222,6 +225,7 @@ export const UpdateSourceResponse = zod.object({
   proposedTo: zod.string().nullish(),
   sellingPrice: zod.number().nullish(),
   imageUrl: zod.string().nullish(),
+  imageUrls: zod.array(zod.string()).nullish(),
   createdAt: zod.string().datetime({}),
   updatedAt: zod.string().datetime({}),
 });
@@ -286,6 +290,7 @@ export const ListDemandsResponseItem = zod.object({
   proposedTo: zod.string().nullish(),
   sellingPrice: zod.number().nullish(),
   imageUrl: zod.string().nullish(),
+  imageUrls: zod.array(zod.string()).nullish(),
   createdAt: zod.string().datetime({}),
   updatedAt: zod.string().datetime({}),
 });
@@ -339,6 +344,7 @@ export const CreateDemandBody = zod.object({
   proposedTo: zod.string().nullish(),
   sellingPrice: zod.number().nullish(),
   imageUrl: zod.string().nullish(),
+  imageUrls: zod.array(zod.string()).nullish(),
 });
 
 /**
@@ -393,6 +399,7 @@ export const UpdateDemandBody = zod.object({
   proposedTo: zod.string().nullish(),
   sellingPrice: zod.number().nullish(),
   imageUrl: zod.string().nullish(),
+  imageUrls: zod.array(zod.string()).nullish(),
 });
 
 export const UpdateDemandResponse = zod.object({
@@ -441,6 +448,7 @@ export const UpdateDemandResponse = zod.object({
   proposedTo: zod.string().nullish(),
   sellingPrice: zod.number().nullish(),
   imageUrl: zod.string().nullish(),
+  imageUrls: zod.array(zod.string()).nullish(),
   createdAt: zod.string().datetime({}),
   updatedAt: zod.string().datetime({}),
 });
@@ -502,6 +510,7 @@ export const GetMatchesResponseItem = zod.object({
     proposedTo: zod.string().nullish(),
     sellingPrice: zod.number().nullish(),
     imageUrl: zod.string().nullish(),
+    imageUrls: zod.array(zod.string()).nullish(),
     createdAt: zod.string().datetime({}),
     updatedAt: zod.string().datetime({}),
   }),
@@ -551,6 +560,7 @@ export const GetMatchesResponseItem = zod.object({
     proposedTo: zod.string().nullish(),
     sellingPrice: zod.number().nullish(),
     imageUrl: zod.string().nullish(),
+    imageUrls: zod.array(zod.string()).nullish(),
     createdAt: zod.string().datetime({}),
     updatedAt: zod.string().datetime({}),
   }),
