@@ -58,7 +58,7 @@ function PhotoThumbnail({ url, index }: { url: string; index: number }) {
 
 export type ColumnKey =
   | "date" | "personInCharge" | "resinType" | "manufacturer"
-  | "grade" | "charpy" | "izod" | "specs" | "price" | "storageLocation" | "quantity" | "quantityType" | "photo" | "tdsUrl" | "isClosed" | "sampleAvailable"
+  | "grade" | "charpy" | "izod" | "specs" | "price" | "storageLocation" | "quantity" | "quantityType" | "packaging" | "photo" | "tdsUrl" | "isClosed" | "sampleAvailable"
   | "prospectiveBuyer" | "desiredQuantity" | "proposedTo" | "sellingPrice";
 
 export type SortKey =
@@ -85,6 +85,7 @@ export const ALL_COLUMNS: { key: ColumnKey; label: string }[] = [
   { key: "storageLocation", label: "置場" },
   { key: "quantity",        label: "数量 (kg)" },
   { key: "quantityType",   label: "数量区分" },
+  { key: "packaging",      label: "梱包形態" },
   { key: "photo",            label: "写真" },
   { key: "tdsUrl",           label: "物性表" },
   { key: "sampleAvailable",  label: "サンプルあり" },
@@ -248,6 +249,7 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
               {col("storageLocation") && <th className="px-4 py-4">置場</th>}
               {col("quantity")       && <SortTh colKey="quantity"  sort={sort} onSort={onSort} className="text-right">数量 (kg)</SortTh>}
               {col("quantityType")   && <th className="px-4 py-4">数量区分</th>}
+              {col("packaging")      && <th className="px-4 py-4">梱包形態</th>}
               {col("photo")          && <th className="px-4 py-4 text-center">写真</th>}
               {col("tdsUrl")         && <th className="px-4 py-4 text-center">物性表</th>}
               {col("sampleAvailable")  && <th className="px-4 py-4 text-center">サンプル</th>}
@@ -363,11 +365,6 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
                         <span title="密度">密度: {formatNumber(row.density)}</span>
                       </div>
                       <div className="flex gap-2 items-center mt-0.5">
-                        {row.packaging && (
-                          <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-secondary/80 text-[10px] uppercase font-medium">
-                            <Package className="w-3 h-3" /> {row.packaging.replace('_', ' ')}
-                          </span>
-                        )}
                         {row.sampleAvailable && (
                           <span className="inline-flex items-center px-1.5 py-0.5 rounded-md bg-primary/10 text-primary text-[10px] uppercase font-bold">
                             サンプル
@@ -402,6 +399,15 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
                           : "bg-orange-100 text-orange-700 dark:bg-orange-900/40 dark:text-orange-300"
                       )}>
                         {row.quantityType}
+                      </span>
+                    ) : dash}
+                  </td>
+                )}
+                {col("packaging") && (
+                  <td className="px-4 py-3 text-sm">
+                    {row.packaging ? (
+                      <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-secondary text-muted-foreground text-xs font-medium">
+                        <Package className="w-3 h-3" />{row.packaging}
                       </span>
                     ) : dash}
                   </td>
