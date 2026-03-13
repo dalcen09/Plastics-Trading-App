@@ -340,6 +340,30 @@ async function getOrComputeAllMatches(): Promise<MatchResult[]> {
         }
       }
 
+      if (source.resinType === "PE") {
+        if (source.peType && demand.peType) {
+          if (source.peType !== demand.peType) continue;
+          reasons.push(`PEタイプ一致: ${source.peType}`);
+          score += 10;
+        }
+      }
+
+      if (source.resinType === "PS") {
+        if (source.psType && demand.psType) {
+          if (source.psType !== demand.psType) continue;
+          reasons.push(`PSタイプ一致: ${source.psType}`);
+          score += 10;
+        }
+      }
+
+      if (source.resinType === "ABS") {
+        if (source.absType && demand.absType) {
+          if (source.absType !== demand.absType) continue;
+          reasons.push(`ABSタイプ一致: ${source.absType}`);
+          score += 10;
+        }
+      }
+
       if (score >= 40) {
         matches.push({ source: serializeEntry(source), demand: serializeEntry(demand), score: Math.min(score, 100), reasons });
       }
