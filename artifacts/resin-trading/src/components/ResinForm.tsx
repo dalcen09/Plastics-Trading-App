@@ -193,7 +193,7 @@ export function ResinForm({
                   <input type="text" placeholder="ExxonMobil など" {...register("manufacturer")} className="input-field" />
                 </FormGroup>
                 <FormGroup label="グレード" error={errors.grade?.message}>
-                  <input type="text" placeholder="グレードID" {...register("grade")} className="input-field" />
+                  <input type="text" placeholder="グレード名" {...register("grade")} className="input-field" />
                 </FormGroup>
               </div>
             </div>
