@@ -44,6 +44,7 @@ function serializeEntry(entry: typeof resinEntriesTable.$inferSelect) {
     izod: toNumber(entry.izod),
     density: toNumber(entry.density),
     price: toNumber(entry.price),
+    storageLocation: entry.storageLocation,
     quantity: toNumber(entry.quantity),
     arrivalPrice: toNumber(entry.arrivalPrice),
     spotPrice: toNumber(entry.spotPrice),
@@ -77,6 +78,7 @@ router.post("/sources", async (req, res) => {
     izod: body.izod?.toString(),
     density: body.density?.toString(),
     price: body.price?.toString(),
+      storageLocation: body.storageLocation ?? null,
     quantity: body.quantity?.toString(),
   }).returning();
   res.status(201).json(serializeEntry(row));
@@ -93,6 +95,7 @@ router.put("/sources/:id", async (req, res) => {
     izod: body.izod?.toString(),
     density: body.density?.toString(),
     price: body.price?.toString(),
+      storageLocation: body.storageLocation ?? null,
     quantity: body.quantity?.toString(),
     updatedAt: new Date(),
   }).where(and(eq(resinEntriesTable.id, id), eq(resinEntriesTable.entryType, "source"))).returning();
@@ -136,6 +139,7 @@ router.post("/demands", async (req, res) => {
     izod: body.izod?.toString(),
     density: body.density?.toString(),
     price: body.price?.toString(),
+      storageLocation: body.storageLocation ?? null,
     quantity: body.quantity?.toString(),
   }).returning();
   res.status(201).json(serializeEntry(row));
@@ -152,6 +156,7 @@ router.put("/demands/:id", async (req, res) => {
     izod: body.izod?.toString(),
     density: body.density?.toString(),
     price: body.price?.toString(),
+      storageLocation: body.storageLocation ?? null,
     quantity: body.quantity?.toString(),
     updatedAt: new Date(),
   }).where(and(eq(resinEntriesTable.id, id), eq(resinEntriesTable.entryType, "demand"))).returning();

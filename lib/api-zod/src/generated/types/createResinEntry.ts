@@ -38,6 +38,7 @@ export interface CreateResinEntry {
   izod?: number | null;
   density?: number | null;
   price?: number | null;
+  storageLocation?: string | null;
   quantity?: number | null;
   quantityType?: QuantityType | null;
   remarks?: string | null;

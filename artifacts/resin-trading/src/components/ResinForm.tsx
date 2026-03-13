@@ -41,6 +41,7 @@ const formSchema = z.object({
   izod: z.coerce.number().nullable().optional(),
   density: z.coerce.number().nullable().optional(),
   price: z.coerce.number().nullable().optional(),
+  storageLocation: z.string().nullable().optional(),
   quantity: z.coerce.number().nullable().optional(),
   quantityType: z.preprocess(v => v === "" ? null : v, z.enum(["月間", "スポット"]).nullable().optional()),
   prospectiveBuyer: z.string().nullable().optional(),
@@ -96,6 +97,7 @@ export function ResinForm({
       izod: initialData?.izod ?? undefined,
       density: initialData?.density ?? undefined,
       price: initialData?.price ?? undefined,
+      storageLocation: initialData?.storageLocation ?? "",
       quantity: initialData?.quantity ?? undefined,
       quantityType: initialData?.quantityType ?? null,
       prospectiveBuyer: initialData?.prospectiveBuyer || "",
@@ -284,6 +286,9 @@ export function ResinForm({
                 </FormGroup>
                 <FormGroup label="価格 (円/kg)" error={errors.price?.message}>
                   <input type="number" step="0.01" placeholder="円" {...register("price")} className="input-field" />
+                </FormGroup>
+                <FormGroup label="置場" error={errors.storageLocation?.message}>
+                  <input type="text" placeholder="例: 大阪倉庫" {...register("storageLocation")} className="input-field" />
                 </FormGroup>
                 <FormGroup label="梱包形態" error={errors.packaging?.message}>
                   <select {...register("packaging")} className="input-field">

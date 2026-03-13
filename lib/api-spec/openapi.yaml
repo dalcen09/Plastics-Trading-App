@@ -346,6 +346,9 @@ components:
         price:
           type: number
           nullable: true
+        storageLocation:
+          type: string
+          nullable: true
         quantity:
           type: number
           nullable: true
@@ -450,6 +453,9 @@ components:
           nullable: true
         price:
           type: number
+          nullable: true
+        storageLocation:
+          type: string
           nullable: true
         quantity:
           type: number
