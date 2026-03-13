@@ -32,8 +32,8 @@ function PhotoThumbnail({ url, index }: { url: string; index: number }) {
       />
       {popup && (
         <div
-          className="fixed z-50 bg-card border border-border rounded-xl shadow-2xl overflow-hidden flex flex-col"
-          style={{ top: popup.top, left: popup.left, width: 256, transform: "translateY(-100%) translateY(-6px)" }}
+          className="fixed bg-card border border-border rounded-xl shadow-2xl overflow-hidden flex flex-col"
+          style={{ top: popup.top, left: popup.left, width: 256, transform: "translateY(-100%) translateY(-6px)", zIndex: 9999 }}
           onMouseEnter={cancelHide}
           onMouseLeave={scheduleHide}
         >
