@@ -1,9 +1,8 @@
-import { Switch, Route, Router as WouterRouter } from "wouter";
+import { Switch, Route, Router as WouterRouter, Redirect } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
-import { Matches } from "./pages/Matches";
 import { CategoryView } from "./pages/CategoryView";
 
 // Keep queries fresh but don't over-fetch
@@ -20,7 +19,7 @@ const queryClient = new QueryClient({
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={Matches} />
+      <Route path="/"><Redirect to="/virgin" /></Route>
       
       <Route path="/virgin">
         {() => <CategoryView category="virgin" />}

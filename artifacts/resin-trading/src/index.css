@@ -59,13 +59,13 @@
 }
 
 :root {
-  /* Clean Professional Slate/Blue Theme */
-  --background: 210 40% 98%; /* Slate 50 */
-  --foreground: 222 47% 11%; /* Slate 950 */
+  /* Maruki Green Theme */
+  --background: 210 40% 98%;
+  --foreground: 222 47% 11%;
   
-  --border: 214 32% 91%; /* Slate 200 */
+  --border: 214 32% 91%;
   --input: 214 32% 91%;
-  --ring: 221 83% 53%; /* Blue 600 */
+  --ring: 152 73% 41%; /* Maruki Green */
 
   --card: 0 0% 100%;
   --card-foreground: 222 47% 11%;
@@ -74,18 +74,18 @@
   --sidebar: 0 0% 100%;
   --sidebar-foreground: 222 47% 11%;
   --sidebar-border: 214 32% 91%;
-  --sidebar-primary: 221 83% 53%;
-  --sidebar-primary-foreground: 210 40% 98%;
-  --sidebar-accent: 210 40% 96%;
-  --sidebar-accent-foreground: 222 47% 11%;
-  --sidebar-ring: 221 83% 53%;
+  --sidebar-primary: 152 73% 41%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 152 30% 95%;
+  --sidebar-accent-foreground: 152 50% 20%;
+  --sidebar-ring: 152 73% 41%;
 
   --popover: 0 0% 100%;
   --popover-foreground: 222 47% 11%;
   --popover-border: 214 32% 91%;
 
-  --primary: 221 83% 53%; /* Primary Blue */
-  --primary-foreground: 210 40% 98%;
+  --primary: 152 73% 41%; /* Maruki Green */
+  --primary-foreground: 0 0% 100%;
   
   --secondary: 210 40% 96%; /* Slate 100 */
   --secondary-foreground: 222 47% 11%;

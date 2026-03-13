@@ -2,14 +2,13 @@ import { ReactNode } from "react";
 import { Link, useLocation } from "wouter";
 import { 
   Box, 
-  Leaf, 
   Recycle, 
-  Network, 
   TrendingUp,
   Search,
   Bell
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import marukiLogo from "@/assets/maruki-logo.png";
 
 interface LayoutProps {
   children: ReactNode;
@@ -19,7 +18,6 @@ export function Layout({ children }: LayoutProps) {
   const [location] = useLocation();
 
   const navItems = [
-    { href: "/", label: "マッチング", icon: Network, matchPrefix: false },
     { href: "/virgin", label: "バージン", icon: Box, matchPrefix: true },
     { href: "/offgrade", label: "オフグレード", icon: TrendingUp, matchPrefix: true },
     { href: "/recycled", label: "リサイクル", icon: Recycle, matchPrefix: true },
@@ -30,12 +28,7 @@ export function Layout({ children }: LayoutProps) {
       {/* Sidebar */}
       <aside className="w-64 flex-shrink-0 border-r border-border bg-card flex flex-col z-20 shadow-sm hidden md:flex">
         <div className="h-16 flex items-center px-6 border-b border-border/50">
-          <div className="flex items-center gap-2 text-primary font-display font-bold text-xl">
-            <div className="bg-primary/10 p-1.5 rounded-lg text-primary">
-              <Leaf className="w-5 h-5" />
-            </div>
-            ResinFlow
-          </div>
+          <img src={marukiLogo} alt="MARUKI" className="h-9 w-auto" />
         </div>
 
         <div className="flex-1 overflow-y-auto py-6 px-4 space-y-1">
@@ -74,9 +67,7 @@ export function Layout({ children }: LayoutProps) {
         {/* Top Header */}
         <header className="h-16 flex-shrink-0 bg-card/80 backdrop-blur-md border-b border-border/50 flex items-center justify-between px-4 sm:px-8 z-10">
           <div className="flex items-center gap-4">
-            <h1 className="text-xl font-display font-semibold text-foreground md:hidden">
-              ResinFlow
-            </h1>
+            <img src={marukiLogo} alt="MARUKI" className="h-8 w-auto md:hidden" />
           </div>
           
           <div className="flex items-center gap-4">
