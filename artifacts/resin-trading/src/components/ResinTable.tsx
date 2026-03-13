@@ -186,7 +186,7 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
               {col("proposedTo")       && <th className="px-4 py-4">提案先</th>}
               {col("sellingPrice")     && <th className="px-4 py-4 text-right">販売価格 (円/kg)</th>}
               {col("isClosed")         && <th className="px-4 py-4 text-center">クローズ</th>}
-              <th className="px-4 py-4 table-sticky-col-right bg-secondary text-center z-20">操作</th>
+              <th className="px-4 py-4 table-sticky-col-right bg-secondary/90 backdrop-blur-sm text-center z-20">操作</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border/50">
@@ -355,7 +355,7 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
                     </button>
                   </td>
                 )}
-                <td className="px-4 py-3 table-sticky-col-right bg-card group-hover:bg-secondary text-center z-10 transition-colors">
+                <td className="px-4 py-3 table-sticky-col-right bg-card group-hover:bg-secondary/40 text-center z-10 transition-colors">
                   <div className="flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                     <button
                       onClick={() => onEdit(row)}
