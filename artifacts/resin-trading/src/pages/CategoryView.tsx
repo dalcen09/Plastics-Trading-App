@@ -361,7 +361,7 @@ export function CategoryView({ category }: CategoryViewProps) {
               className="px-4 py-1.5 rounded-xl font-semibold bg-primary text-primary-foreground shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/30 hover:-translate-y-0.5 active:translate-y-0 transition-all duration-200 flex items-center gap-2 text-sm"
             >
               <Plus className="w-4 h-4" />
-              {activeTab === "sources" ? "仕入れ先を追加" : "需要を追加"}
+              {activeTab === "sources" ? "仕入を追加" : "需要を追加"}
             </button>
           </div>
         </div>
