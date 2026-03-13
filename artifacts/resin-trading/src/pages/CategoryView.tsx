@@ -485,6 +485,12 @@ export function CategoryView({ category }: CategoryViewProps) {
                       >
                         すべて非表示
                       </button>
+                      <button
+                        onClick={() => setShowColumns(false)}
+                        className="flex-1 text-xs py-1.5 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors font-semibold"
+                      >
+                        OK
+                      </button>
                     </div>
                   </div>
                 </>
