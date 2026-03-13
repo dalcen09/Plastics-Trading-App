@@ -458,10 +458,12 @@ export function CategoryView({ category }: CategoryViewProps) {
                 <>
                   {/* backdrop */}
                   <div className="fixed inset-0 z-30" onClick={() => setShowColumns(false)} />
-                  <div className="absolute right-0 top-full mt-2 z-40 bg-card border border-border rounded-xl shadow-xl p-3 w-[360px]">
+                  <div className="absolute right-0 top-full mt-2 z-40 bg-card border border-border rounded-xl shadow-xl p-3 w-[520px]">
                     <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 px-1">表示する列</p>
-                    <div className="grid grid-cols-2 gap-x-2">
-                      {[ALL_COLUMNS.slice(0, 10), ALL_COLUMNS.slice(10)].map((colGroup, gi) => (
+                    <div className="grid grid-cols-3 gap-x-2">
+                      {Array.from({ length: Math.ceil(ALL_COLUMNS.length / 10) }, (_, i) =>
+                        ALL_COLUMNS.slice(i * 10, (i + 1) * 10)
+                      ).map((colGroup, gi) => (
                         <div key={gi} className="flex flex-col gap-0.5">
                           {colGroup.map(({ key, label }) => (
                             <label
