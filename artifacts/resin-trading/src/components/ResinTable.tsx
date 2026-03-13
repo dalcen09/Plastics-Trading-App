@@ -384,7 +384,7 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
                   </td>
                 )}
                 {col("photo") && (
-                  <td className="px-4 py-3">
+                  <td className="pl-4 pr-8 py-3">
                     {(() => {
                       const urls = row.imageUrls?.length ? row.imageUrls : row.imageUrl ? [row.imageUrl] : [];
                       const MAX = 3;
