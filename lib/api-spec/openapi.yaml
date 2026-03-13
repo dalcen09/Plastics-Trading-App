@@ -262,7 +262,7 @@ components:
 
     PEType:
       type: string
-      enum: [LD, HD]
+      enum: [LD, HD, LLD]
 
     PSType:
       type: string

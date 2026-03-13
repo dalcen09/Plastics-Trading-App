@@ -47,6 +47,7 @@ export type PEType = (typeof PEType)[keyof typeof PEType];
 export const PEType = {
   LD: "LD",
   HD: "HD",
+  LLD: "LLD",
 } as const;
 
 export type PSType = (typeof PSType)[keyof typeof PSType];

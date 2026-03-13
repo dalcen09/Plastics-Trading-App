@@ -12,7 +12,7 @@ export const resinTypeEnum = pgEnum("resin_type", [
   "Other",
 ]);
 export const ppTypeEnum = pgEnum("pp_type", ["ホモ", "ブロック", "ランダム"]);
-export const peTypeEnum = pgEnum("pe_type", ["LD", "HD"]);
+export const peTypeEnum = pgEnum("pe_type", ["LD", "HD", "LLD"]);
 export const psTypeEnum = pgEnum("ps_type", ["HI", "GP"]);
 export const packagingTypeEnum = pgEnum("packaging_type", ["Bags", "Octabin", "Bulk", "Jumbo_Bag", "Box", "Other"]);
 export const quantityTypeEnum = pgEnum("quantity_type", ["月間", "スポット"]);
