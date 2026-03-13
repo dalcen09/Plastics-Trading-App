@@ -1,7 +1,6 @@
 import { ReactNode } from "react";
 import { Link, useLocation } from "wouter";
 import { 
-  Box, 
   Recycle, 
   TrendingUp,
   Search,
@@ -53,9 +52,9 @@ export function Layout({ children }: LayoutProps) {
   const trashCount = trashItems.length;
 
   const navItems = [
-    { href: "/virgin", label: "バージン", icon: Box, matchPrefix: true },
-    { href: "/offgrade", label: "オフグレード", icon: TrendingUp, matchPrefix: true },
-    { href: "/recycled", label: "リサイクル", icon: Recycle, matchPrefix: true },
+    { href: "/virgin",   label: "バージン",    badge: "VG", icon: null,       matchPrefix: true },
+    { href: "/offgrade", label: "オフグレード", badge: null, icon: TrendingUp, matchPrefix: true },
+    { href: "/recycled", label: "リサイクル",   badge: null, icon: Recycle,    matchPrefix: true },
   ];
 
   return (
@@ -86,10 +85,19 @@ export function Layout({ children }: LayoutProps) {
                     : "text-foreground/70 hover:bg-secondary hover:text-foreground active:scale-[0.98]"
                 )}
               >
-                <item.icon className={cn(
-                  "w-5 h-5 transition-colors", 
-                  isActive ? "text-primary-foreground" : "text-muted-foreground group-hover:text-foreground"
-                )} />
+                {item.badge ? (
+                  <span className={cn(
+                    "w-5 h-5 flex items-center justify-center rounded text-[10px] font-black tracking-tight flex-shrink-0 transition-colors",
+                    isActive ? "bg-white/20 text-white" : "bg-secondary text-muted-foreground group-hover:bg-secondary/80 group-hover:text-foreground"
+                  )}>
+                    {item.badge}
+                  </span>
+                ) : item.icon ? (
+                  <item.icon className={cn(
+                    "w-5 h-5 transition-colors",
+                    isActive ? "text-primary-foreground" : "text-muted-foreground group-hover:text-foreground"
+                  )} />
+                ) : null}
                 {item.label}
               </Link>
             );
