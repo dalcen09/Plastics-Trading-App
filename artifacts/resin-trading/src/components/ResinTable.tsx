@@ -174,6 +174,13 @@ function SortTh({
   );
 }
 
+function peVariant(type: string): { main: string; badge: string | null } {
+  if (type === "LLDPE") return { main: "PE", badge: "LLD" };
+  if (type === "HDPE")  return { main: "PE", badge: "HD" };
+  if (type === "LDPE")  return { main: "PE", badge: "LD" };
+  return { main: type, badge: null };
+}
+
 export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, visibleColumns, sort, onSort, selectedIds = new Set(), onToggleSelect, onToggleSelectAll }: ResinTableProps) {
   const col = (key: ColumnKey) => visibleColumns.has(key);
   const allIds = data.map(r => r.id);
@@ -296,7 +303,17 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
                 {col("resinType") && (
                   <td className="px-4 py-3">
                     <span className="font-semibold text-foreground flex items-center gap-1.5">
-                      {row.resinType}
+                      {(() => {
+                        const { main, badge } = peVariant(row.resinType);
+                        return (
+                          <>
+                            {main}
+                            {badge && (
+                              <span className="text-xs px-1.5 py-0.5 rounded-md bg-blue-100 text-blue-700 dark:bg-blue-900/40 dark:text-blue-300 font-medium">{badge}</span>
+                            )}
+                          </>
+                        );
+                      })()}
                       {row.ppType && (
                         <span className="text-xs px-1.5 py-0.5 rounded-md bg-secondary text-muted-foreground font-medium">{row.ppType}</span>
                       )}
