@@ -1,7 +1,7 @@
 import { Router, type IRouter } from "express";
 import { db } from "@workspace/db";
 import { resinEntriesTable, staffTable, prospectiveBuyersTable } from "@workspace/db/schema";
-import { eq, and, inArray, sql } from "drizzle-orm";
+import { eq, and, inArray, isNull, isNotNull } from "drizzle-orm";
 import {
   CreateSourceBody,
   UpdateSourceBody,
@@ -54,6 +54,7 @@ function serializeEntry(entry: typeof resinEntriesTable.$inferSelect) {
     sellingPrice: toNumber(entry.sellingPrice),
     createdAt: entry.createdAt.toISOString(),
     updatedAt: entry.updatedAt.toISOString(),
+    deletedAt: entry.deletedAt ? entry.deletedAt.toISOString() : null,
   };
 }
 
@@ -61,7 +62,7 @@ function serializeEntry(entry: typeof resinEntriesTable.$inferSelect) {
 
 router.get("/sources", async (req, res) => {
   const query = ListSourcesQueryParams.parse(req.query);
-  const conditions = [eq(resinEntriesTable.entryType, "source")];
+  const conditions = [eq(resinEntriesTable.entryType, "source"), isNull(resinEntriesTable.deletedAt)];
   if (query.resinCategory) {
     conditions.push(eq(resinEntriesTable.resinCategory, query.resinCategory));
   }
@@ -104,21 +105,27 @@ router.put("/sources/:id", async (req, res) => {
       tdsUrl: body.tdsUrl ?? null,
     quantity: body.quantity?.toString(),
     updatedAt: new Date(),
-  }).where(and(eq(resinEntriesTable.id, id), eq(resinEntriesTable.entryType, "source"))).returning();
+  }).where(and(eq(resinEntriesTable.id, id), eq(resinEntriesTable.entryType, "source"), isNull(resinEntriesTable.deletedAt))).returning();
   if (!row) return res.status(404).json({ error: "Not found" });
   res.json(serializeEntry(row));
 });
 
+// Soft delete single source
 router.delete("/sources/:id", async (req, res) => {
   const { id } = DeleteSourceParams.parse(req.params);
-  await db.delete(resinEntriesTable).where(and(eq(resinEntriesTable.id, id), eq(resinEntriesTable.entryType, "source")));
+  await db.update(resinEntriesTable)
+    .set({ deletedAt: new Date() })
+    .where(and(eq(resinEntriesTable.id, id), eq(resinEntriesTable.entryType, "source"), isNull(resinEntriesTable.deletedAt)));
   res.status(204).end();
 });
 
+// Soft batch-delete sources
 router.post("/sources/batch-delete", async (req, res) => {
   const ids: number[] = Array.isArray(req.body?.ids) ? req.body.ids.map(Number).filter(Number.isFinite) : [];
   if (ids.length === 0) return res.status(204).end();
-  await db.delete(resinEntriesTable).where(and(inArray(resinEntriesTable.id, ids), eq(resinEntriesTable.entryType, "source")));
+  await db.update(resinEntriesTable)
+    .set({ deletedAt: new Date() })
+    .where(and(inArray(resinEntriesTable.id, ids), eq(resinEntriesTable.entryType, "source"), isNull(resinEntriesTable.deletedAt)));
   res.status(204).end();
 });
 
@@ -126,7 +133,7 @@ router.post("/sources/batch-delete", async (req, res) => {
 
 router.get("/demands", async (req, res) => {
   const query = ListDemandsQueryParams.parse(req.query);
-  const conditions = [eq(resinEntriesTable.entryType, "demand")];
+  const conditions = [eq(resinEntriesTable.entryType, "demand"), isNull(resinEntriesTable.deletedAt)];
   if (query.resinCategory) {
     conditions.push(eq(resinEntriesTable.resinCategory, query.resinCategory));
   }
@@ -169,21 +176,77 @@ router.put("/demands/:id", async (req, res) => {
       tdsUrl: body.tdsUrl ?? null,
     quantity: body.quantity?.toString(),
     updatedAt: new Date(),
-  }).where(and(eq(resinEntriesTable.id, id), eq(resinEntriesTable.entryType, "demand"))).returning();
+  }).where(and(eq(resinEntriesTable.id, id), eq(resinEntriesTable.entryType, "demand"), isNull(resinEntriesTable.deletedAt))).returning();
   if (!row) return res.status(404).json({ error: "Not found" });
   res.json(serializeEntry(row));
 });
 
+// Soft delete single demand
 router.delete("/demands/:id", async (req, res) => {
   const { id } = DeleteDemandParams.parse(req.params);
-  await db.delete(resinEntriesTable).where(and(eq(resinEntriesTable.id, id), eq(resinEntriesTable.entryType, "demand")));
+  await db.update(resinEntriesTable)
+    .set({ deletedAt: new Date() })
+    .where(and(eq(resinEntriesTable.id, id), eq(resinEntriesTable.entryType, "demand"), isNull(resinEntriesTable.deletedAt)));
   res.status(204).end();
 });
 
+// Soft batch-delete demands
 router.post("/demands/batch-delete", async (req, res) => {
   const ids: number[] = Array.isArray(req.body?.ids) ? req.body.ids.map(Number).filter(Number.isFinite) : [];
   if (ids.length === 0) return res.status(204).end();
-  await db.delete(resinEntriesTable).where(and(inArray(resinEntriesTable.id, ids), eq(resinEntriesTable.entryType, "demand")));
+  await db.update(resinEntriesTable)
+    .set({ deletedAt: new Date() })
+    .where(and(inArray(resinEntriesTable.id, ids), eq(resinEntriesTable.entryType, "demand"), isNull(resinEntriesTable.deletedAt)));
+  res.status(204).end();
+});
+
+// ---- TRASH ----
+
+// GET /api/trash — list all soft-deleted entries
+router.get("/trash", async (_req, res) => {
+  const rows = await db.select().from(resinEntriesTable)
+    .where(isNotNull(resinEntriesTable.deletedAt))
+    .orderBy(resinEntriesTable.deletedAt);
+  res.json(rows.map(serializeEntry));
+});
+
+// POST /api/trash/:id/restore — restore a single entry
+router.post("/trash/:id/restore", async (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  if (!Number.isFinite(id)) return res.status(400).json({ error: "Invalid id" });
+  const [row] = await db.update(resinEntriesTable)
+    .set({ deletedAt: null })
+    .where(and(eq(resinEntriesTable.id, id), isNotNull(resinEntriesTable.deletedAt)))
+    .returning();
+  if (!row) return res.status(404).json({ error: "Not found in trash" });
+  res.json(serializeEntry(row));
+});
+
+// DELETE /api/trash/:id — permanently delete a single entry
+router.delete("/trash/:id", async (req, res) => {
+  const id = parseInt(req.params.id, 10);
+  if (!Number.isFinite(id)) return res.status(400).json({ error: "Invalid id" });
+  await db.delete(resinEntriesTable)
+    .where(and(eq(resinEntriesTable.id, id), isNotNull(resinEntriesTable.deletedAt)));
+  res.status(204).end();
+});
+
+// POST /api/trash/batch-restore — restore multiple entries
+router.post("/trash/batch-restore", async (req, res) => {
+  const ids: number[] = Array.isArray(req.body?.ids) ? req.body.ids.map(Number).filter(Number.isFinite) : [];
+  if (ids.length === 0) return res.status(204).end();
+  await db.update(resinEntriesTable)
+    .set({ deletedAt: null })
+    .where(and(inArray(resinEntriesTable.id, ids), isNotNull(resinEntriesTable.deletedAt)));
+  res.status(204).end();
+});
+
+// DELETE /api/trash/batch-purge — permanently delete multiple entries
+router.delete("/trash/batch-purge", async (req, res) => {
+  const ids: number[] = Array.isArray(req.body?.ids) ? req.body.ids.map(Number).filter(Number.isFinite) : [];
+  if (ids.length === 0) return res.status(204).end();
+  await db.delete(resinEntriesTable)
+    .where(and(inArray(resinEntriesTable.id, ids), isNotNull(resinEntriesTable.deletedAt)));
   res.status(204).end();
 });
 
@@ -202,8 +265,8 @@ function withinTolerance(a: number | null, b: number | null, pct: number): boole
 }
 
 router.get("/matches", async (req, res) => {
-  const sources = await db.select().from(resinEntriesTable).where(eq(resinEntriesTable.entryType, "source"));
-  const demands = await db.select().from(resinEntriesTable).where(eq(resinEntriesTable.entryType, "demand"));
+  const sources = await db.select().from(resinEntriesTable).where(and(eq(resinEntriesTable.entryType, "source"), isNull(resinEntriesTable.deletedAt)));
+  const demands = await db.select().from(resinEntriesTable).where(and(eq(resinEntriesTable.entryType, "demand"), isNull(resinEntriesTable.deletedAt)));
 
   const matches: Array<{ source: object; demand: object; score: number; reasons: string[] }> = [];
 
@@ -212,7 +275,6 @@ router.get("/matches", async (req, res) => {
       const reasons: string[] = [];
       let score = 0;
 
-      // Must match resin category and type
       if (source.resinCategory !== demand.resinCategory) continue;
       if (source.resinType !== demand.resinType) continue;
 
@@ -220,7 +282,6 @@ router.get("/matches", async (req, res) => {
       reasons.push(`Same resin type: ${source.resinType}`);
       score += 40;
 
-      // Grade match
       if (source.grade && demand.grade) {
         if (source.grade.toLowerCase() === demand.grade.toLowerCase()) {
           reasons.push(`Matching grade: ${source.grade}`);
@@ -228,7 +289,6 @@ router.get("/matches", async (req, res) => {
         }
       }
 
-      // Manufacturer match
       if (source.manufacturer && demand.manufacturer) {
         if (source.manufacturer.toLowerCase() === demand.manufacturer.toLowerCase()) {
           reasons.push(`Same manufacturer: ${source.manufacturer}`);
@@ -236,7 +296,6 @@ router.get("/matches", async (req, res) => {
         }
       }
 
-      // MFI range overlap check
       const srcLo = toNum(source.meltFlowIndexLower), srcHi = toNum(source.meltFlowIndexUpper);
       const dmLo = toNum(demand.meltFlowIndexLower), dmHi = toNum(demand.meltFlowIndexUpper);
       const srcMid = srcLo !== null ? (srcHi !== null ? (srcLo + srcHi) / 2 : srcLo) : srcHi;
@@ -246,7 +305,6 @@ router.get("/matches", async (req, res) => {
         score += 10;
       }
 
-      // Density match (within 5%)
       const srcDen = toNum(source.density);
       const dmDen = toNum(demand.density);
       if (withinTolerance(srcDen, dmDen, 0.05)) {
@@ -254,7 +312,6 @@ router.get("/matches", async (req, res) => {
         score += 10;
       }
 
-      // PP type match (if applicable)
       if (source.resinType === "PP" && source.ppType && demand.ppType) {
         if (source.ppType === demand.ppType) {
           reasons.push(`Same PP type: ${source.ppType}`);

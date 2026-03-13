@@ -58,6 +58,7 @@ export const resinEntriesTable = pgTable("resin_entries", {
   tdsUrl: text("tds_url"),
   createdAt: timestamp("created_at").defaultNow().notNull(),
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
+  deletedAt: timestamp("deleted_at"),
 });
 
 export const insertResinEntrySchema = createInsertSchema(resinEntriesTable).omit({ id: true, createdAt: true, updatedAt: true });

@@ -5,17 +5,33 @@ import {
   Recycle, 
   TrendingUp,
   Search,
-  Bell
+  Bell,
+  Trash2,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import marukiLogo from "@/assets/maruki-logo.png";
+import { useQuery } from "@tanstack/react-query";
 
 interface LayoutProps {
   children: ReactNode;
 }
 
+const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
+
 export function Layout({ children }: LayoutProps) {
   const [location] = useLocation();
+
+  const { data: trashItems = [] } = useQuery<unknown[]>({
+    queryKey: ["trash"],
+    queryFn: async () => {
+      const res = await fetch(`${BASE}/api/trash`);
+      if (!res.ok) return [];
+      return res.json();
+    },
+    refetchInterval: 15000,
+    staleTime: 5000,
+  });
+  const trashCount = trashItems.length;
 
   const navItems = [
     { href: "/virgin", label: "バージン", icon: Box, matchPrefix: true },
@@ -59,6 +75,27 @@ export function Layout({ children }: LayoutProps) {
               </Link>
             );
           })}
+        </div>
+
+        {/* Trash link pinned to bottom */}
+        <div className="px-4 pb-5 pt-2 border-t border-border/50">
+          <Link
+            href="/trash"
+            className={cn(
+              "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 group",
+              location === "/trash" || location.startsWith("/trash")
+                ? "bg-destructive/10 text-destructive"
+                : "text-foreground/60 hover:bg-destructive/10 hover:text-destructive"
+            )}
+          >
+            <Trash2 className="w-5 h-5 flex-shrink-0" />
+            <span className="flex-1">ゴミ箱</span>
+            {trashCount > 0 && (
+              <span className="inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 rounded-full bg-destructive text-destructive-foreground text-xs font-semibold">
+                {trashCount}
+              </span>
+            )}
+          </Link>
         </div>
       </aside>
 

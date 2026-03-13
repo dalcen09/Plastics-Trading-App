@@ -4,6 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
 import { CategoryView } from "./pages/CategoryView";
+import { TrashView } from "./pages/TrashView";
 
 // Keep queries fresh but don't over-fetch
 const queryClient = new QueryClient({
@@ -33,6 +34,7 @@ function Router() {
         {() => <CategoryView category="recycled" />}
       </Route>
       
+      <Route path="/trash" component={TrashView} />
       <Route component={NotFound} />
     </Switch>
   );
