@@ -665,6 +665,7 @@ export function CategoryView({ category }: CategoryViewProps) {
               selectedIds={selectedIds}
               onToggleSelect={handleToggleSelect}
               onToggleSelectAll={handleToggleSelectAll}
+              startIndex={pageSize === 0 ? 0 : (safePage - 1) * pageSize}
             />
           </div>
 

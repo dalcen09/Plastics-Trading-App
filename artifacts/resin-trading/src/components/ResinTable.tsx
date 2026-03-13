@@ -142,6 +142,7 @@ interface ResinTableProps {
   selectedIds: Set<number>;
   onToggleSelect: (id: number) => void;
   onToggleSelectAll: (ids: number[]) => void;
+  startIndex?: number;
 }
 
 const dash = <span className="text-border">—</span>;
@@ -174,7 +175,7 @@ function SortTh({
   );
 }
 
-export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, visibleColumns, sort, onSort, selectedIds = new Set(), onToggleSelect, onToggleSelectAll }: ResinTableProps) {
+export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, visibleColumns, sort, onSort, selectedIds = new Set(), onToggleSelect, onToggleSelectAll, startIndex = 0 }: ResinTableProps) {
   const col = (key: ColumnKey) => visibleColumns.has(key);
   const allIds = data.map(r => r.id);
 
@@ -219,6 +220,8 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
                   title="このページをすべて選択"
                 />
               </th>
+              {/* Row number */}
+              <th className="px-2 py-4 bg-secondary text-center text-muted-foreground w-10">No.</th>
               {/* 操作 sticky second column */}
               <th className="px-3 py-4 table-sticky-col-left-2 bg-secondary text-center z-20">操作</th>
               {/* 取引先 */}
@@ -248,7 +251,7 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
             </tr>
           </thead>
           <tbody className="divide-y divide-border/50">
-            {data.map((row) => {
+            {data.map((row, index) => {
               const isSelected = selectedIds.has(row.id);
               return (
               <tr key={row.id} className={cn("hover:bg-secondary/40 transition-colors group", isSelected && "bg-primary/5", row.isClosed && "opacity-40")}>
@@ -259,6 +262,10 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
                     onChange={() => onToggleSelect(row.id)}
                     className="w-4 h-4 rounded border-border accent-primary cursor-pointer"
                   />
+                </td>
+                {/* Row number */}
+                <td className="px-2 py-3 text-center text-xs text-muted-foreground tabular-nums select-none">
+                  {startIndex + index + 1}
                 </td>
                 <td className={cn("px-3 py-3 table-sticky-col-left-2 text-center z-10 transition-colors", isSelected ? "bg-primary/10" : "bg-card group-hover:bg-secondary")}>
                   <div className="flex items-center justify-center gap-1.5">
