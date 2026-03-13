@@ -9,10 +9,7 @@
 export type PackagingType = (typeof PackagingType)[keyof typeof PackagingType];
 
 export const PackagingType = {
-  Bags: "Bags",
-  Octabin: "Octabin",
-  Bulk: "Bulk",
-  Jumbo_Bag: "Jumbo_Bag",
-  Box: "Box",
-  Other: "Other",
+  "25㎏紙袋": "25㎏紙袋",
+  フレコン: "フレコン",
+  そのほか: "そのほか",
 } as const;

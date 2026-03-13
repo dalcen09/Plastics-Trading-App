@@ -15,7 +15,7 @@ export const ppTypeEnum = pgEnum("pp_type", ["ホモ", "ブロック", "ラン�
 export const peTypeEnum = pgEnum("pe_type", ["LD", "HD", "LLD"]);
 export const psTypeEnum = pgEnum("ps_type", ["HI", "GP"]);
 export const absTypeEnum = pgEnum("abs_type", ["難燃"]);
-export const packagingTypeEnum = pgEnum("packaging_type", ["Bags", "Octabin", "Bulk", "Jumbo_Bag", "Box", "Other"]);
+export const packagingTypeEnum = pgEnum("packaging_type", ["25㎏紙袋", "フレコン", "そのほか"]);
 export const quantityTypeEnum = pgEnum("quantity_type", ["月間", "スポット"]);
 
 export const resinEntriesTable = pgTable("resin_entries", {

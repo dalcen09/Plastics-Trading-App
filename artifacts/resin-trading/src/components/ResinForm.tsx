@@ -89,7 +89,7 @@ export function ResinForm({
       absType: initialData?.absType || null,
       isClosed: initialData?.isClosed ?? false,
       sampleAvailable: initialData?.sampleAvailable || false,
-      packaging: initialData?.packaging || PackagingType.Bags,
+      packaging: initialData?.packaging || PackagingType["25㎏紙袋"],
       meltFlowIndexLower: initialData?.meltFlowIndexLower ?? undefined,
       meltFlowIndexUpper: initialData?.meltFlowIndexUpper ?? undefined,
       charpy: initialData?.charpy ?? undefined,
@@ -275,7 +275,7 @@ export function ResinForm({
                 </FormGroup>
                 <FormGroup label="梱包形態" error={errors.packaging?.message}>
                   <select {...register("packaging")} className="input-field">
-                    {Object.values(PackagingType).map(t => <option key={t} value={t}>{t.replace('_', ' ')}</option>)}
+                    {Object.values(PackagingType).map(t => <option key={t} value={t}>{t}</option>)}
                   </select>
                 </FormGroup>
                 

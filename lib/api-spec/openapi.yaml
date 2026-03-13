@@ -278,7 +278,7 @@ components:
 
     PackagingType:
       type: string
-      enum: [Bags, Octabin, Bulk, Jumbo_Bag, Box, Other]
+      enum: ["25㎏紙袋", "フレコン", "そのほか"]
 
     ResinEntry:
       type: object
