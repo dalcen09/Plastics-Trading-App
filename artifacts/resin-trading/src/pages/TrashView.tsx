@@ -78,8 +78,8 @@ export function TrashView() {
 
   const invalidate = () => {
     qc.invalidateQueries({ queryKey: ["trash"] });
-    qc.invalidateQueries({ queryKey: ["sources"] });
-    qc.invalidateQueries({ queryKey: ["demands"] });
+    qc.invalidateQueries({ queryKey: ["/api/sources"] });
+    qc.invalidateQueries({ queryKey: ["/api/demands"] });
   };
 
   const restoreOne = useMutation({
