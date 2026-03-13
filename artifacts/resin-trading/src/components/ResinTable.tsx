@@ -59,7 +59,7 @@ function PhotoThumbnail({ url, index }: { url: string; index: number }) {
 export type ColumnKey =
   | "date" | "personInCharge" | "resinType" | "manufacturer"
   | "grade" | "charpy" | "izod" | "specs" | "price" | "storageLocation" | "quantity" | "quantityType" | "packaging" | "photo" | "tdsUrl" | "isClosed" | "sampleAvailable"
-  | "prospectiveBuyer" | "desiredQuantity" | "proposedTo" | "sellingPrice";
+  | "prospectiveBuyer" | "desiredQuantity" | "proposedTo" | "sellingPrice" | "remarks";
 
 export type SortKey =
   | "counterparty" | "date" | "personInCharge" | "resinType"
@@ -93,6 +93,7 @@ export const ALL_COLUMNS: { key: ColumnKey; label: string }[] = [
   { key: "desiredQuantity",  label: "希望数量 (kg)" },
   { key: "proposedTo",       label: "提案先" },
   { key: "sellingPrice",     label: "販売価格 (円/kg)" },
+  { key: "remarks",          label: "備考" },
   { key: "isClosed",         label: "クローズ" },
 ];
 
@@ -257,6 +258,7 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
               {col("desiredQuantity")  && <th className="px-4 py-4 text-right">希望数量 (kg)</th>}
               {col("proposedTo")       && <th className="px-4 py-4">提案先</th>}
               {col("sellingPrice")     && <th className="px-4 py-4 text-right">販売価格 (円/kg)</th>}
+              {col("remarks")          && <th className="px-4 py-4">備考</th>}
               {col("isClosed")         && <th className="px-4 py-4 text-center">クローズ</th>}
             </tr>
           </thead>
@@ -479,6 +481,11 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
                 {col("sellingPrice") && (
                   <td className="px-4 py-3 text-right font-medium text-foreground">
                     {row.sellingPrice != null ? formatCurrency(row.sellingPrice) : dash}
+                  </td>
+                )}
+                {col("remarks") && (
+                  <td className="px-4 py-3 text-sm text-muted-foreground max-w-[200px]">
+                    <span className="line-clamp-2 whitespace-pre-wrap">{row.remarks || dash}</span>
                   </td>
                 )}
                 {col("isClosed") && (
