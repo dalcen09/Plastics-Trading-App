@@ -174,10 +174,12 @@ function SortTh({
   );
 }
 
-function peVariant(type: string): { main: string; badge: string | null } {
+function resinVariant(type: string): { main: string; badge: string | null } {
   if (type === "LLDPE") return { main: "PE", badge: "LLD" };
   if (type === "HDPE")  return { main: "PE", badge: "HD" };
   if (type === "LDPE")  return { main: "PE", badge: "LD" };
+  if (type === "GPPS")  return { main: "PS", badge: "GP" };
+  if (type === "HIPS")  return { main: "PS", badge: "HI" };
   return { main: type, badge: null };
 }
 
@@ -304,7 +306,7 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
                   <td className="px-4 py-3">
                     <span className="font-semibold text-foreground flex items-center gap-1.5">
                       {(() => {
-                        const { main, badge } = peVariant(row.resinType);
+                        const { main, badge } = resinVariant(row.resinType);
                         return (
                           <>
                             {main}
