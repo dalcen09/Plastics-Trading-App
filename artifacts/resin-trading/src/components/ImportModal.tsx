@@ -117,19 +117,6 @@ export function ImportModal({ onClose, onSuccess }: ImportModalProps) {
             </button>
           </div>
 
-          {/* Required columns info */}
-          <div className="p-4 rounded-xl bg-secondary/40 border border-border/50 text-sm">
-            <p className="font-semibold text-foreground mb-2">必須列（列名はどちらの言語でも可）</p>
-            <div className="grid grid-cols-2 gap-1 text-muted-foreground text-xs">
-              <span>• <strong>type</strong> — source または demand</span>
-              <span>• <strong>category</strong> — virgin / offgrade / recycled</span>
-              <span>• <strong>date</strong> — 例: 2026-03-12</span>
-              <span>• <strong>counterparty</strong> — 取引先名</span>
-              <span>• <strong>person in charge / pic</strong> — 担当者</span>
-              <span>• <strong>resin type</strong> — PP / PE / ABS など</span>
-            </div>
-          </div>
-
           {/* Drop zone */}
           {!result && (
             <div
