@@ -1,7 +1,7 @@
 import { ResinEntry } from "@workspace/api-client-react";
 import { Edit2, Trash2, Box, Package, ArrowUp, ArrowDown, ArrowUpDown, ImageIcon, Download, FileText } from "lucide-react";
 import { formatCurrency, formatDate, formatNumber, cn } from "@/lib/utils";
-import { useState, useRef, useCallback } from "react";
+import { useState, useRef, useCallback, useEffect } from "react";
 import { createPortal } from "react-dom";
 
 function PhotoThumbnail({ url, index }: { url: string; index: number }) {
@@ -177,6 +177,8 @@ function SortTh({
 export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, visibleColumns, sort, onSort, selectedIds = new Set(), onToggleSelect, onToggleSelectAll }: ResinTableProps) {
   const col = (key: ColumnKey) => visibleColumns.has(key);
   const allIds = data.map(r => r.id);
+  const scrollRef = useRef<HTMLDivElement>(null);
+  useEffect(() => { scrollRef.current?.scrollTo({ top: 0 }); }, [data]);
 
   const allSelected = allIds.length > 0 && allIds.every(id => selectedIds.has(id));
   const someSelected = allIds.some(id => selectedIds.has(id)) && !allSelected;
@@ -204,7 +206,7 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
 
   return (
     <div className="w-full h-full bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
-      <div className="overflow-auto h-full">
+      <div ref={scrollRef} className="overflow-auto h-full">
         <table className="min-w-full text-sm text-left whitespace-nowrap">
           <thead className="text-xs text-muted-foreground uppercase bg-secondary font-semibold tracking-wider sticky top-0 z-20">
             <tr>
