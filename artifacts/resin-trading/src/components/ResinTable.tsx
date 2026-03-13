@@ -385,9 +385,21 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
                   <td className="px-4 py-3">
                     {(() => {
                       const urls = row.imageUrls?.length ? row.imageUrls : row.imageUrl ? [row.imageUrl] : [];
+                      const MAX = 3;
+                      const visible = urls.slice(0, MAX);
+                      const overflow = urls.length - MAX;
                       return urls.length > 0 ? (
-                        <div className="flex flex-wrap gap-1 justify-center">
-                          {urls.map((url, i) => <PhotoThumbnail key={url} url={url} index={i} />)}
+                        <div className="flex items-center">
+                          {visible.map((url, i) => (
+                            <div key={url} className="relative flex-shrink-0 rounded-md ring-2 ring-card" style={{ marginLeft: i === 0 ? 0 : -8, zIndex: MAX - i }}>
+                              <PhotoThumbnail url={url} index={i} />
+                            </div>
+                          ))}
+                          {overflow > 0 && (
+                            <div className="flex-shrink-0 w-9 h-9 rounded-md bg-secondary border border-border/50 flex items-center justify-center text-xs font-medium text-muted-foreground" style={{ marginLeft: -8, zIndex: 0 }}>
+                              +{overflow}
+                            </div>
+                          )}
                         </div>
                       ) : (
                         <div className="flex justify-center">
