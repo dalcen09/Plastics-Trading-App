@@ -1,5 +1,4 @@
 import { ResinEntry } from "@workspace/api-client-react";
-import { useRef, useEffect, useState } from "react";
 import { Edit2, Trash2, Box, Package, ArrowUp, ArrowDown, ArrowUpDown, ImageIcon } from "lucide-react";
 import { formatCurrency, formatDate, formatNumber, cn } from "@/lib/utils";
 
@@ -123,41 +122,6 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
   const col = (key: ColumnKey) => visibleColumns.has(key);
   const allIds = data.map(r => r.id);
 
-  const tableScrollRef = useRef<HTMLDivElement>(null);
-  const topScrollRef = useRef<HTMLDivElement>(null);
-  const sentinelRef = useRef<HTMLDivElement>(null);
-  const [scrollWidth, setScrollWidth] = useState(0);
-  const [bottomVisible, setBottomVisible] = useState(false);
-
-  useEffect(() => {
-    const el = tableScrollRef.current;
-    if (!el) return;
-    const update = () => setScrollWidth(el.scrollWidth);
-    update();
-    const ro = new ResizeObserver(update);
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, [visibleColumns]);
-
-  useEffect(() => {
-    const sentinel = sentinelRef.current;
-    if (!sentinel) return;
-    const io = new IntersectionObserver(
-      ([entry]) => setBottomVisible(entry.isIntersecting),
-      { threshold: 0 }
-    );
-    io.observe(sentinel);
-    return () => io.disconnect();
-  }, []);
-
-  const onTopScroll = () => {
-    if (tableScrollRef.current && topScrollRef.current)
-      tableScrollRef.current.scrollLeft = topScrollRef.current.scrollLeft;
-  };
-  const onTableScroll = () => {
-    if (tableScrollRef.current && topScrollRef.current)
-      topScrollRef.current.scrollLeft = tableScrollRef.current.scrollLeft;
-  };
   const allSelected = allIds.length > 0 && allIds.every(id => selectedIds.has(id));
   const someSelected = allIds.some(id => selectedIds.has(id)) && !allSelected;
 
@@ -183,19 +147,10 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
   }
 
   return (
-    <div className="w-full bg-card rounded-2xl border border-border shadow-sm flex flex-col relative">
-      {/* Sticky mirror scrollbar at top — fades out when bottom scrollbar is in view */}
-      <div
-        ref={topScrollRef}
-        onScroll={onTopScroll}
-        className="overflow-x-scroll sticky top-0 z-30 transition-opacity duration-300"
-        style={{ height: 12, opacity: bottomVisible ? 0 : 1, pointerEvents: bottomVisible ? "none" : "auto" }}
-      >
-        <div style={{ width: scrollWidth, height: 1 }} />
-      </div>
-      <div ref={tableScrollRef} onScroll={onTableScroll} className="overflow-x-scroll overflow-y-visible">
+    <div className="w-full bg-card rounded-2xl border border-border shadow-sm overflow-hidden">
+      <div className="overflow-auto max-h-[70vh]">
         <table className="min-w-full text-sm text-left whitespace-nowrap">
-          <thead className="text-xs text-muted-foreground uppercase bg-secondary/50 font-semibold tracking-wider">
+          <thead className="text-xs text-muted-foreground uppercase bg-secondary font-semibold tracking-wider sticky top-0 z-20">
             <tr>
               {/* Checkbox select-all */}
               <th className="pl-4 pr-2 py-4 table-sticky-col-left bg-secondary/90 backdrop-blur-sm z-20 w-10">
@@ -423,8 +378,6 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
           </tbody>
         </table>
       </div>
-      {/* Sentinel: when visible, the native bottom scrollbar is in view */}
-      <div ref={sentinelRef} style={{ height: 1 }} />
     </div>
   );
 }
