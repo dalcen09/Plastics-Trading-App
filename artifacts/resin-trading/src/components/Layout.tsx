@@ -7,10 +7,12 @@ import {
   Search,
   Bell,
   Trash2,
+  Network,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import marukiLogo from "@/assets/maruki-logo.png";
 import { useQuery } from "@tanstack/react-query";
+import { useGetMatches } from "@workspace/api-client-react";
 
 interface LayoutProps {
   children: ReactNode;
@@ -20,6 +22,9 @@ const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
 
 export function Layout({ children }: LayoutProps) {
   const [location] = useLocation();
+
+  const { data: matches = [] } = useGetMatches({ query: { staleTime: 30000, refetchInterval: 30000 } });
+  const matchCount = matches.length;
 
   const { data: trashItems = [] } = useQuery<unknown[]>({
     queryKey: ["trash"],
@@ -75,6 +80,29 @@ export function Layout({ children }: LayoutProps) {
               </Link>
             );
           })}
+        </div>
+
+        {/* Matches link */}
+        <div className="px-4 pb-2">
+          <Link
+            href="/matches"
+            className={cn(
+              "flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 group",
+              location === "/matches" || location.startsWith("/matches")
+                ? "bg-primary text-primary-foreground shadow-md shadow-primary/20"
+                : "text-foreground/70 hover:bg-secondary hover:text-foreground active:scale-[0.98]"
+            )}
+          >
+            <Network className={cn("w-5 h-5 flex-shrink-0 transition-colors",
+              location.startsWith("/matches") ? "text-primary-foreground" : "text-muted-foreground group-hover:text-foreground"
+            )} />
+            <span className="flex-1">マッチング</span>
+            {matchCount > 0 && (
+              <span className="inline-flex items-center justify-center min-w-[1.25rem] h-5 px-1.5 rounded-full bg-emerald-500 text-white text-xs font-semibold">
+                {matchCount}
+              </span>
+            )}
+          </Link>
         </div>
 
         {/* Trash link pinned to bottom */}

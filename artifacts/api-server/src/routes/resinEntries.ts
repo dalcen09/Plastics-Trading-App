@@ -258,11 +258,14 @@ function toNum(val: string | null | undefined): number | null {
   return isNaN(n) ? null : n;
 }
 
-function withinTolerance(a: number | null, b: number | null, pct: number): boolean {
+function withinAbs(a: number | null, b: number | null, tol: number): boolean {
   if (a === null || b === null) return false;
-  if (a === 0 && b === 0) return true;
-  return Math.abs(a - b) / Math.max(Math.abs(a), Math.abs(b)) <= pct;
+  return Math.abs(a - b) <= tol;
 }
+
+const CATEGORY_LABEL: Record<string, string> = {
+  virgin: "バージン", offgrade: "オフグレード", recycled: "リサイクル",
+};
 
 router.get("/matches", async (req, res) => {
   const sources = await db.select().from(resinEntriesTable).where(and(eq(resinEntriesTable.entryType, "source"), isNull(resinEntriesTable.deletedAt)));
@@ -278,20 +281,20 @@ router.get("/matches", async (req, res) => {
       if (source.resinCategory !== demand.resinCategory) continue;
       if (source.resinType !== demand.resinType) continue;
 
-      reasons.push(`Same resin category: ${source.resinCategory}`);
-      reasons.push(`Same resin type: ${source.resinType}`);
+      reasons.push(`カテゴリ一致: ${CATEGORY_LABEL[source.resinCategory] ?? source.resinCategory}`);
+      reasons.push(`樹脂種別一致: ${source.resinType}`);
       score += 40;
 
       if (source.grade && demand.grade) {
         if (source.grade.toLowerCase() === demand.grade.toLowerCase()) {
-          reasons.push(`Matching grade: ${source.grade}`);
+          reasons.push(`グレード一致: ${source.grade}`);
           score += 20;
         }
       }
 
       if (source.manufacturer && demand.manufacturer) {
         if (source.manufacturer.toLowerCase() === demand.manufacturer.toLowerCase()) {
-          reasons.push(`Same manufacturer: ${source.manufacturer}`);
+          reasons.push(`メーカー一致: ${source.manufacturer}`);
           score += 10;
         }
       }
@@ -300,21 +303,21 @@ router.get("/matches", async (req, res) => {
       const dmLo = toNum(demand.meltFlowIndexLower), dmHi = toNum(demand.meltFlowIndexUpper);
       const srcMid = srcLo !== null ? (srcHi !== null ? (srcLo + srcHi) / 2 : srcLo) : srcHi;
       const dmMid = dmLo !== null ? (dmHi !== null ? (dmLo + dmHi) / 2 : dmLo) : dmHi;
-      if (srcMid !== null && dmMid !== null && withinTolerance(srcMid, dmMid, 0.2)) {
-        reasons.push(`Compatible MFI: ${srcMid} vs ${dmMid} g/10min`);
-        score += 10;
+      if (srcMid !== null && dmMid !== null && withinAbs(srcMid, dmMid, 1)) {
+        reasons.push(`MI近似: ${srcMid} ↔ ${dmMid} g/10min (±1)`);
+        score += 15;
       }
 
       const srcDen = toNum(source.density);
       const dmDen = toNum(demand.density);
-      if (withinTolerance(srcDen, dmDen, 0.05)) {
-        reasons.push(`Compatible density: ${srcDen} vs ${dmDen} g/cm³`);
-        score += 10;
+      if (withinAbs(srcDen, dmDen, 0.5)) {
+        reasons.push(`密度近似: ${srcDen} ↔ ${dmDen} g/cm³ (±0.5)`);
+        score += 15;
       }
 
       if (source.resinType === "PP" && source.ppType && demand.ppType) {
         if (source.ppType === demand.ppType) {
-          reasons.push(`Same PP type: ${source.ppType}`);
+          reasons.push(`PPタイプ一致: ${source.ppType}`);
           score += 10;
         }
       }

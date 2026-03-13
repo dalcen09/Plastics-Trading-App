@@ -5,6 +5,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
 import { CategoryView } from "./pages/CategoryView";
 import { TrashView } from "./pages/TrashView";
+import { Matches } from "./pages/Matches";
 
 // Keep queries fresh but don't over-fetch
 const queryClient = new QueryClient({
@@ -35,6 +36,7 @@ function Router() {
       </Route>
       
       <Route path="/trash" component={TrashView} />
+      <Route path="/matches" component={Matches} />
       <Route component={NotFound} />
     </Switch>
   );

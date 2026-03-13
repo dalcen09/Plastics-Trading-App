@@ -144,6 +144,7 @@ interface ResinTableProps {
   selectedIds: Set<number>;
   onToggleSelect: (id: number) => void;
   onToggleSelectAll: (ids: number[]) => void;
+  matchCounts?: Map<number, number>;
 }
 
 const dash = <span className="text-border">—</span>;
@@ -185,7 +186,7 @@ function resinVariant(type: string): { main: string; badge: string | null } {
   return { main: type, badge: null };
 }
 
-export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, visibleColumns, sort, onSort, selectedIds = new Set(), onToggleSelect, onToggleSelectAll }: ResinTableProps) {
+export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, visibleColumns, sort, onSort, selectedIds = new Set(), onToggleSelect, onToggleSelectAll, matchCounts }: ResinTableProps) {
   const col = (key: ColumnKey) => visibleColumns.has(key);
   const allIds = data.map(r => r.id);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -298,7 +299,14 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
                   </div>
                 </td>
                 <td className={cn("px-4 py-3 font-medium text-foreground transition-colors", isSelected ? "bg-primary/5" : "bg-card group-hover:bg-secondary/40")}>
-                  {row.counterparty}
+                  <div className="flex flex-col gap-0.5">
+                    {row.counterparty}
+                    {matchCounts && (matchCounts.get(row.id) ?? 0) > 0 && (
+                      <a href="/matches" className="inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded-md bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300 w-fit hover:bg-emerald-200 transition-colors">
+                        ⚡ {matchCounts.get(row.id)}件マッチ
+                      </a>
+                    )}
+                  </div>
                 </td>
                 {col("date") && (
                   <td className="px-4 py-3 text-muted-foreground">{formatDate(row.date)}</td>
