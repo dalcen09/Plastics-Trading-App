@@ -1,6 +1,6 @@
 import { Router, type IRouter } from "express";
 import { db } from "@workspace/db";
-import { resinEntriesTable } from "@workspace/db/schema";
+import { resinEntriesTable, staffTable } from "@workspace/db/schema";
 import { eq, and, inArray, sql } from "drizzle-orm";
 import {
   CreateSourceBody,
@@ -17,13 +17,10 @@ import {
 
 const router: IRouter = Router();
 
-// GET /api/persons-in-charge — distinct 担当者 values
+// GET /api/persons-in-charge — managed staff list
 router.get("/persons-in-charge", async (_req, res) => {
-  const rows = await db
-    .selectDistinct({ name: resinEntriesTable.personInCharge })
-    .from(resinEntriesTable)
-    .orderBy(resinEntriesTable.personInCharge);
-  res.json(rows.map(r => r.name).filter(Boolean));
+  const rows = await db.select({ name: staffTable.name }).from(staffTable).orderBy(staffTable.name);
+  res.json(rows.map(r => r.name));
 });
 
 function toNumber(val: string | null | undefined): number | null {

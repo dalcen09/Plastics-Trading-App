@@ -61,3 +61,8 @@ export const resinEntriesTable = pgTable("resin_entries", {
 export const insertResinEntrySchema = createInsertSchema(resinEntriesTable).omit({ id: true, createdAt: true, updatedAt: true });
 export type InsertResinEntry = z.infer<typeof insertResinEntrySchema>;
 export type ResinEntry = typeof resinEntriesTable.$inferSelect;
+
+export const staffTable = pgTable("staff", {
+  id: serial("id").primaryKey(),
+  name: text("name").notNull().unique(),
+});
