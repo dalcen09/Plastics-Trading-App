@@ -714,7 +714,7 @@ export function CategoryView({ category }: CategoryViewProps) {
       {isFormOpen && (
         <ResinForm
           initialData={editingEntry}
-          entryType={activeTab as CreateResinEntryEntryType}
+          entryType={(activeTab === "sources" ? "source" : "demand") as CreateResinEntryEntryType}
           resinCategory={category as ResinCategory}
           onSubmit={handleSubmit}
           onCancel={closeForm}
