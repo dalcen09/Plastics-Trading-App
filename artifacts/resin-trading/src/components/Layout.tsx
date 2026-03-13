@@ -1,7 +1,6 @@
 import { ReactNode } from "react";
 import { Link, useLocation } from "wouter";
 import { 
-  Recycle,
   Search,
   Bell,
   Trash2,
@@ -53,7 +52,7 @@ export function Layout({ children }: LayoutProps) {
   const navItems = [
     { href: "/virgin",   label: "バージン",    badge: "VG", icon: null,       matchPrefix: true },
     { href: "/offgrade", label: "オフグレード", badge: "OG", icon: null,       matchPrefix: true },
-    { href: "/recycled", label: "リサイクル",   badge: null, icon: Recycle,    matchPrefix: true },
+    { href: "/recycled", label: "リサイクル",   badge: "再生", icon: null,      matchPrefix: true },
   ];
 
   return (
@@ -86,7 +85,7 @@ export function Layout({ children }: LayoutProps) {
               >
                 {item.badge ? (
                   <span className={cn(
-                    "w-5 h-5 flex items-center justify-center rounded text-[10px] font-black tracking-tight flex-shrink-0 transition-colors",
+                    "min-w-[20px] h-5 px-0.5 flex items-center justify-center rounded text-[10px] font-black tracking-tight flex-shrink-0 transition-colors",
                     isActive ? "bg-white/20 text-white" : "bg-secondary text-muted-foreground group-hover:bg-secondary/80 group-hover:text-foreground"
                   )}>
                     {item.badge}
