@@ -212,6 +212,15 @@ export function CategoryView({ category }: CategoryViewProps) {
     }
   });
 
+  const toggleClosedSource = useUpdateSource({
+    mutation: {
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: getListSourcesQueryKey({ resinCategory: category as ResinCategory }) });
+      },
+      onError: () => toast({ variant: "destructive", title: "エラー", description: "更新に失敗しました" })
+    }
+  });
+
   const deleteSource = useDeleteSource({
     mutation: {
       onSuccess: () => {
@@ -243,6 +252,15 @@ export function CategoryView({ category }: CategoryViewProps) {
         toast({ title: "成功", description: "需要を更新しました" });
       },
       onError: () => toast({ variant: "destructive", title: "エラー", description: "需要の更新に失敗しました" })
+    }
+  });
+
+  const toggleClosedDemand = useUpdateDemand({
+    mutation: {
+      onSuccess: () => {
+        queryClient.invalidateQueries({ queryKey: getListDemandsQueryKey({ resinCategory: category as ResinCategory }) });
+      },
+      onError: () => toast({ variant: "destructive", title: "エラー", description: "更新に失敗しました" })
     }
   });
 
@@ -287,6 +305,15 @@ export function CategoryView({ category }: CategoryViewProps) {
       deleteSource.mutate({ id });
     } else {
       deleteDemand.mutate({ id });
+    }
+  };
+
+  const handleToggleClosed = (entry: ResinEntry) => {
+    const updated = { ...entry, isClosed: !entry.isClosed };
+    if (activeTab === "sources") {
+      toggleClosedSource.mutate({ id: entry.id, data: updated });
+    } else {
+      toggleClosedDemand.mutate({ id: entry.id, data: updated });
     }
   };
 
@@ -609,6 +636,7 @@ export function CategoryView({ category }: CategoryViewProps) {
             isLoading={activeTab === "sources" ? sourcesLoading : demandsLoading}
             onEdit={handleOpenForm}
             onDelete={handleDelete}
+            onToggleClosed={handleToggleClosed}
             visibleColumns={visibleColumns}
             sort={sort}
             onSort={handleSort}

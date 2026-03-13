@@ -69,6 +69,7 @@ interface ResinTableProps {
   data: ResinEntry[];
   onEdit: (entry: ResinEntry) => void;
   onDelete: (id: number) => void;
+  onToggleClosed?: (entry: ResinEntry) => void;
   isLoading: boolean;
   visibleColumns: Set<ColumnKey>;
   sort: SortConfig | null;
@@ -108,7 +109,7 @@ function SortTh({
   );
 }
 
-export function ResinTable({ data, onEdit, onDelete, isLoading, visibleColumns, sort, onSort, selectedIds = new Set(), onToggleSelect, onToggleSelectAll }: ResinTableProps) {
+export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, visibleColumns, sort, onSort, selectedIds = new Set(), onToggleSelect, onToggleSelectAll }: ResinTableProps) {
   const col = (key: ColumnKey) => visibleColumns.has(key);
   const allIds = data.map(r => r.id);
   const allSelected = allIds.length > 0 && allIds.every(id => selectedIds.has(id));
@@ -286,10 +287,16 @@ export function ResinTable({ data, onEdit, onDelete, isLoading, visibleColumns, 
                 )}
                 {col("isClosed") && (
                   <td className="px-4 py-3 text-center">
-                    {row.isClosed
-                      ? <span className="text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground font-medium">クローズ</span>
-                      : <span className="text-xs px-2 py-0.5 rounded-full bg-green-100 text-green-700 font-medium dark:bg-green-900/30 dark:text-green-400">オープン</span>
-                    }
+                    <button
+                      onClick={() => onToggleClosed?.(row)}
+                      title={row.isClosed ? "クリックでオープンに戻す" : "クリックでクローズ"}
+                      className="transition-opacity hover:opacity-70"
+                    >
+                      {row.isClosed
+                        ? <span className="text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground font-medium cursor-pointer">クローズ</span>
+                        : <span className="text-xs px-2 py-0.5 rounded-full bg-green-100 text-green-700 font-medium dark:bg-green-900/30 dark:text-green-400 cursor-pointer">オープン</span>
+                      }
+                    </button>
                   </td>
                 )}
                 <td className="px-4 py-3 table-sticky-col-right bg-card group-hover:bg-secondary/40 text-center z-10 transition-colors">
