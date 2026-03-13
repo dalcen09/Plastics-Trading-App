@@ -346,7 +346,7 @@ export function CategoryView({ category }: CategoryViewProps) {
               className="px-3 py-1.5 rounded-xl font-semibold border border-border text-foreground hover:bg-secondary transition-colors flex items-center gap-2 text-sm"
             >
               <Upload className="w-4 h-4" />
-              Excelインポート
+              データインポート
             </button>
             <button
               onClick={() => exportToExcel(sortedData, visibleColumns)}

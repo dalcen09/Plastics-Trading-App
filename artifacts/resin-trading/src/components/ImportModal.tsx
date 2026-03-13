@@ -92,7 +92,7 @@ export function ImportModal({ onClose, onSuccess }: ImportModalProps) {
         {/* Header */}
         <div className="px-6 py-4 border-b border-border/50 flex justify-between items-center bg-secondary/30">
           <div>
-            <h2 className="text-xl font-bold text-foreground">Excelインポート</h2>
+            <h2 className="text-xl font-bold text-foreground">データインポート</h2>
             <p className="text-sm text-muted-foreground mt-0.5">スプレッドシートからデータを一括インポートします</p>
           </div>
           <button onClick={onClose} className="p-2 text-muted-foreground hover:bg-secondary rounded-full transition-colors">
