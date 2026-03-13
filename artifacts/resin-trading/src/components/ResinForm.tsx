@@ -15,7 +15,7 @@ import {
   CreateResinEntryEntryType
 } from "@workspace/api-client-react";
 import { useUpload } from "@workspace/object-storage-web";
-import { X, Loader2, Upload, Trash2 } from "lucide-react";
+import { X, Loader2, Upload, Trash2, FileText } from "lucide-react";
 import { format } from "date-fns";
 
 const formSchema = z.object({
@@ -51,6 +51,7 @@ const formSchema = z.object({
   remarks: z.string().nullable().optional(),
   imageUrl: z.string().nullable().optional(),
   imageUrls: z.array(z.string()).optional(),
+  tdsUrl: z.string().nullable().optional(),
 });
 
 type FormValues = z.infer<typeof formSchema>;
@@ -110,6 +111,7 @@ export function ResinForm({
       imageUrls: initialData?.imageUrls?.length
         ? initialData.imageUrls
         : initialData?.imageUrl ? [initialData.imageUrl] : [],
+      tdsUrl: initialData?.tdsUrl ?? null,
     }
   });
 
@@ -122,6 +124,15 @@ export function ResinForm({
     onSuccess: (response: { objectPath: string }) => {
       const url = `/api/storage${response.objectPath}`;
       formSetValue("imageUrls", [...(watch("imageUrls") ?? []), url]);
+    },
+  });
+
+  const currentTdsUrl = watch("tdsUrl");
+  const tdsInputRef = useRef<HTMLInputElement>(null);
+  const [isTdsDragging, setIsTdsDragging] = useState(false);
+  const { uploadFile: uploadTds, isUploading: isTdsUploading } = useUpload({
+    onSuccess: (response: { objectPath: string }) => {
+      formSetValue("tdsUrl", `/api/storage${response.objectPath}`);
     },
   });
 
@@ -435,6 +446,70 @@ export function ResinForm({
                   {isDragging ? "ここにドロップ" : "ここにドラッグ＆ドロップ、または「写真を追加」をクリック"}
                 </p>
               </div>
+            </div>
+
+            {/* TDS Upload */}
+            <div className="flex flex-col gap-2">
+              <label className="text-sm font-medium text-foreground">物性表</label>
+              <input type="hidden" {...register("tdsUrl")} />
+              <input
+                ref={tdsInputRef}
+                type="file"
+                accept="application/pdf,image/*"
+                className="hidden"
+                onChange={async (e) => {
+                  const file = e.target.files?.[0];
+                  if (file) await uploadTds(file);
+                  e.target.value = "";
+                }}
+              />
+              {currentTdsUrl ? (
+                <div className="flex items-center gap-3 px-4 py-3 rounded-xl border border-border/50 bg-secondary/20">
+                  <FileText className="w-8 h-8 text-primary flex-shrink-0" />
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-foreground truncate">物性表あり</p>
+                    <a href={currentTdsUrl} download className="text-xs text-primary hover:underline">ダウンロード</a>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => formSetValue("tdsUrl", null)}
+                    className="p-1.5 rounded-lg text-muted-foreground hover:text-red-500 hover:bg-red-500/10 transition-colors flex-shrink-0"
+                    title="削除"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              ) : (
+                <div
+                  className={`rounded-xl border-2 border-dashed p-4 transition-all ${isTdsDragging ? "border-primary bg-primary/5 scale-[1.01]" : "border-border/50 bg-transparent"}`}
+                  onDragEnter={(e) => { e.preventDefault(); setIsTdsDragging(true); }}
+                  onDragOver={(e) => { e.preventDefault(); setIsTdsDragging(true); }}
+                  onDragLeave={(e) => { if (!e.currentTarget.contains(e.relatedTarget as Node)) setIsTdsDragging(false); }}
+                  onDrop={async (e) => {
+                    e.preventDefault();
+                    setIsTdsDragging(false);
+                    const file = e.dataTransfer.files[0];
+                    if (file) await uploadTds(file);
+                  }}
+                >
+                  <button
+                    type="button"
+                    onClick={() => tdsInputRef.current?.click()}
+                    disabled={isTdsUploading}
+                    className="flex flex-col items-center justify-center gap-2 w-full text-muted-foreground hover:text-foreground transition-colors disabled:opacity-50 disabled:pointer-events-none"
+                  >
+                    {isTdsUploading ? (
+                      <Loader2 className="w-6 h-6 animate-spin" />
+                    ) : (
+                      <>
+                        <FileText className="w-6 h-6" />
+                        <span className="text-sm">{isTdsDragging ? "ここにドロップ" : "PDF または画像をドラッグ＆ドロップ"}</span>
+                        <span className="text-xs text-muted-foreground/70">またはクリックして選択</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              )}
             </div>
 
           </form>

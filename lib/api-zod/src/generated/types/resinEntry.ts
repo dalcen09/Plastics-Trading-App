@@ -49,6 +49,7 @@ export interface ResinEntry {
   sellingPrice?: number | null;
   imageUrl?: string | null;
   imageUrls?: string[] | null;
+  tdsUrl?: string | null;
   createdAt: string;
   updatedAt: string;
 }

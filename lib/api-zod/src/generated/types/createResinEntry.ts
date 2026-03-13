@@ -48,4 +48,5 @@ export interface CreateResinEntry {
   sellingPrice?: number | null;
   imageUrl?: string | null;
   imageUrls?: string[] | null;
+  tdsUrl?: string | null;
 }

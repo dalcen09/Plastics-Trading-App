@@ -1,5 +1,5 @@
 import { ResinEntry } from "@workspace/api-client-react";
-import { Edit2, Trash2, Box, Package, ArrowUp, ArrowDown, ArrowUpDown, ImageIcon, Download } from "lucide-react";
+import { Edit2, Trash2, Box, Package, ArrowUp, ArrowDown, ArrowUpDown, ImageIcon, Download, FileText } from "lucide-react";
 import { formatCurrency, formatDate, formatNumber, cn } from "@/lib/utils";
 import { useState, useRef, useCallback } from "react";
 import { createPortal } from "react-dom";
@@ -58,7 +58,7 @@ function PhotoThumbnail({ url, index }: { url: string; index: number }) {
 
 export type ColumnKey =
   | "date" | "personInCharge" | "resinType" | "manufacturer"
-  | "grade" | "charpy" | "izod" | "specs" | "price" | "storageLocation" | "quantity" | "quantityType" | "photo" | "isClosed" | "sampleAvailable"
+  | "grade" | "charpy" | "izod" | "specs" | "price" | "storageLocation" | "quantity" | "quantityType" | "photo" | "tdsUrl" | "isClosed" | "sampleAvailable"
   | "prospectiveBuyer" | "desiredQuantity" | "proposedTo" | "sellingPrice";
 
 export type SortKey =
@@ -86,6 +86,7 @@ export const ALL_COLUMNS: { key: ColumnKey; label: string }[] = [
   { key: "quantity",        label: "数量 (kg)" },
   { key: "quantityType",   label: "数量区分" },
   { key: "photo",            label: "写真" },
+  { key: "tdsUrl",           label: "物性表" },
   { key: "sampleAvailable",  label: "サンプルあり" },
   { key: "prospectiveBuyer", label: "ワーク希望者" },
   { key: "desiredQuantity",  label: "希望数量 (kg)" },
@@ -237,6 +238,7 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
               {col("quantity")       && <SortTh colKey="quantity"  sort={sort} onSort={onSort} className="text-right">数量 (kg)</SortTh>}
               {col("quantityType")   && <th className="px-4 py-4">数量区分</th>}
               {col("photo")          && <th className="px-4 py-4 text-center">写真</th>}
+              {col("tdsUrl")         && <th className="px-4 py-4 text-center">物性表</th>}
               {col("sampleAvailable")  && <th className="px-4 py-4 text-center">サンプル</th>}
               {col("prospectiveBuyer") && <th className="px-4 py-4">ワーク希望者</th>}
               {col("desiredQuantity")  && <th className="px-4 py-4 text-right">希望数量 (kg)</th>}
@@ -409,6 +411,23 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
                         </div>
                       );
                     })()}
+                  </td>
+                )}
+                {col("tdsUrl") && (
+                  <td className="px-4 py-3 text-center">
+                    {row.tdsUrl ? (
+                      <a
+                        href={row.tdsUrl}
+                        download
+                        title="物性表をダウンロード"
+                        className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-primary/10 text-primary text-xs font-medium hover:bg-primary/20 transition-colors"
+                      >
+                        <FileText className="w-3.5 h-3.5" />
+                        DL
+                      </a>
+                    ) : (
+                      <span className="text-muted-foreground/40">―</span>
+                    )}
                   </td>
                 )}
                 {col("sampleAvailable") && (

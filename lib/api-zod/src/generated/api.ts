@@ -68,6 +68,7 @@ export const ListSourcesResponseItem = zod.object({
   sellingPrice: zod.number().nullish(),
   imageUrl: zod.string().nullish(),
   imageUrls: zod.array(zod.string()).nullish(),
+  tdsUrl: zod.string().nullish(),
   createdAt: zod.string().datetime({}),
   updatedAt: zod.string().datetime({}),
 });
@@ -122,6 +123,7 @@ export const CreateSourceBody = zod.object({
   sellingPrice: zod.number().nullish(),
   imageUrl: zod.string().nullish(),
   imageUrls: zod.array(zod.string()).nullish(),
+  tdsUrl: zod.string().nullish(),
 });
 
 /**
@@ -177,6 +179,7 @@ export const UpdateSourceBody = zod.object({
   sellingPrice: zod.number().nullish(),
   imageUrl: zod.string().nullish(),
   imageUrls: zod.array(zod.string()).nullish(),
+  tdsUrl: zod.string().nullish(),
 });
 
 export const UpdateSourceResponse = zod.object({
@@ -226,6 +229,7 @@ export const UpdateSourceResponse = zod.object({
   sellingPrice: zod.number().nullish(),
   imageUrl: zod.string().nullish(),
   imageUrls: zod.array(zod.string()).nullish(),
+  tdsUrl: zod.string().nullish(),
   createdAt: zod.string().datetime({}),
   updatedAt: zod.string().datetime({}),
 });
@@ -291,6 +295,7 @@ export const ListDemandsResponseItem = zod.object({
   sellingPrice: zod.number().nullish(),
   imageUrl: zod.string().nullish(),
   imageUrls: zod.array(zod.string()).nullish(),
+  tdsUrl: zod.string().nullish(),
   createdAt: zod.string().datetime({}),
   updatedAt: zod.string().datetime({}),
 });
@@ -345,6 +350,7 @@ export const CreateDemandBody = zod.object({
   sellingPrice: zod.number().nullish(),
   imageUrl: zod.string().nullish(),
   imageUrls: zod.array(zod.string()).nullish(),
+  tdsUrl: zod.string().nullish(),
 });
 
 /**
@@ -400,6 +406,7 @@ export const UpdateDemandBody = zod.object({
   sellingPrice: zod.number().nullish(),
   imageUrl: zod.string().nullish(),
   imageUrls: zod.array(zod.string()).nullish(),
+  tdsUrl: zod.string().nullish(),
 });
 
 export const UpdateDemandResponse = zod.object({
@@ -449,6 +456,7 @@ export const UpdateDemandResponse = zod.object({
   sellingPrice: zod.number().nullish(),
   imageUrl: zod.string().nullish(),
   imageUrls: zod.array(zod.string()).nullish(),
+  tdsUrl: zod.string().nullish(),
   createdAt: zod.string().datetime({}),
   updatedAt: zod.string().datetime({}),
 });
@@ -511,6 +519,7 @@ export const GetMatchesResponseItem = zod.object({
     sellingPrice: zod.number().nullish(),
     imageUrl: zod.string().nullish(),
     imageUrls: zod.array(zod.string()).nullish(),
+    tdsUrl: zod.string().nullish(),
     createdAt: zod.string().datetime({}),
     updatedAt: zod.string().datetime({}),
   }),
@@ -561,6 +570,7 @@ export const GetMatchesResponseItem = zod.object({
     sellingPrice: zod.number().nullish(),
     imageUrl: zod.string().nullish(),
     imageUrls: zod.array(zod.string()).nullish(),
+    tdsUrl: zod.string().nullish(),
     createdAt: zod.string().datetime({}),
     updatedAt: zod.string().datetime({}),
   }),
