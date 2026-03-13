@@ -1,6 +1,58 @@
 import { ResinEntry } from "@workspace/api-client-react";
-import { Edit2, Trash2, Box, Package, ArrowUp, ArrowDown, ArrowUpDown, ImageIcon } from "lucide-react";
+import { Edit2, Trash2, Box, Package, ArrowUp, ArrowDown, ArrowUpDown, ImageIcon, Download } from "lucide-react";
 import { formatCurrency, formatDate, formatNumber, cn } from "@/lib/utils";
+import { useState, useRef, useCallback } from "react";
+
+function PhotoThumbnail({ url, index }: { url: string; index: number }) {
+  const [popup, setPopup] = useState<{ top: number; left: number } | null>(null);
+  const thumbRef = useRef<HTMLDivElement>(null);
+  const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  const cancelHide = () => { if (hideTimer.current) clearTimeout(hideTimer.current); };
+  const scheduleHide = () => { hideTimer.current = setTimeout(() => setPopup(null), 120); };
+
+  const show = useCallback(() => {
+    cancelHide();
+    if (!thumbRef.current) return;
+    const r = thumbRef.current.getBoundingClientRect();
+    const pw = 256;
+    let left = r.left + r.width / 2 - pw / 2;
+    const top = r.top;
+    if (left < 8) left = 8;
+    if (left + pw > window.innerWidth - 8) left = window.innerWidth - pw - 8;
+    setPopup({ top, left });
+  }, []);
+
+  return (
+    <div ref={thumbRef} className="inline-block" onMouseEnter={show} onMouseLeave={scheduleHide}>
+      <img
+        src={url}
+        alt={`写真 ${index + 1}`}
+        className="w-9 h-9 object-cover rounded-md border border-border/50 cursor-pointer hover:ring-2 hover:ring-primary/50 transition-all"
+      />
+      {popup && (
+        <div
+          className="fixed z-50 bg-card border border-border rounded-xl shadow-2xl overflow-hidden flex flex-col"
+          style={{ top: popup.top, left: popup.left, width: 256, transform: "translateY(-100%) translateY(-6px)" }}
+          onMouseEnter={cancelHide}
+          onMouseLeave={scheduleHide}
+        >
+          <img src={url} alt={`写真 ${index + 1}`} className="w-full max-h-52 object-contain bg-secondary/30" />
+          <div className="p-2.5 flex justify-center border-t border-border/50 bg-card">
+            <a
+              href={url}
+              download
+              className="flex items-center gap-1.5 px-4 py-1.5 rounded-lg bg-primary text-primary-foreground text-xs font-medium hover:bg-primary/90 transition-colors"
+            >
+              <Download className="w-3.5 h-3.5" />
+              ダウンロード
+            </a>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
 
 export type ColumnKey =
   | "date" | "personInCharge" | "resinType" | "manufacturer"
@@ -330,18 +382,19 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
                   </td>
                 )}
                 {col("photo") && (
-                  <td className="px-4 py-3 text-center">
-                    {row.imageUrl ? (
-                      <a href={row.imageUrl} target="_blank" rel="noopener noreferrer">
-                        <img
-                          src={row.imageUrl}
-                          alt="写真"
-                          className="w-10 h-10 object-cover rounded-md border border-border/50 hover:scale-110 transition-transform inline-block"
-                        />
-                      </a>
-                    ) : (
-                      <ImageIcon className="w-4 h-4 text-muted-foreground/30 inline-block" />
-                    )}
+                  <td className="px-4 py-3">
+                    {(() => {
+                      const urls = row.imageUrls?.length ? row.imageUrls : row.imageUrl ? [row.imageUrl] : [];
+                      return urls.length > 0 ? (
+                        <div className="flex flex-wrap gap-1 justify-center">
+                          {urls.map((url, i) => <PhotoThumbnail key={url} url={url} index={i} />)}
+                        </div>
+                      ) : (
+                        <div className="flex justify-center">
+                          <ImageIcon className="w-4 h-4 text-muted-foreground/30" />
+                        </div>
+                      );
+                    })()}
                   </td>
                 )}
                 {col("sampleAvailable") && (
