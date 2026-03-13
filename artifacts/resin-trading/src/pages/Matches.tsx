@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Layout } from "@/components/Layout";
 import { useGetMatches } from "@workspace/api-client-react";
-import { Network, ArrowRightLeft, AlertCircle, Building2, User, Gauge, DollarSign, ChevronLeft, ChevronRight, X } from "lucide-react";
+import { Network, ArrowRightLeft, AlertCircle, Building2, User, Gauge, DollarSign, ChevronLeft, ChevronRight, X, ExternalLink } from "lucide-react";
 import { formatCurrency, formatNumber, cn } from "@/lib/utils";
 import { Link, useLocation } from "wouter";
 
@@ -216,15 +216,16 @@ function MatchCard({ match, highlightEntryId }: { match: any; highlightEntryId?:
       <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-6 items-stretch relative">
 
         {/* Source Panel */}
-        <div className={cn(
-          "rounded-2xl p-5 border",
+        <Link href={`/${match.source.resinCategory}?highlightId=${match.source.id}&tab=sources`} className={cn(
+          "rounded-2xl p-5 border block cursor-pointer transition-all hover:shadow-md hover:scale-[1.01]",
           sourceIsHighlight
             ? "bg-primary/10 border-primary/30 ring-2 ring-primary/20"
-            : "bg-secondary/30 border-border/50"
+            : "bg-secondary/30 border-border/50 hover:border-border"
         )}>
           <div className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-4 flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-blue-500"></span> 仕入れ先（サプライヤー）
-            {sourceIsHighlight && <span className="ml-auto text-primary text-[10px] bg-primary/10 px-1.5 py-0.5 rounded">選択中</span>}
+            {sourceIsHighlight && <span className="text-primary text-[10px] bg-primary/10 px-1.5 py-0.5 rounded">選択中</span>}
+            <span className="ml-auto text-[10px] text-muted-foreground/60 flex items-center gap-0.5"><ExternalLink className="w-3 h-3" />テーブルで確認</span>
           </div>
           <div className="space-y-4">
             <div>
@@ -242,7 +243,7 @@ function MatchCard({ match, highlightEntryId }: { match: any; highlightEntryId?:
               <InfoBadge label="数量" value={`${formatNumber(match.source.quantity)} kg`} />
             </div>
           </div>
-        </div>
+        </Link>
 
         {/* Divider / Arrow */}
         <div className="hidden md:flex flex-col items-center justify-center px-4 relative z-10">
@@ -253,16 +254,17 @@ function MatchCard({ match, highlightEntryId }: { match: any; highlightEntryId?:
         </div>
 
         {/* Demand Panel */}
-        <div className={cn(
-          "rounded-2xl p-5 border relative overflow-hidden",
+        <Link href={`/${match.demand.resinCategory}?highlightId=${match.demand.id}&tab=demands`} className={cn(
+          "rounded-2xl p-5 border relative overflow-hidden block cursor-pointer transition-all hover:shadow-md hover:scale-[1.01]",
           demandIsHighlight
             ? "bg-primary/10 border-primary/30 ring-2 ring-primary/20"
-            : "bg-primary/5 border-primary/10"
+            : "bg-primary/5 border-primary/10 hover:border-primary/20"
         )}>
           <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-bl-full -z-10"></div>
           <div className="text-xs font-bold uppercase tracking-wider text-primary mb-4 flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span> 需要（バイヤー）
-            {demandIsHighlight && <span className="ml-auto text-primary text-[10px] bg-primary/20 px-1.5 py-0.5 rounded">選択中</span>}
+            {demandIsHighlight && <span className="text-primary text-[10px] bg-primary/20 px-1.5 py-0.5 rounded">選択中</span>}
+            <span className="ml-auto text-[10px] text-primary/40 flex items-center gap-0.5"><ExternalLink className="w-3 h-3" />テーブルで確認</span>
           </div>
           <div className="space-y-4">
             <div>
@@ -280,7 +282,7 @@ function MatchCard({ match, highlightEntryId }: { match: any; highlightEntryId?:
               <InfoBadge label="希望数量" value={`${formatNumber(match.demand.quantity)} kg`} />
             </div>
           </div>
-        </div>
+        </Link>
 
       </div>
     </div>

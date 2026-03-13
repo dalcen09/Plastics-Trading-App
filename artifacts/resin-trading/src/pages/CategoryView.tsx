@@ -1,4 +1,4 @@
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect, useRef } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Layout } from "@/components/Layout";
 import { ResinTable, ALL_COLUMNS, DEFAULT_VISIBLE, ColumnKey, SortConfig, SortKey, sortData } from "@/components/ResinTable";
@@ -98,6 +98,16 @@ export function CategoryView({ category }: CategoryViewProps) {
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
   const [isBulkDeleting, setIsBulkDeleting] = useState(false);
   const [lastEditedId, setLastEditedId] = useState<number | null>(null);
+
+  const highlightId = useMemo(() => {
+    const p = new URLSearchParams(window.location.search).get("highlightId");
+    return p ? parseInt(p, 10) : null;
+  }, []);
+  const tabParam = useMemo(() => {
+    const p = new URLSearchParams(window.location.search).get("tab");
+    return p === "sources" || p === "demands" ? p : null;
+  }, []);
+  const highlightPageJumped = useRef(false);
 
   const toggleColumn = (key: ColumnKey) =>
     setVisibleColumns(prev => {
@@ -203,6 +213,21 @@ export function CategoryView({ category }: CategoryViewProps) {
 
   // Reset to page 1 when filters, sort or tab changes
   useEffect(() => { setPage(1); }, [filters, activeTab, pageSize, sort]);
+
+  // On initial load: apply tab param and clear filters so highlighted entry is visible
+  useEffect(() => {
+    if (tabParam) setActiveTab(tabParam);
+    if (highlightId != null) setFilters(emptyFilters);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  // Jump to the page containing the highlighted entry (runs once after data is ready)
+  useEffect(() => {
+    if (highlightId == null || highlightPageJumped.current || pageSize <= 0) return;
+    const idx = sortedData.findIndex(e => e.id === highlightId);
+    if (idx === -1) return;
+    highlightPageJumped.current = true;
+    setPage(Math.floor(idx / pageSize) + 1);
+  }, [highlightId, sortedData, pageSize]);
 
   const hasActiveFilters = Object.values(filters).some(v => v !== "");
   const activeFilterCount = Object.values(filters).filter(v => v !== "").length;
@@ -701,6 +726,7 @@ export function CategoryView({ category }: CategoryViewProps) {
               onToggleSelectAll={handleToggleSelectAll}
               matchCounts={matchCounts}
               lastEditedId={lastEditedId}
+              highlightId={highlightId}
             />
           </div>
 

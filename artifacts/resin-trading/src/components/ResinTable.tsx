@@ -146,6 +146,7 @@ interface ResinTableProps {
   onToggleSelectAll: (ids: number[]) => void;
   matchCounts?: Map<number, number>;
   lastEditedId?: number | null;
+  highlightId?: number | null;
 }
 
 const dash = <span className="text-border">—</span>;
@@ -187,17 +188,27 @@ function resinVariant(type: string): { main: string; badge: string | null } {
   return { main: type, badge: null };
 }
 
-export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, visibleColumns, sort, onSort, selectedIds = new Set(), onToggleSelect, onToggleSelectAll, matchCounts, lastEditedId }: ResinTableProps) {
+export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, visibleColumns, sort, onSort, selectedIds = new Set(), onToggleSelect, onToggleSelectAll, matchCounts, lastEditedId, highlightId }: ResinTableProps) {
   const col = (key: ColumnKey) => visibleColumns.has(key);
   const allIds = data.map(r => r.id);
   const scrollRef = useRef<HTMLDivElement>(null);
   const rowRefs = useRef<Map<number, HTMLTableRowElement>>(new Map());
+  const [flashId, setFlashId] = useState<number | null>(null);
 
   useEffect(() => {
     if (lastEditedId == null) return;
     const el = rowRefs.current.get(lastEditedId);
     if (el) el.scrollIntoView({ block: "nearest", behavior: "smooth" });
   }, [lastEditedId, data]);
+
+  useEffect(() => {
+    if (highlightId == null) return;
+    const el = rowRefs.current.get(highlightId);
+    if (el) el.scrollIntoView({ block: "center", behavior: "smooth" });
+    setFlashId(highlightId);
+    const t = setTimeout(() => setFlashId(null), 2500);
+    return () => clearTimeout(t);
+  }, [highlightId, data]);
 
   const allSelected = allIds.length > 0 && allIds.every(id => selectedIds.has(id));
   const someSelected = allIds.some(id => selectedIds.has(id)) && !allSelected;
@@ -274,7 +285,7 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
             {data.map((row) => {
               const isSelected = selectedIds.has(row.id);
               return (
-              <tr key={row.id} ref={el => { if (el) rowRefs.current.set(row.id, el); else rowRefs.current.delete(row.id); }} className={cn("hover:bg-secondary/40 transition-colors group", isSelected && "bg-primary/5", row.isClosed && "opacity-40")}>
+              <tr key={row.id} ref={el => { if (el) rowRefs.current.set(row.id, el); else rowRefs.current.delete(row.id); }} className={cn("hover:bg-secondary/40 transition-colors group", isSelected && "bg-primary/5", row.isClosed && "opacity-40", flashId === row.id && "animate-row-highlight")}>
                 <td className={cn("pl-4 pr-2 py-3 table-sticky-col-left z-10 transition-colors", isSelected ? "bg-primary/10" : "bg-card group-hover:bg-secondary")}>
                   <input
                     type="checkbox"
