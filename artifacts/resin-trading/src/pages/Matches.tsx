@@ -7,6 +7,15 @@ import { Link, useLocation } from "wouter";
 
 const PAGE_SIZE = 30;
 
+function formatMI(lower: number | string | null | undefined, upper: number | string | null | undefined): string | null {
+  const lo = lower != null && lower !== "" ? Number(lower) : null;
+  const hi = upper != null && upper !== "" ? Number(upper) : null;
+  if (lo !== null && hi !== null) return `${lo}〜${hi}`;
+  if (lo !== null) return String(lo);
+  if (hi !== null) return String(hi);
+  return null;
+}
+
 function useSearchParam(name: string): string | null {
   if (typeof window === "undefined") return null;
   return new URLSearchParams(window.location.search).get(name);
@@ -229,7 +238,7 @@ function MatchCard({ match, highlightEntryId }: { match: any; highlightEntryId?:
             <div className="grid grid-cols-2 gap-3 text-sm">
               <InfoBadge icon={<Gauge className="w-3.5 h-3.5"/>} label="製品" value={`${match.source.manufacturer || '未指定'} ${match.source.grade || ''}`} />
               <InfoBadge icon={<DollarSign className="w-3.5 h-3.5"/>} label="価格" value={formatCurrency(match.source.price)} />
-              <InfoBadge label="MI" value={formatNumber(match.source.meltFlowIndex)} />
+              <InfoBadge label="MI" value={formatMI(match.source.meltFlowIndexLower, match.source.meltFlowIndexUpper) ?? '指定なし'} />
               <InfoBadge label="数量" value={`${formatNumber(match.source.quantity)} kg`} />
             </div>
           </div>
@@ -267,7 +276,7 @@ function MatchCard({ match, highlightEntryId }: { match: any; highlightEntryId?:
             <div className="grid grid-cols-2 gap-3 text-sm">
               <InfoBadge icon={<Gauge className="w-3.5 h-3.5"/>} label="希望製品" value={`${match.demand.manufacturer || '指定なし'} ${match.demand.grade || ''}`} />
               <InfoBadge icon={<DollarSign className="w-3.5 h-3.5"/>} label="目標価格" value={formatCurrency(match.demand.price)} />
-              <InfoBadge label="目標MI" value={formatNumber(match.demand.meltFlowIndex) || '指定なし'} />
+              <InfoBadge label="目標MI" value={formatMI(match.demand.meltFlowIndexLower, match.demand.meltFlowIndexUpper) ?? '指定なし'} />
               <InfoBadge label="希望数量" value={`${formatNumber(match.demand.quantity)} kg`} />
             </div>
           </div>
