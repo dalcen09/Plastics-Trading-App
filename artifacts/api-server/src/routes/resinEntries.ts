@@ -381,14 +381,18 @@ router.get("/matches/count-by-entry", async (req, res) => {
   res.json(counts);
 });
 
-// GET /matches (paginated)
+// GET /matches (paginated, with optional entryId filter)
 router.get("/matches", async (req, res) => {
   const { resinCategory } = req.query as { resinCategory?: string };
+  const entryId = req.query.entryId ? parseInt(req.query.entryId as string, 10) : null;
   const limit = Math.min(parseInt((req.query.limit as string) ?? "50", 10), 200);
   const offset = parseInt((req.query.offset as string) ?? "0", 10);
 
   const all = await getOrComputeAllMatches();
-  const filtered = resinCategory ? all.filter(m => (m.source as any).resinCategory === resinCategory) : all;
+  let filtered = resinCategory ? all.filter(m => (m.source as any).resinCategory === resinCategory) : all;
+  if (entryId !== null && Number.isFinite(entryId)) {
+    filtered = filtered.filter(m => (m.source as any).id === entryId || (m.demand as any).id === entryId);
+  }
   const items = filtered.slice(offset, offset + limit);
   res.json({ total: filtered.length, items });
 });

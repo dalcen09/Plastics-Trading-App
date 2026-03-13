@@ -574,6 +574,10 @@ export const GetMatchesQueryParams = zod.object({
   limit: zod.coerce.number().default(getMatchesQueryLimitDefault),
   offset: zod.coerce.number().default(getMatchesQueryOffsetDefault),
   resinCategory: zod.coerce.string().optional(),
+  entryId: zod.coerce
+    .number()
+    .optional()
+    .describe("Filter to matches involving this entry ID"),
 });
 
 export const GetMatchesResponse = zod.object({

@@ -1,17 +1,27 @@
 import { useState } from "react";
 import { Layout } from "@/components/Layout";
 import { useGetMatches } from "@workspace/api-client-react";
-import { Network, ArrowRightLeft, AlertCircle, Building2, User, Gauge, DollarSign, ChevronLeft, ChevronRight } from "lucide-react";
+import { Network, ArrowRightLeft, AlertCircle, Building2, User, Gauge, DollarSign, ChevronLeft, ChevronRight, X } from "lucide-react";
 import { formatCurrency, formatNumber, cn } from "@/lib/utils";
-import { Link } from "wouter";
+import { Link, useLocation } from "wouter";
 
 const PAGE_SIZE = 30;
 
+function useSearchParam(name: string): string | null {
+  if (typeof window === "undefined") return null;
+  return new URLSearchParams(window.location.search).get(name);
+}
+
 export function Matches() {
   const [page, setPage] = useState(0);
+  const [, navigate] = useLocation();
+
+  const entryIdStr = useSearchParam("entryId");
+  const entryId = entryIdStr ? parseInt(entryIdStr, 10) : undefined;
+  const entryName = useSearchParam("name");
 
   const { data, isLoading } = useGetMatches(
-    { limit: PAGE_SIZE, offset: page * PAGE_SIZE },
+    { limit: PAGE_SIZE, offset: page * PAGE_SIZE, ...(entryId ? { entryId } : {}) },
     { query: { staleTime: 60000 } }
   );
 
@@ -19,13 +29,15 @@ export function Matches() {
   const total = data?.total ?? 0;
   const totalPages = Math.max(1, Math.ceil(total / PAGE_SIZE));
 
+  const isFiltered = !!entryId;
+
   return (
     <Layout>
       <div className="flex flex-col h-full max-w-6xl mx-auto">
 
         {/* Header */}
         <div className="flex-shrink-0 mb-6">
-          <div className="flex items-center justify-between">
+          <div className="flex items-start justify-between gap-4">
             <div className="flex items-center gap-3">
               <div className="p-3 bg-primary/10 text-primary rounded-2xl">
                 <Network className="w-8 h-8" />
@@ -34,17 +46,34 @@ export function Matches() {
                 <h1 className="text-3xl font-display font-bold text-foreground">
                   マッチング分析
                 </h1>
-                <p className="text-muted-foreground mt-1">
-                  仕入れ先と需要の自動マッチングを表示します。
-                  {total > 0 && <span className="ml-2 font-semibold text-primary">{total.toLocaleString()}件</span>}
-                </p>
+                {isFiltered ? (
+                  <div className="flex items-center gap-2 mt-1 flex-wrap">
+                    <span className="text-muted-foreground text-sm">絞り込み中:</span>
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-primary/10 text-primary rounded-full text-sm font-semibold">
+                      {entryName ?? `ID ${entryId}`}
+                      <button
+                        onClick={() => navigate("/matches")}
+                        className="hover:bg-primary/20 rounded-full p-0.5 transition-colors"
+                        title="フィルター解除"
+                      >
+                        <X className="w-3.5 h-3.5" />
+                      </button>
+                    </span>
+                    <span className="text-primary font-semibold text-sm">{total}件のマッチ</span>
+                  </div>
+                ) : (
+                  <p className="text-muted-foreground mt-1 text-sm">
+                    仕入れ先と需要の自動マッチングを表示します。
+                    {total > 0 && <span className="ml-2 font-semibold text-primary">{total.toLocaleString()}件</span>}
+                  </p>
+                )}
               </div>
             </div>
 
             {/* Pagination top */}
             {total > PAGE_SIZE && (
-              <div className="flex items-center gap-2">
-                <span className="text-sm text-muted-foreground">
+              <div className="flex items-center gap-2 flex-shrink-0">
+                <span className="text-sm text-muted-foreground whitespace-nowrap">
                   {page * PAGE_SIZE + 1}–{Math.min((page + 1) * PAGE_SIZE, total)} / {total.toLocaleString()}
                 </span>
                 <button
@@ -78,11 +107,10 @@ export function Matches() {
             <>
               <div className="grid grid-cols-1 gap-6">
                 {items.map((match, idx) => (
-                  <MatchCard key={`${page}-${idx}`} match={match} />
+                  <MatchCard key={`${page}-${idx}`} match={match} highlightEntryId={entryId} />
                 ))}
               </div>
 
-              {/* Pagination bottom */}
               {totalPages > 1 && (
                 <div className="flex items-center justify-center gap-3 mt-8">
                   <button
@@ -112,16 +140,27 @@ export function Matches() {
               </div>
               <h3 className="text-xl font-display font-semibold text-foreground mb-2">マッチングなし</h3>
               <p className="text-center max-w-md text-sm">
-                現在の仕入れ先と需要の間に有効なマッチングが見つかりませんでした。在庫またはリクエストを追加してください。
+                {isFiltered
+                  ? "この取引先に対するマッチングが見つかりませんでした。"
+                  : "現在の仕入れ先と需要の間に有効なマッチングが見つかりませんでした。"}
               </p>
-              <div className="flex gap-4 mt-8">
-                <Link href="/virgin" className="px-5 py-2.5 rounded-xl text-sm font-semibold bg-secondary text-foreground hover:bg-secondary/80 transition-colors">
-                  バージンを追加
-                </Link>
-                <Link href="/offgrade" className="px-5 py-2.5 rounded-xl text-sm font-semibold bg-secondary text-foreground hover:bg-secondary/80 transition-colors">
-                  オフグレードを追加
-                </Link>
-              </div>
+              {isFiltered ? (
+                <button
+                  onClick={() => navigate("/matches")}
+                  className="mt-6 px-5 py-2.5 rounded-xl text-sm font-semibold bg-secondary text-foreground hover:bg-secondary/80 transition-colors"
+                >
+                  全マッチを表示
+                </button>
+              ) : (
+                <div className="flex gap-4 mt-8">
+                  <Link href="/virgin" className="px-5 py-2.5 rounded-xl text-sm font-semibold bg-secondary text-foreground hover:bg-secondary/80 transition-colors">
+                    バージンを追加
+                  </Link>
+                  <Link href="/offgrade" className="px-5 py-2.5 rounded-xl text-sm font-semibold bg-secondary text-foreground hover:bg-secondary/80 transition-colors">
+                    オフグレードを追加
+                  </Link>
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -130,11 +169,14 @@ export function Matches() {
   );
 }
 
-function MatchCard({ match }: { match: any }) {
+function MatchCard({ match, highlightEntryId }: { match: any; highlightEntryId?: number }) {
   const isHighMatch = match.score >= 80;
   const scoreColor = isHighMatch
     ? "text-emerald-600 bg-emerald-50 border-emerald-200"
     : "text-amber-600 bg-amber-50 border-amber-200";
+
+  const sourceIsHighlight = highlightEntryId && match.source.id === highlightEntryId;
+  const demandIsHighlight = highlightEntryId && match.demand.id === highlightEntryId;
 
   return (
     <div className="bg-card rounded-3xl p-6 sm:p-8 shadow-lg shadow-black/5 border border-border/60 hover:shadow-xl hover:border-primary/20 transition-all duration-300">
@@ -166,9 +208,15 @@ function MatchCard({ match }: { match: any }) {
       <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-6 items-stretch relative">
 
         {/* Source Panel */}
-        <div className="bg-secondary/30 rounded-2xl p-5 border border-border/50">
+        <div className={cn(
+          "rounded-2xl p-5 border",
+          sourceIsHighlight
+            ? "bg-primary/10 border-primary/30 ring-2 ring-primary/20"
+            : "bg-secondary/30 border-border/50"
+        )}>
           <div className="text-xs font-bold uppercase tracking-wider text-muted-foreground mb-4 flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-blue-500"></span> 仕入れ先（サプライヤー）
+            {sourceIsHighlight && <span className="ml-auto text-primary text-[10px] bg-primary/10 px-1.5 py-0.5 rounded">選択中</span>}
           </div>
           <div className="space-y-4">
             <div>
@@ -197,10 +245,16 @@ function MatchCard({ match }: { match: any }) {
         </div>
 
         {/* Demand Panel */}
-        <div className="bg-primary/5 rounded-2xl p-5 border border-primary/10 relative overflow-hidden">
+        <div className={cn(
+          "rounded-2xl p-5 border relative overflow-hidden",
+          demandIsHighlight
+            ? "bg-primary/10 border-primary/30 ring-2 ring-primary/20"
+            : "bg-primary/5 border-primary/10"
+        )}>
           <div className="absolute top-0 right-0 w-32 h-32 bg-primary/5 rounded-bl-full -z-10"></div>
           <div className="text-xs font-bold uppercase tracking-wider text-primary mb-4 flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span> 需要（バイヤー）
+            {demandIsHighlight && <span className="ml-auto text-primary text-[10px] bg-primary/20 px-1.5 py-0.5 rounded">選択中</span>}
           </div>
           <div className="space-y-4">
             <div>

@@ -204,6 +204,12 @@ paths:
           required: false
           schema:
             type: string
+        - name: entryId
+          in: query
+          required: false
+          description: Filter to matches involving this entry ID
+          schema:
+            type: integer
       responses:
         "200":
           description: Paginated list of matches

@@ -10,4 +10,8 @@ export type GetMatchesParams = {
   limit?: number;
   offset?: number;
   resinCategory?: string;
+  /**
+   * Filter to matches involving this entry ID
+   */
+  entryId?: number;
 };
