@@ -236,7 +236,7 @@ export function ResinForm({
 
             {/* Section: Technical Specs */}
             <div>
-              <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4 pt-4 border-t border-border/50">技術仕様</h3>
+              <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4 pt-4 border-t border-border/50">物性</h3>
               <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
                 <FormGroup label="MI 下限" error={errors.meltFlowIndexLower?.message}>
                   <input type="number" step="0.01" placeholder="g/10min" {...register("meltFlowIndexLower")} className="input-field" />
