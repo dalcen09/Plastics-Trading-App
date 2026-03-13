@@ -3,6 +3,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Layout } from "@/components/Layout";
 import { Trash2, RotateCcw, AlertTriangle, CheckSquare, Square } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { getGetMatchesQueryKey, getGetMatchCountQueryKey, getGetMatchCountByEntryQueryKey } from "@workspace/api-client-react";
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
 
@@ -80,6 +81,9 @@ export function TrashView() {
     qc.invalidateQueries({ queryKey: ["trash"] });
     qc.invalidateQueries({ queryKey: ["/api/sources"] });
     qc.invalidateQueries({ queryKey: ["/api/demands"] });
+    qc.invalidateQueries({ queryKey: getGetMatchesQueryKey() });
+    qc.invalidateQueries({ queryKey: getGetMatchCountQueryKey() });
+    qc.invalidateQueries({ queryKey: getGetMatchCountByEntryQueryKey() });
   };
 
   const restoreOne = useMutation({

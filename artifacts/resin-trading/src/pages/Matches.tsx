@@ -21,8 +21,7 @@ export function Matches() {
   const entryName = useSearchParam("name");
 
   const { data, isLoading } = useGetMatches(
-    { limit: PAGE_SIZE, offset: page * PAGE_SIZE, ...(entryId ? { entryId } : {}) },
-    { query: { staleTime: 60000 } }
+    { limit: PAGE_SIZE, offset: page * PAGE_SIZE, ...(entryId ? { entryId } : {}) }
   );
 
   const items = data?.items ?? [];

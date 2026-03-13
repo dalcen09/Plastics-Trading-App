@@ -23,7 +23,7 @@ const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
 export function Layout({ children }: LayoutProps) {
   const [location] = useLocation();
 
-  const { data: countData } = useGetMatchCount({ query: { staleTime: 60000, refetchInterval: 60000 } });
+  const { data: countData } = useGetMatchCount({ query: { refetchInterval: 60000 } });
   const matchCount = countData?.count ?? 0;
 
   const { data: trashItems = [] } = useQuery<unknown[]>({

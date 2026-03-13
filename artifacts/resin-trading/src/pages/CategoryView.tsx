@@ -148,6 +148,9 @@ export function CategoryView({ category }: CategoryViewProps) {
         queryClient.invalidateQueries({ queryKey: getListDemandsQueryKey({ resinCategory: category as ResinCategory }) });
       }
       queryClient.invalidateQueries({ queryKey: ["trash"] });
+      queryClient.invalidateQueries({ queryKey: getGetMatchesQueryKey() });
+      queryClient.invalidateQueries({ queryKey: getGetMatchCountByEntryQueryKey() });
+      queryClient.invalidateQueries({ queryKey: getGetMatchCountQueryKey() });
       toast({ title: `${ids.length} 件を削除しました` });
     } catch {
       toast({ title: "削除に失敗しました", variant: "destructive" });
@@ -163,8 +166,7 @@ export function CategoryView({ category }: CategoryViewProps) {
   const { data: demands = [], isLoading: demandsLoading } = useListDemands({ resinCategory: category as ResinCategory });
 
   const { data: countByEntry = {} } = useGetMatchCountByEntry(
-    { resinCategory: category },
-    { query: { staleTime: 60000 } }
+    { resinCategory: category }
   );
   const matchCounts = useMemo(() => {
     const map = new Map<number, number>();
@@ -767,8 +769,8 @@ export function CategoryView({ category }: CategoryViewProps) {
             queryClient.invalidateQueries({ queryKey: getListSourcesQueryKey({ resinCategory: category as ResinCategory }) });
             queryClient.invalidateQueries({ queryKey: getListDemandsQueryKey({ resinCategory: category as ResinCategory }) });
             queryClient.invalidateQueries({ queryKey: getGetMatchesQueryKey() });
-        queryClient.invalidateQueries({ queryKey: getGetMatchCountByEntryQueryKey() });
-        queryClient.invalidateQueries({ queryKey: getGetMatchCountQueryKey() });
+            queryClient.invalidateQueries({ queryKey: getGetMatchCountByEntryQueryKey() });
+            queryClient.invalidateQueries({ queryKey: getGetMatchCountQueryKey() });
           }}
         />
       )}
