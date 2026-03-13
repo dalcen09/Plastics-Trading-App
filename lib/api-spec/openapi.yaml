@@ -264,6 +264,10 @@ components:
       type: string
       enum: [LD, HD]
 
+    PSType:
+      type: string
+      enum: [HI, GP]
+
     QuantityType:
       type: string
       enum: ["月間", "スポット"]
@@ -305,6 +309,9 @@ components:
           nullable: true
         peType:
           $ref: "#/components/schemas/PEType"
+          nullable: true
+        psType:
+          $ref: "#/components/schemas/PSType"
           nullable: true
         sampleAvailable:
           type: boolean
@@ -387,6 +394,9 @@ components:
           nullable: true
         peType:
           $ref: "#/components/schemas/PEType"
+          nullable: true
+        psType:
+          $ref: "#/components/schemas/PSType"
           nullable: true
         sampleAvailable:
           type: boolean

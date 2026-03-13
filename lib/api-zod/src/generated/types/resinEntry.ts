@@ -8,6 +8,7 @@
 import type { PackagingType } from "./packagingType";
 import type { PEType } from "./pEType";
 import type { PPType } from "./pPType";
+import type { PSType } from "./pSType";
 import type { QuantityType } from "./quantityType";
 import type { ResinCategory } from "./resinCategory";
 import type { ResinEntryEntryType } from "./resinEntryEntryType";
@@ -26,6 +27,7 @@ export interface ResinEntry {
   otherResinType?: string | null;
   ppType?: PPType | null;
   peType?: PEType | null;
+  psType?: PSType | null;
   sampleAvailable?: boolean | null;
   packaging?: PackagingType | null;
   meltFlowIndex?: number | null;

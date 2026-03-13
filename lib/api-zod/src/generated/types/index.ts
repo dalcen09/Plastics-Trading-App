@@ -16,6 +16,7 @@ export * from "./match";
 export * from "./packagingType";
 export * from "./pEType";
 export * from "./pPType";
+export * from "./pSType";
 export * from "./quantityType";
 export * from "./resinCategory";
 export * from "./resinEntry";

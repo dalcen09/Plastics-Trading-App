@@ -9,6 +9,7 @@ import {
   ResinType, 
   PPType, 
   PEType,
+  PSType,
   PackagingType,
   CreateResinEntryEntryType
 } from "@workspace/api-client-react";
@@ -28,6 +29,7 @@ const formSchema = z.object({
   otherResinType: z.string().nullable().optional(),
   ppType: z.preprocess(v => v === "" ? null : v, z.nativeEnum(PPType).nullable().optional()),
   peType: z.preprocess(v => v === "" ? null : v, z.nativeEnum(PEType).nullable().optional()),
+  psType: z.preprocess(v => v === "" ? null : v, z.nativeEnum(PSType).nullable().optional()),
   sampleAvailable: z.boolean().nullable().optional(),
   packaging: z.nativeEnum(PackagingType).nullable().optional(),
   meltFlowIndex: z.coerce.number().nullable().optional(),
@@ -75,6 +77,7 @@ export function ResinForm({
       otherResinType: initialData?.otherResinType || "",
       ppType: initialData?.ppType || null,
       peType: initialData?.peType || null,
+      psType: initialData?.psType || null,
       sampleAvailable: initialData?.sampleAvailable || false,
       packaging: initialData?.packaging || PackagingType.Bags,
       meltFlowIndex: initialData?.meltFlowIndex ?? undefined,
@@ -185,6 +188,15 @@ export function ResinForm({
                     <select {...register("peType")} className="input-field">
                       <option value="">―</option>
                       {Object.values(PEType).map(t => <option key={t} value={t}>{t}</option>)}
+                    </select>
+                  </FormGroup>
+                )}
+
+                {selectedResinType === ResinType.PS && (
+                  <FormGroup label="PSタイプ" error={errors.psType?.message}>
+                    <select {...register("psType")} className="input-field">
+                      <option value="">―</option>
+                      {Object.values(PSType).map(t => <option key={t} value={t}>{t}</option>)}
                     </select>
                   </FormGroup>
                 )}
