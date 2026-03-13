@@ -143,7 +143,7 @@ export function ResinForm({
         <div className="px-6 py-4 border-b border-border/50 flex justify-between items-center bg-secondary/30">
           <div>
             <h2 className="text-xl font-display font-bold text-foreground">
-              {initialData ? "編集" : "追加"} — {entryType === "source" ? "仕入れ先" : "需要"}
+              {initialData ? "編集" : "追加"}
             </h2>
             <p className="text-sm text-muted-foreground mt-0.5 capitalize">
               {resinCategory === "virgin" ? "バージン" : resinCategory === "offgrade" ? "オフグレード" : "リサイクル"} 樹脂
