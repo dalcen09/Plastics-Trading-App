@@ -135,6 +135,16 @@
     @apply bg-white/80 backdrop-blur-md border border-white/20 shadow-xl shadow-black/5;
   }
 
+  /* Remove number input spin buttons */
+  input[type='number']::-webkit-inner-spin-button,
+  input[type='number']::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+  input[type='number'] {
+    -moz-appearance: textfield;
+  }
+
   /* Table styling for sticky columns */
   .table-sticky-col-left {
     position: sticky;
