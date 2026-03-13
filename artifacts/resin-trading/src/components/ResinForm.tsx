@@ -170,7 +170,7 @@ export function ResinForm({
 
             {/* Section: Product Specs */}
             <div>
-              <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4 pt-4 border-t border-border/50">製品仕様</h3>
+              <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4 pt-4 border-t border-border/50">製品</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5">
                 <FormGroup label="樹脂種別" error={errors.resinType?.message}>
                   <select {...register("resinType")} className="input-field">
