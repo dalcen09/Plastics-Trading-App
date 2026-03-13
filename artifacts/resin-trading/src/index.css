@@ -139,6 +139,9 @@
   .table-sticky-col-left {
     @apply sticky left-0 z-10 bg-inherit after:absolute after:inset-y-0 after:right-[-1px] after:w-px after:bg-border;
   }
+  .table-sticky-col-left-2 {
+    @apply sticky left-10 z-10 bg-inherit after:absolute after:inset-y-0 after:right-[-1px] after:w-px after:bg-border;
+  }
   .table-sticky-col-right {
     @apply sticky right-0 z-10 bg-inherit after:absolute after:inset-y-0 after:left-[-1px] after:w-px after:bg-border;
   }

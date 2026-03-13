@@ -163,9 +163,10 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
                   title="このページをすべて選択"
                 />
               </th>
-              {/* 取引先 always sticky */}
-              <SortTh colKey="counterparty" sort={sort} onSort={onSort}
-                className="bg-secondary/90 backdrop-blur-sm z-20">
+              {/* 操作 sticky second column */}
+              <th className="px-3 py-4 table-sticky-col-left-2 bg-secondary/90 backdrop-blur-sm text-center z-20">操作</th>
+              {/* 取引先 */}
+              <SortTh colKey="counterparty" sort={sort} onSort={onSort}>
                 取引先
               </SortTh>
               {col("date")           && <SortTh colKey="date"          sort={sort} onSort={onSort}>日付</SortTh>}
@@ -186,7 +187,6 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
               {col("proposedTo")       && <th className="px-4 py-4">提案先</th>}
               {col("sellingPrice")     && <th className="px-4 py-4 text-right">販売価格 (円/kg)</th>}
               {col("isClosed")         && <th className="px-4 py-4 text-center">クローズ</th>}
-              <th className="px-4 py-4 table-sticky-col-right bg-secondary/90 backdrop-blur-sm text-center z-20">操作</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border/50">
@@ -201,6 +201,28 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
                     onChange={() => onToggleSelect(row.id)}
                     className="w-4 h-4 rounded border-border accent-primary cursor-pointer"
                   />
+                </td>
+                <td className={cn("px-3 py-3 table-sticky-col-left-2 text-center z-10 transition-colors", isSelected ? "bg-primary/5" : "bg-card group-hover:bg-secondary/40")}>
+                  <div className="flex items-center justify-center gap-1.5 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button
+                      onClick={() => onEdit(row)}
+                      className="p-1.5 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-lg transition-colors"
+                      title="編集"
+                    >
+                      <Edit2 className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => {
+                        if (window.confirm("このエントリを削除してもよろしいですか？")) {
+                          onDelete(row.id);
+                        }
+                      }}
+                      className="p-1.5 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
+                      title="削除"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
                 </td>
                 <td className={cn("px-4 py-3 font-medium text-foreground transition-colors", isSelected ? "bg-primary/5" : "bg-card group-hover:bg-secondary/40")}>
                   {row.counterparty}
@@ -355,28 +377,6 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
                     </button>
                   </td>
                 )}
-                <td className="px-4 py-3 table-sticky-col-right bg-card group-hover:bg-secondary/40 text-center z-10 transition-colors">
-                  <div className="flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                    <button
-                      onClick={() => onEdit(row)}
-                      className="p-1.5 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-lg transition-colors"
-                      title="編集"
-                    >
-                      <Edit2 className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => {
-                        if (window.confirm("このエントリを削除してもよろしいですか？")) {
-                          onDelete(row.id);
-                        }
-                      }}
-                      className="p-1.5 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
-                      title="削除"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                </td>
               </tr>
             );
             })}
