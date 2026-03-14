@@ -9,7 +9,6 @@ import {
   X,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
-import marukiLogo from "@/assets/maruki-logo.png";
 import { useQuery } from "@tanstack/react-query";
 import { useGetMatchCount } from "@workspace/api-client-react";
 
@@ -67,7 +66,6 @@ export function Layout({ children }: LayoutProps) {
     <>
       {/* Logo row */}
       <div className="h-16 flex items-center justify-between px-6 border-b border-border/50 flex-shrink-0">
-        <img src={marukiLogo} alt="MARUKI" className="h-9 w-auto" />
         {/* Close button – mobile only */}
         <button
           onClick={() => setMobileMenuOpen(false)}
@@ -230,7 +228,6 @@ export function Layout({ children }: LayoutProps) {
             >
               <Menu className="w-5 h-5" />
             </button>
-            <img src={marukiLogo} alt="MARUKI" className="h-8 w-auto md:hidden" />
           </div>
 
           <div className="flex items-center gap-4">
