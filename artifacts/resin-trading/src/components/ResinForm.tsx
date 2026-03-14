@@ -225,7 +225,7 @@ export function ResinForm({
                 )}
                 
                 {selectedResinType === ResinType.PP && (
-                  <FormGroup label="PPタイプ" error={errors.ppType?.message}>
+                  <FormGroup label="タイプ" error={errors.ppType?.message}>
                     <select {...register("ppType")} className="input-field">
                       <option value="">―</option>
                       {Object.values(PPType).map(t => <option key={t} value={t}>{t}</option>)}
@@ -234,7 +234,7 @@ export function ResinForm({
                 )}
 
                 {selectedResinType === ResinType.PE && (
-                  <FormGroup label="PEタイプ" error={errors.peType?.message}>
+                  <FormGroup label="タイプ" error={errors.peType?.message}>
                     <select {...register("peType")} className="input-field">
                       <option value="">―</option>
                       {Object.values(PEType).map(t => <option key={t} value={t}>{t}</option>)}
@@ -243,7 +243,7 @@ export function ResinForm({
                 )}
 
                 {selectedResinType === ResinType.PS && (
-                  <FormGroup label="PSタイプ" error={errors.psType?.message}>
+                  <FormGroup label="タイプ" error={errors.psType?.message}>
                     <select {...register("psType")} className="input-field">
                       <option value="">―</option>
                       {Object.values(PSType).map(t => <option key={t} value={t}>{t}</option>)}
@@ -252,7 +252,7 @@ export function ResinForm({
                 )}
 
                 {selectedResinType === ResinType.ABS && (
-                  <FormGroup label="ABSタイプ" error={errors.absType?.message}>
+                  <FormGroup label="タイプ" error={errors.absType?.message}>
                     <select {...register("absType")} className="input-field">
                       <option value="">―</option>
                       {Object.values(ABSType).map(t => <option key={t} value={t}>{t}</option>)}
