@@ -1,7 +1,7 @@
 import { useState, useMemo, useEffect, useRef } from "react";
 import { useQueryClient } from "@tanstack/react-query";
 import { Layout } from "@/components/Layout";
-import { ResinTable, ALL_COLUMNS, DEFAULT_VISIBLE, ColumnKey, SortConfig, SortKey, sortData } from "@/components/ResinTable";
+import { ResinTable, ALL_COLUMNS, DEFAULT_VISIBLE, RECYCLED_ONLY_COLUMNS, ColumnKey, SortConfig, SortKey, sortData } from "@/components/ResinTable";
 import { ResinForm } from "@/components/ResinForm";
 import { 
   useListSources, 
@@ -91,7 +91,11 @@ export function CategoryView({ category }: CategoryViewProps) {
   const [filters, setFilters] = useState<Filters>(emptyFilters);
   const [showFilters, setShowFilters] = useState(false);
   const [showColumns, setShowColumns] = useState(false);
-  const [visibleColumns, setVisibleColumns] = useState<Set<ColumnKey>>(new Set(DEFAULT_VISIBLE));
+  const [visibleColumns, setVisibleColumns] = useState<Set<ColumnKey>>(() => {
+    const base = new Set(DEFAULT_VISIBLE);
+    if (category === "recycled") RECYCLED_ONLY_COLUMNS.forEach(k => base.add(k));
+    return base;
+  });
   const [sort, setSort] = useState<SortConfig | null>(null);
   const [pageSize, setPageSize] = useState<number>(50);
   const [page, setPage] = useState(1);
@@ -518,30 +522,35 @@ export function CategoryView({ category }: CategoryViewProps) {
                   <div className="fixed left-1/2 -translate-x-1/2 bottom-4 sm:bottom-auto sm:absolute sm:left-auto sm:translate-x-0 sm:right-0 sm:top-full sm:mt-2 z-40 bg-card border border-border rounded-xl shadow-xl p-3 w-[calc(100vw-2rem)] sm:w-[520px] max-h-[80vh] overflow-y-auto">
                     <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wider mb-2 px-1">表示する列</p>
                     <div className="grid grid-cols-2 sm:grid-cols-3 gap-x-2">
-                      {Array.from({ length: Math.ceil(ALL_COLUMNS.length / 10) }, (_, i) =>
-                        ALL_COLUMNS.slice(i * 10, (i + 1) * 10)
-                      ).map((colGroup, gi) => (
-                        <div key={gi} className="flex flex-col gap-0.5">
-                          {colGroup.map(({ key, label }) => (
-                            <label
-                              key={key}
-                              className="flex items-center gap-2.5 px-2 py-1.5 rounded-lg hover:bg-secondary cursor-pointer text-sm"
-                            >
-                              <input
-                                type="checkbox"
-                                checked={visibleColumns.has(key)}
-                                onChange={() => toggleColumn(key)}
-                                className="w-4 h-4 accent-primary rounded"
-                              />
-                              {label}
-                            </label>
-                          ))}
-                        </div>
-                      ))}
+                      {(() => {
+                        const availableCols = ALL_COLUMNS.filter(c =>
+                          category === "recycled" || !RECYCLED_ONLY_COLUMNS.includes(c.key)
+                        );
+                        return Array.from({ length: Math.ceil(availableCols.length / 10) }, (_, i) =>
+                          availableCols.slice(i * 10, (i + 1) * 10)
+                        ).map((colGroup, gi) => (
+                          <div key={gi} className="flex flex-col gap-0.5">
+                            {colGroup.map(({ key, label }) => (
+                              <label
+                                key={key}
+                                className="flex items-center gap-2.5 px-2 py-1.5 rounded-lg hover:bg-secondary cursor-pointer text-sm"
+                              >
+                                <input
+                                  type="checkbox"
+                                  checked={visibleColumns.has(key)}
+                                  onChange={() => toggleColumn(key)}
+                                  className="w-4 h-4 accent-primary rounded"
+                                />
+                                {label}
+                              </label>
+                            ))}
+                          </div>
+                        ));
+                      })()}
                     </div>
                     <div className="border-t border-border mt-2 pt-2 flex gap-2">
                       <button
-                        onClick={() => setVisibleColumns(new Set(ALL_COLUMNS.map(c => c.key)))}
+                        onClick={() => setVisibleColumns(new Set(ALL_COLUMNS.filter(c => category === "recycled" || !RECYCLED_ONLY_COLUMNS.includes(c.key)).map(c => c.key)))}
                         className="flex-1 text-xs py-1.5 rounded-lg border border-border hover:bg-secondary transition-colors"
                       >
                         すべて表示

@@ -444,6 +444,12 @@ components:
         sellingPrice:
           type: number
           nullable: true
+        origin:
+          type: string
+          nullable: true
+        colorTone:
+          type: string
+          nullable: true
         imageUrl:
           type: string
           nullable: true
@@ -559,6 +565,12 @@ components:
           nullable: true
         sellingPrice:
           type: number
+          nullable: true
+        origin:
+          type: string
+          nullable: true
+        colorTone:
+          type: string
           nullable: true
         imageUrl:
           type: string

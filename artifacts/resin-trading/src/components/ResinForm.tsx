@@ -48,6 +48,8 @@ const formSchema = z.object({
   desiredQuantity: z.coerce.number().nullable().optional(),
   proposedTo: z.string().nullable().optional(),
   sellingPrice: z.coerce.number().nullable().optional(),
+  origin: z.string().nullable().optional(),
+  colorTone: z.string().nullable().optional(),
   remarks: z.string().nullable().optional(),
   imageUrl: z.string().nullable().optional(),
   imageUrls: z.array(z.string()).optional(),
@@ -106,6 +108,8 @@ export function ResinForm({
       desiredQuantity: initialData?.desiredQuantity ?? undefined,
       proposedTo: initialData?.proposedTo || "",
       sellingPrice: initialData?.sellingPrice ?? undefined,
+      origin: initialData?.origin || "",
+      colorTone: initialData?.colorTone || "",
       remarks: initialData?.remarks || "",
       imageUrl: initialData?.imageUrl ?? null,
       imageUrls: initialData?.imageUrls?.length
@@ -263,6 +267,16 @@ export function ResinForm({
                   <input type="text" placeholder="グレード名" {...register("grade")} className="input-field" />
                 </FormGroup>
               </div>
+              {resinCategory === ResinCategory.recycled && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 mt-5">
+                  <FormGroup label="由来" error={errors.origin?.message}>
+                    <input type="text" placeholder="由来を入力..." {...register("origin")} className="input-field" />
+                  </FormGroup>
+                  <FormGroup label="色目" error={errors.colorTone?.message}>
+                    <input type="text" placeholder="色目を入力..." {...register("colorTone")} className="input-field" />
+                  </FormGroup>
+                </div>
+              )}
             </div>
 
             {/* Section: Technical Specs */}

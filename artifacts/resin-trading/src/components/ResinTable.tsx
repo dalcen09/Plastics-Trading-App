@@ -59,7 +59,10 @@ function PhotoThumbnail({ url, index }: { url: string; index: number }) {
 export type ColumnKey =
   | "date" | "personInCharge" | "resinType" | "manufacturer"
   | "grade" | "charpy" | "izod" | "specs" | "price" | "storageLocation" | "quantity" | "quantityType" | "packaging" | "photo" | "tdsUrl" | "isClosed" | "sampleAvailable"
-  | "prospectiveBuyer" | "desiredQuantity" | "proposedTo" | "sellingPrice" | "remarks";
+  | "prospectiveBuyer" | "desiredQuantity" | "proposedTo" | "sellingPrice" | "remarks"
+  | "origin" | "colorTone";
+
+export const RECYCLED_ONLY_COLUMNS: ColumnKey[] = ["origin", "colorTone"];
 
 export type SortKey =
   | "counterparty" | "date" | "personInCharge" | "resinType"
@@ -93,6 +96,8 @@ export const ALL_COLUMNS: { key: ColumnKey; label: string }[] = [
   { key: "desiredQuantity",  label: "希望数量 (kg)" },
   { key: "proposedTo",       label: "提案先" },
   { key: "sellingPrice",     label: "販売価格 (円/kg)" },
+  { key: "origin",           label: "由来" },
+  { key: "colorTone",        label: "色目" },
   { key: "remarks",          label: "備考" },
   { key: "isClosed",         label: "クローズ" },
 ];
@@ -100,7 +105,8 @@ export const ALL_COLUMNS: { key: ColumnKey; label: string }[] = [
 export const DEFAULT_VISIBLE: Set<ColumnKey> = new Set(
   ALL_COLUMNS.map(c => c.key).filter(k =>
     k !== "charpy" && k !== "izod" && k !== "photo" && k !== "sampleAvailable" &&
-    k !== "prospectiveBuyer" && k !== "desiredQuantity" && k !== "proposedTo" && k !== "sellingPrice"
+    k !== "prospectiveBuyer" && k !== "desiredQuantity" && k !== "proposedTo" && k !== "sellingPrice" &&
+    k !== "origin" && k !== "colorTone"
   )
 );
 
@@ -262,6 +268,8 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
               {col("resinType")      && <SortTh colKey="resinType"      sort={sort} onSort={onSort}>樹脂</SortTh>}
               {col("manufacturer")   && <SortTh colKey="manufacturer"   sort={sort} onSort={onSort}>メーカー</SortTh>}
               {col("grade")          && <SortTh colKey="grade"          sort={sort} onSort={onSort}>グレード</SortTh>}
+              {col("origin")         && <th className="px-4 py-4">由来</th>}
+              {col("colorTone")      && <th className="px-4 py-4">色目</th>}
               {col("charpy")         && <SortTh colKey="charpy"         sort={sort} onSort={onSort} className="text-right">シャルピー</SortTh>}
               {col("izod")           && <SortTh colKey="izod"           sort={sort} onSort={onSort} className="text-right">アイゾッド</SortTh>}
               {col("specs")          && <th className="px-4 py-4">仕様</th>}
@@ -369,6 +377,12 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
                 )}
                 {col("grade") && (
                   <td className="px-4 py-3 text-sm text-muted-foreground">{row.grade || dash}</td>
+                )}
+                {col("origin") && (
+                  <td className="px-4 py-3 text-sm text-muted-foreground">{row.origin || dash}</td>
+                )}
+                {col("colorTone") && (
+                  <td className="px-4 py-3 text-sm text-muted-foreground">{row.colorTone || dash}</td>
                 )}
                 {col("charpy") && (
                   <td className="px-4 py-3 text-sm text-right text-muted-foreground">

@@ -46,6 +46,8 @@ export interface CreateResinEntry {
   desiredQuantity?: number | null;
   proposedTo?: string | null;
   sellingPrice?: number | null;
+  origin?: string | null;
+  colorTone?: string | null;
   imageUrl?: string | null;
   imageUrls?: string[] | null;
   tdsUrl?: string | null;
