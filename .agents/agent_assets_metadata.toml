@@ -1,0 +1,8 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "tDMCjgG8vUHeXPYvtd0GG"
+uri = "file://maruki-app-introduction.md"
+type = "text"
+title = "MARUKI App — General Introduction"
