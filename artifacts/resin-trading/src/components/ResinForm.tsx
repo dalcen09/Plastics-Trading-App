@@ -339,11 +339,11 @@ export function ResinForm({
               <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4 pt-4 border-t border-border/50">取引情報</h3>
               {/* Row 1: 数量 下限 / 数量 上限 / 数量区分 / 価格 下限 / 価格 上限 / 納入・置場 / 場所 */}
               <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-5 mb-5">
-                <FormGroup label="数量 下限 (kg)" error={errors.quantityLower?.message}>
-                  <input type="number" step="0.01" placeholder="kg" {...register("quantityLower")} className="input-field" />
+                <FormGroup label="数量 下限" error={errors.quantityLower?.message}>
+                  <UnitInput unit="kg" type="number" step="0.01" {...register("quantityLower")} />
                 </FormGroup>
-                <FormGroup label="数量 上限 (kg)" error={errors.quantityUpper?.message}>
-                  <input type="number" step="0.01" placeholder="kg" {...register("quantityUpper")} className="input-field" />
+                <FormGroup label="数量 上限" error={errors.quantityUpper?.message}>
+                  <UnitInput unit="kg" type="number" step="0.01" {...register("quantityUpper")} />
                 </FormGroup>
                 <FormGroup label="数量区分" error={errors.quantityType?.message}>
                   <select {...register("quantityType")} className="input-field">
@@ -352,11 +352,11 @@ export function ResinForm({
                     <option value="スポット">スポット</option>
                   </select>
                 </FormGroup>
-                <FormGroup label="価格 下限 (円/kg)" error={errors.priceLower?.message}>
-                  <input type="number" step="0.01" placeholder="円" {...register("priceLower")} className="input-field" />
+                <FormGroup label="価格 下限" error={errors.priceLower?.message}>
+                  <UnitInput unit="円/kg" type="number" step="0.01" {...register("priceLower")} />
                 </FormGroup>
-                <FormGroup label="価格 上限 (円/kg)" error={errors.priceUpper?.message}>
-                  <input type="number" step="0.01" placeholder="円" {...register("priceUpper")} className="input-field" />
+                <FormGroup label="価格 上限" error={errors.priceUpper?.message}>
+                  <UnitInput unit="円/kg" type="number" step="0.01" {...register("priceUpper")} />
                 </FormGroup>
                 <FormGroup label="納入・置場" error={errors.locationType?.message}>
                   <select {...register("locationType")} className="input-field">
@@ -380,8 +380,8 @@ export function ResinForm({
                     <option value="ポリ袋">ポリ袋</option>
                   </select>
                 </FormGroup>
-                <FormGroup label="梱包重量 (kg)" error={errors.packagingWeight?.message}>
-                  <input type="number" step="0.01" placeholder="例: 500" {...register("packagingWeight")} className="input-field" />
+                <FormGroup label="梱包重量" error={errors.packagingWeight?.message}>
+                  <UnitInput unit="kg" type="number" step="0.01" placeholder="例: 500" {...register("packagingWeight")} />
                 </FormGroup>
                 <FormGroup label="無地・メーカー" error={errors.plainMaker?.message}>
                   <select {...register("plainMaker")} className="input-field">
@@ -428,17 +428,17 @@ export function ResinForm({
                     {personOptions.map(name => <option key={name} value={name}>{name}</option>)}
                   </select>
                 </FormGroup>
-                <FormGroup label="希望数量 (kg)" error={errors.desiredQuantity?.message}>
-                  <input type="number" step="0.01" placeholder="0" {...register("desiredQuantity")} className="input-field" />
+                <FormGroup label="希望数量" error={errors.desiredQuantity?.message}>
+                  <UnitInput unit="kg" type="number" step="0.01" {...register("desiredQuantity")} />
                 </FormGroup>
                 <FormGroup label="提案先" error={errors.proposedTo?.message}>
                   <input type="text" placeholder="提案先" {...register("proposedTo")} className="input-field" />
                 </FormGroup>
-                <FormGroup label="販売価格 (円/kg)" error={errors.sellingPrice?.message}>
-                  <input type="number" step="0.01" placeholder="0" {...register("sellingPrice")} className="input-field" />
+                <FormGroup label="販売価格" error={errors.sellingPrice?.message}>
+                  <UnitInput unit="円/kg" type="number" step="0.01" {...register("sellingPrice")} />
                 </FormGroup>
-                <FormGroup label="最終交渉価格 (円/kg)" error={errors.finalNegotiatedPrice?.message}>
-                  <input type="number" step="0.01" placeholder="0" {...register("finalNegotiatedPrice")} className="input-field" />
+                <FormGroup label="最終交渉価格" error={errors.finalNegotiatedPrice?.message}>
+                  <UnitInput unit="円/kg" type="number" step="0.01" {...register("finalNegotiatedPrice")} />
                 </FormGroup>
               </div>
             </div>
@@ -628,6 +628,20 @@ export function ResinForm({
           color: hsl(var(--muted-foreground) / 0.7);
         }
       `}</style>
+    </div>
+  );
+}
+
+function UnitInput({ unit, ...props }: React.InputHTMLAttributes<HTMLInputElement> & { unit: string }) {
+  return (
+    <div className="flex items-stretch overflow-hidden rounded-lg border border-border bg-background focus-within:ring-2 focus-within:ring-ring/50 focus-within:border-ring transition-colors">
+      <span className="flex items-center px-2.5 text-xs font-medium text-muted-foreground bg-secondary/50 border-r border-border shrink-0 select-none">
+        {unit}
+      </span>
+      <input
+        {...props}
+        className="flex-1 min-w-0 px-3 py-2.5 text-sm bg-transparent outline-none placeholder:text-muted-foreground/50"
+      />
     </div>
   );
 }
