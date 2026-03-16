@@ -395,7 +395,7 @@ components:
           $ref: "#/components/schemas/ABSType"
           nullable: true
         isClosed:
-          type: boolean
+          type: string
         sampleAvailable:
           type: string
           nullable: true
@@ -529,7 +529,7 @@ components:
           $ref: "#/components/schemas/ABSType"
           nullable: true
         isClosed:
-          type: boolean
+          type: string
         sampleAvailable:
           type: string
           nullable: true

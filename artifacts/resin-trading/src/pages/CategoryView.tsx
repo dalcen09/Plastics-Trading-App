@@ -378,7 +378,7 @@ export function CategoryView({ category }: CategoryViewProps) {
   };
 
   const handleToggleClosed = (entry: ResinEntry) => {
-    const updated = { ...entry, isClosed: !entry.isClosed };
+    const updated = { ...entry, isClosed: entry.isClosed === "クローズ" ? "オープン" : "クローズ" };
     if (activeTab === "sources") {
       toggleClosedSource.mutate({ id: entry.id, data: updated });
     } else {

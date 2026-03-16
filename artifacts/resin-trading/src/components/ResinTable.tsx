@@ -303,7 +303,7 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
             {data.map((row) => {
               const isSelected = selectedIds.has(row.id);
               return (
-              <tr key={row.id} ref={el => { if (el) rowRefs.current.set(row.id, el); else rowRefs.current.delete(row.id); }} className={cn("hover:bg-secondary/40 transition-colors group", isSelected && "bg-primary/5", row.isClosed && "opacity-40", flashId === row.id && "animate-row-highlight")}>
+              <tr key={row.id} ref={el => { if (el) rowRefs.current.set(row.id, el); else rowRefs.current.delete(row.id); }} className={cn("hover:bg-secondary/40 transition-colors group", isSelected && "bg-primary/5", row.isClosed === "クローズ" && "opacity-40", flashId === row.id && "animate-row-highlight")}>
                 <td className={cn("pl-4 pr-2 py-3 table-sticky-col-left z-10 transition-colors", isSelected ? "bg-primary/10" : "bg-card group-hover:bg-secondary")}>
                   <input
                     type="checkbox"
@@ -555,10 +555,10 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
                   <td className="px-4 py-3 text-center">
                     <button
                       onClick={() => onToggleClosed?.(row)}
-                      title={row.isClosed ? "クリックでオープンに戻す" : "クリックでクローズ"}
+                      title={row.isClosed === "クローズ" ? "クリックでオープンに戻す" : "クリックでクローズ"}
                       className="transition-opacity hover:opacity-70"
                     >
-                      {row.isClosed
+                      {row.isClosed === "クローズ"
                         ? <span className="text-xs px-2 py-0.5 rounded-full bg-muted text-muted-foreground font-medium cursor-pointer">クローズ</span>
                         : <span className="text-xs px-2 py-0.5 rounded-full bg-green-100 text-green-700 font-medium dark:bg-green-900/30 dark:text-green-400 cursor-pointer">オープン</span>
                       }

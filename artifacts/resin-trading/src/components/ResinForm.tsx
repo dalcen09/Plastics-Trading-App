@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { 
@@ -32,7 +32,7 @@ const formSchema = z.object({
   peType: z.preprocess(v => v === "" ? null : v, z.nativeEnum(PEType).nullable().optional()),
   psType: z.preprocess(v => v === "" ? null : v, z.nativeEnum(PSType).nullable().optional()),
   absType: z.preprocess(v => v === "" ? null : v, z.nativeEnum(ABSType).nullable().optional()),
-  isClosed: z.boolean(),
+  isClosed: z.enum(["クローズ", "オープン"]),
   sampleAvailable: z.preprocess(v => v === "" ? null : v, z.enum(["あり", "なし", "要相談", "有償"]).nullable().optional()),
   packaging: z.nativeEnum(PackagingType).nullable().optional(),
   meltFlowIndexLower: z.coerce.number().nullable().optional(),
@@ -96,7 +96,7 @@ export function ResinForm({
       peType: initialData?.peType || null,
       psType: initialData?.psType || null,
       absType: initialData?.absType || null,
-      isClosed: initialData?.isClosed ?? false,
+      isClosed: (initialData?.isClosed as "クローズ" | "オープン") ?? "オープン",
       sampleAvailable: (initialData?.sampleAvailable as "あり" | "なし" | "要相談" | "有償" | null) ?? null,
       packaging: initialData?.packaging || PackagingType["紙袋"],
       meltFlowIndexLower: initialData?.meltFlowIndexLower ?? undefined,
@@ -356,25 +356,14 @@ export function ResinForm({
                   </select>
                 </FormGroup>
               </div>
-              {/* Checkboxes */}
-              <div className="flex items-center gap-6">
-                <div className="flex flex-col justify-end pb-2">
-                  <label className="flex items-center gap-2 cursor-pointer group">
-                    <Controller
-                      name="isClosed"
-                      control={control}
-                      render={({ field }) => (
-                        <input
-                          type="checkbox"
-                          className="w-5 h-5 rounded border-border text-primary focus:ring-primary/20 transition-colors cursor-pointer"
-                          checked={field.value || false}
-                          onChange={(e) => field.onChange(e.target.checked)}
-                        />
-                      )}
-                    />
-                    <span className="text-sm font-medium text-foreground group-hover:text-primary transition-colors">クローズ</span>
-                  </label>
-                </div>
+              {/* Status fields */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5">
+                <FormGroup label="クローズ・オープン" error={errors.isClosed?.message}>
+                  <select {...register("isClosed")} className="input-field">
+                    <option value="オープン">オープン</option>
+                    <option value="クローズ">クローズ</option>
+                  </select>
+                </FormGroup>
 
                 <FormGroup label="サンプル" error={errors.sampleAvailable?.message}>
                   <select {...register("sampleAvailable")} className="input-field">

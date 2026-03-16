@@ -61,7 +61,7 @@ export const ListSourcesResponseItem = zod.object({
   peType: zod.enum(["LD", "HD", "LLD"]).nullish(),
   psType: zod.enum(["HI", "GP"]).nullish(),
   absType: zod.enum(["難燃"]).nullish(),
-  isClosed: zod.boolean().optional(),
+  isClosed: zod.string().optional(),
   sampleAvailable: zod.string().nullish(),
   packaging: zod
     .enum(["紙袋", "フレコン", "カートン", "鉄箱", "ポリ袋"])
@@ -136,7 +136,7 @@ export const CreateSourceBody = zod.object({
   peType: zod.enum(["LD", "HD", "LLD"]).nullish(),
   psType: zod.enum(["HI", "GP"]).nullish(),
   absType: zod.enum(["難燃"]).nullish(),
-  isClosed: zod.boolean().optional(),
+  isClosed: zod.string().optional(),
   sampleAvailable: zod.string().nullish(),
   packaging: zod
     .enum(["紙袋", "フレコン", "カートン", "鉄箱", "ポリ袋"])
@@ -212,7 +212,7 @@ export const UpdateSourceBody = zod.object({
   peType: zod.enum(["LD", "HD", "LLD"]).nullish(),
   psType: zod.enum(["HI", "GP"]).nullish(),
   absType: zod.enum(["難燃"]).nullish(),
-  isClosed: zod.boolean().optional(),
+  isClosed: zod.string().optional(),
   sampleAvailable: zod.string().nullish(),
   packaging: zod
     .enum(["紙袋", "フレコン", "カートン", "鉄箱", "ポリ袋"])
@@ -282,7 +282,7 @@ export const UpdateSourceResponse = zod.object({
   peType: zod.enum(["LD", "HD", "LLD"]).nullish(),
   psType: zod.enum(["HI", "GP"]).nullish(),
   absType: zod.enum(["難燃"]).nullish(),
-  isClosed: zod.boolean().optional(),
+  isClosed: zod.string().optional(),
   sampleAvailable: zod.string().nullish(),
   packaging: zod
     .enum(["紙袋", "フレコン", "カートン", "鉄箱", "ポリ袋"])
@@ -368,7 +368,7 @@ export const ListDemandsResponseItem = zod.object({
   peType: zod.enum(["LD", "HD", "LLD"]).nullish(),
   psType: zod.enum(["HI", "GP"]).nullish(),
   absType: zod.enum(["難燃"]).nullish(),
-  isClosed: zod.boolean().optional(),
+  isClosed: zod.string().optional(),
   sampleAvailable: zod.string().nullish(),
   packaging: zod
     .enum(["紙袋", "フレコン", "カートン", "鉄箱", "ポリ袋"])
@@ -443,7 +443,7 @@ export const CreateDemandBody = zod.object({
   peType: zod.enum(["LD", "HD", "LLD"]).nullish(),
   psType: zod.enum(["HI", "GP"]).nullish(),
   absType: zod.enum(["難燃"]).nullish(),
-  isClosed: zod.boolean().optional(),
+  isClosed: zod.string().optional(),
   sampleAvailable: zod.string().nullish(),
   packaging: zod
     .enum(["紙袋", "フレコン", "カートン", "鉄箱", "ポリ袋"])
@@ -519,7 +519,7 @@ export const UpdateDemandBody = zod.object({
   peType: zod.enum(["LD", "HD", "LLD"]).nullish(),
   psType: zod.enum(["HI", "GP"]).nullish(),
   absType: zod.enum(["難燃"]).nullish(),
-  isClosed: zod.boolean().optional(),
+  isClosed: zod.string().optional(),
   sampleAvailable: zod.string().nullish(),
   packaging: zod
     .enum(["紙袋", "フレコン", "カートン", "鉄箱", "ポリ袋"])
@@ -589,7 +589,7 @@ export const UpdateDemandResponse = zod.object({
   peType: zod.enum(["LD", "HD", "LLD"]).nullish(),
   psType: zod.enum(["HI", "GP"]).nullish(),
   absType: zod.enum(["難燃"]).nullish(),
-  isClosed: zod.boolean().optional(),
+  isClosed: zod.string().optional(),
   sampleAvailable: zod.string().nullish(),
   packaging: zod
     .enum(["紙袋", "フレコン", "カートン", "鉄箱", "ポリ袋"])
@@ -688,7 +688,7 @@ export const GetMatchesResponse = zod.object({
         peType: zod.enum(["LD", "HD", "LLD"]).nullish(),
         psType: zod.enum(["HI", "GP"]).nullish(),
         absType: zod.enum(["難燃"]).nullish(),
-        isClosed: zod.boolean().optional(),
+        isClosed: zod.string().optional(),
         sampleAvailable: zod.string().nullish(),
         packaging: zod
           .enum(["紙袋", "フレコン", "カートン", "鉄箱", "ポリ袋"])
@@ -759,7 +759,7 @@ export const GetMatchesResponse = zod.object({
         peType: zod.enum(["LD", "HD", "LLD"]).nullish(),
         psType: zod.enum(["HI", "GP"]).nullish(),
         absType: zod.enum(["難燃"]).nullish(),
-        isClosed: zod.boolean().optional(),
+        isClosed: zod.string().optional(),
         sampleAvailable: zod.string().nullish(),
         packaging: zod
           .enum(["紙袋", "フレコン", "カートン", "鉄箱", "ポリ袋"])
