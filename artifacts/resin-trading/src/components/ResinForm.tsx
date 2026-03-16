@@ -335,8 +335,8 @@ export function ResinForm({
             {/* Section: Commercial Info */}
             <div>
               <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4 pt-4 border-t border-border/50">詳細</h3>
-              {/* Row 1: 数量 / 数量区分 / 価格 / 納入・置場 / 場所 */}
-              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-5 mb-5">
+              {/* Row 1: 数量 / 数量区分 */}
+              <div className="grid grid-cols-2 gap-5 mb-5">
                 <RangeGroup label="数量 (kg)" errorLower={errors.quantityLower?.message} errorUpper={errors.quantityUpper?.message}>
                   <input type="number" step="0.01" placeholder="下限" {...register("quantityLower")} className="input-field" />
                   <input type="number" step="0.01" placeholder="上限" {...register("quantityUpper")} className="input-field" />
@@ -348,6 +348,9 @@ export function ResinForm({
                     <option value="スポット">スポット</option>
                   </select>
                 </FormGroup>
+              </div>
+              {/* Row 2: 価格 / 納入・置場 / 場所 */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-5 mb-5">
                 <RangeGroup label="価格 (円/kg)" errorLower={errors.priceLower?.message} errorUpper={errors.priceUpper?.message}>
                   <input type="number" step="0.01" placeholder="下限" {...register("priceLower")} className="input-field" />
                   <input type="number" step="0.01" placeholder="上限" {...register("priceUpper")} className="input-field" />
@@ -363,7 +366,7 @@ export function ResinForm({
                   <input type="text" placeholder="例: 大阪倉庫" {...register("storageLocation")} className="input-field" />
                 </FormGroup>
               </div>
-              {/* Row 2: 梱包形態 / 梱包重量 / 無地・メーカー / ランニング・ワンウェイ */}
+              {/* Row 3: 梱包形態 / 梱包重量 / 無地・メーカー / ランニング・ワンウェイ */}
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5 mb-5">
                 <FormGroup label="梱包形態" error={errors.packaging?.message}>
                   <select {...register("packaging")} className="input-field">
