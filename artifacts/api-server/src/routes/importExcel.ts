@@ -183,8 +183,18 @@ const FIELD_ALIASES: Record<string, string> = {
   "price usd": "price",
   "価格": "price",
   "仕入価格": "price",
+  "仕入れ価格": "price",
+  "仕入値": "price",
+  "仕入れ値": "price",
+  "買値": "price",
   "購入価格": "price",
   "単価": "price",
+  "参考単価": "price",
+  "参考価格": "price",
+  "希望価格": "price",
+  "指値": "price",
+  "提示価格": "price",
+  "入荷価格": "price",
   // price lower/upper
   "price lower": "priceLower",
   "price (lower)": "priceLower",
@@ -202,6 +212,8 @@ const FIELD_ALIASES: Record<string, string> = {
   "最終交渉価格": "finalNegotiatedPrice",
   "交渉価格": "finalNegotiatedPrice",
   "最終価格": "finalNegotiatedPrice",
+  "成約価格": "finalNegotiatedPrice",
+  "決定価格": "finalNegotiatedPrice",
 
   // ── quantity ──────────────────────────────────────────────────────────────
   "quantity": "quantity",
@@ -211,6 +223,15 @@ const FIELD_ALIASES: Record<string, string> = {
   "発生数量": "quantity",
   "数量": "quantity",
   "ロット": "quantity",
+  "発生量": "quantity",
+  "重量": "quantity",
+  "在庫量": "quantity",
+  "在庫数量": "quantity",
+  "入荷量": "quantity",
+  "入荷数量": "quantity",
+  "ロット数量": "quantity",
+  "ロット重量": "quantity",
+  "取引数量": "quantity",
   // quantity lower/upper
   "quantity lower": "quantityLower",
   "quantity (lower)": "quantityLower",
@@ -227,11 +248,18 @@ const FIELD_ALIASES: Record<string, string> = {
   "desired quantity": "desiredQuantity",
   "希望数量": "desiredQuantity",
   "要望数量": "desiredQuantity",
+  "ご希望数量": "desiredQuantity",
 
   // ── quantityType (スポット・月間) ──────────────────────────────────────────
   "quantity type": "quantityType",
   "スポット・月間": "quantityType",
+  "月間・スポット": "quantityType",
+  "スポット/月間": "quantityType",
+  "月間/スポット": "quantityType",
   "取引区分": "quantityType",
+  "取引形態": "quantityType",
+  "受注区分": "quantityType",
+  "発注区分": "quantityType",
 
   // ── packagingWeight (梱包重量) ────────────────────────────────────────────
   "packaging weight": "packagingWeight",
@@ -267,6 +295,16 @@ const FIELD_ALIASES: Record<string, string> = {
   "メモ": "remarks",
   "コメント": "remarks",
   "注記": "remarks",
+
+  // ── locationType (納入・置場) ─────────────────────────────────────────────
+  "location type": "locationType",
+  "location_type": "locationType",
+  "納入・置場": "locationType",
+  "納入置場": "locationType",
+  "納入/置場": "locationType",
+  "置場区分": "locationType",
+  "納入区分": "locationType",
+  "納入形態": "locationType",
 
   // ── storageLocation (他県置場) ────────────────────────────────────────────
   "storage location": "storageLocation",
@@ -349,7 +387,21 @@ const PACKAGING_ALIASES: Record<string, string> = {
 };
 
 function resolveField(colName: string): string | null {
-  return FIELD_ALIASES[colName.trim().toLowerCase()] ?? null;
+  const raw = colName.trim().toLowerCase();
+  // 1. Try exact match first
+  if (FIELD_ALIASES[raw] != null) return FIELD_ALIASES[raw];
+  // 2. Strip parenthetical unit suffixes: 価格(円/kg) → 価格, 数量(kg) → 数量
+  const stripped = raw
+    .replace(/[\(（][^\)）]*[\)）]/g, "")  // remove (...) and （...）
+    .replace(/[（）()]/g, "")              // remove any remaining stray parens
+    .replace(/[【】\[\]]/g, "")            // remove bracket decorators
+    .replace(/\s+/g, " ")
+    .trim();
+  if (stripped !== raw && FIELD_ALIASES[stripped] != null) return FIELD_ALIASES[stripped];
+  // 3. Also try stripping trailing slash-delimited units: 価格/円kg → 価格
+  const slashStripped = raw.replace(/[\/／][^\/／\s]+$/, "").trim();
+  if (slashStripped !== raw && FIELD_ALIASES[slashStripped] != null) return FIELD_ALIASES[slashStripped];
+  return null;
 }
 
 function normalizeEntryType(val: string): "source" | "demand" | null {
@@ -428,6 +480,38 @@ function normalizeIsClosed(val: string): "クローズ" | "オープン" {
   const v = val.trim().toLowerCase();
   if (v.includes("クローズ") || v.includes("close") || v === "1" || v === "true") return "クローズ";
   return "オープン";
+}
+
+function normalizePEType(val: string): "LD" | "HD" | "LLD" | null {
+  if (!val || !val.trim() || val.trim() === "-") return null;
+  const v = val.trim().toUpperCase();
+  if (v === "LD" || v.includes("LDPE") || v.includes("低密度")) return "LD";
+  if (v === "HD" || v.includes("HDPE") || v.includes("高密度")) return "HD";
+  if (v === "LLD" || v.includes("LLDPE") || v.includes("直鎖")) return "LLD";
+  return null;
+}
+
+function normalizePSType(val: string): "HI" | "GP" | null {
+  if (!val || !val.trim() || val.trim() === "-") return null;
+  const v = val.trim().toUpperCase();
+  if (v === "HI" || v.includes("HIPS") || v.includes("耐衝")) return "HI";
+  if (v === "GP" || v.includes("GPPS") || v.includes("汎用")) return "GP";
+  return null;
+}
+
+function normalizeABSType(val: string): "難燃" | null {
+  if (!val || !val.trim() || val.trim() === "-") return null;
+  const v = val.trim();
+  if (v === "難燃" || v.toLowerCase().includes("flame") || v.toLowerCase().includes("fr")) return "難燃";
+  return null;
+}
+
+function normalizeLocationType(val: string): "納入" | "置場" | null {
+  if (!val || !val.trim() || val.trim() === "-") return null;
+  const v = val.trim();
+  if (v === "納入" || v.toLowerCase().includes("deliver") || v.toLowerCase().includes("delivery")) return "納入";
+  if (v === "置場" || v.includes("置き場") || v.toLowerCase().includes("storage") || v.toLowerCase().includes("warehouse")) return "置場";
+  return null;
 }
 
 function parseDate(val: any): string | null {
@@ -569,12 +653,23 @@ router.post("/import", upload.single("file"), async (req, res) => {
           izodUpper: numStr(data.izodUpper),
           densityLower: numStr(data.densityLower),
           densityUpper: numStr(data.densityUpper),
+          peType: data.peType ? normalizePEType(String(data.peType)) as any : null,
+          psType: data.psType ? normalizePSType(String(data.psType)) as any : null,
+          absType: data.absType ? normalizeABSType(String(data.absType)) as any : null,
+          otherResinType: data.otherResinType ? String(data.otherResinType).trim() || null : null,
           price: numStr(data.price),
+          priceLower: numStr(data.priceLower),
+          priceUpper: numStr(data.priceUpper),
           finalNegotiatedPrice: numStr(data.finalNegotiatedPrice),
           quantity: numStr(data.quantity),
+          quantityLower: numStr(data.quantityLower),
+          quantityUpper: numStr(data.quantityUpper),
           quantityType: data.quantityType ? normalizeQuantityType(String(data.quantityType)) as any : null,
+          locationType: data.locationType ? normalizeLocationType(String(data.locationType)) as any : null,
           remarks: data.remarks ? String(data.remarks).trim() || null : null,
           // Extended fields
+          origin: data.origin ? String(data.origin).trim() || null : null,
+          colorTone: data.colorTone ? String(data.colorTone).trim() || null : null,
           storageLocation: data.storageLocation ? String(data.storageLocation).trim() || null : null,
           arrivalPrice: numStr(data.arrivalPrice),
           spotPrice: numStr(data.spotPrice),
