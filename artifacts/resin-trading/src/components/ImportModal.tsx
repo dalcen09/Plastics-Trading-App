@@ -64,18 +64,30 @@ export function ImportModal({ onClose, onSuccess }: ImportModalProps) {
 
   const downloadTemplate = () => {
     const headers = [
-      "type", "category", "date", "counterparty", "person in charge",
-      "resin type", "manufacturer", "grade", "pp type", "sample available",
-      "packaging", "melt flow index",
-      "charpy lower", "charpy upper", "izod lower", "izod upper", "density lower", "density upper",
-      "price", "quantity", "remarks"
+      "区分", "カテゴリ", "日付", "取引先", "担当者",
+      "樹脂", "メーカー", "グレード", "タイプ", "サンプル",
+      "梱包形態", "梱包重量", "無地・メーカー", "ランニング・ワンウェイ",
+      "MI 下限", "MI 上限",
+      "シャルピー 下限", "シャルピー 上限",
+      "アイゾット 下限", "アイゾット 上限",
+      "密度 下限", "密度 上限",
+      "価格 下限", "価格 上限",
+      "数量 下限", "数量 上限", "数量区分",
+      "納入・置場", "場所",
+      "希望数量", "提案先", "販売価格", "最終交渉価格",
+      "クローズ", "備考"
     ];
     const example = [
-      "source", "virgin", "2026-03-12", "ABC Chemical Co.", "Tanaka Taro",
-      "PP", "ExxonMobil", "PP1014H2", "Homopolymer", "yes",
-      "Bags", "3.5",
+      "仕入", "バージン", "2026-03-12", "ABC化学株式会社", "田中太郎",
+      "PP", "ExxonMobil", "PP1014H2", "Homopolymer", "あり",
+      "紙袋", "25", "メーカー", "ランニング",
+      "3.0", "4.0",
       "", "", "", "", "0.900", "0.910",
-      "1200", "50", ""
+      "120", "150",
+      "10000", "20000", "月間",
+      "納入", "大阪",
+      "", "", "", "",
+      "オープン", ""
     ];
     const csv = [headers.join(","), example.join(",")].join("\n");
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });

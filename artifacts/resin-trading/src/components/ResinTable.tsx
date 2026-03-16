@@ -95,11 +95,11 @@ export const ALL_COLUMNS: { key: ColumnKey; label: string }[] = [
   { key: "tdsUrl",           label: "物性表" },
   { key: "sampleAvailable",  label: "サンプル" },
   { key: "prospectiveBuyer", label: "ワーク希望者" },
-  { key: "desiredQuantity",  label: "希望数量 (kg)" },
+  { key: "desiredQuantity",  label: "希望数量" },
   { key: "proposedTo",       label: "提案先" },
-  { key: "sellingPrice",          label: "販売価格 (円/kg)" },
-  { key: "finalNegotiatedPrice",  label: "最終交渉価格 (円/kg)" },
-  { key: "packagingWeight",       label: "梱包重量 (kg)" },
+  { key: "sellingPrice",          label: "販売価格" },
+  { key: "finalNegotiatedPrice",  label: "最終交渉価格" },
+  { key: "packagingWeight",       label: "梱包重量" },
   { key: "plainMaker",            label: "無地・メーカー" },
   { key: "usageType",             label: "ランニング・ワンウェイ" },
   { key: "origin",           label: "由来" },
@@ -292,11 +292,11 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
               {col("tdsUrl")         && <th className="px-4 py-4 text-center">物性表</th>}
               {col("sampleAvailable")  && <th className="px-4 py-4">サンプル</th>}
               {col("prospectiveBuyer") && <th className="px-4 py-4">ワーク希望者</th>}
-              {col("desiredQuantity")  && <th className="px-4 py-4 text-right">希望数量 (kg)</th>}
+              {col("desiredQuantity")  && <th className="px-4 py-4 text-right">希望数量</th>}
               {col("proposedTo")       && <th className="px-4 py-4">提案先</th>}
-              {col("sellingPrice")          && <th className="px-4 py-4 text-right">販売価格 (円/kg)</th>}
-              {col("finalNegotiatedPrice") && <th className="px-4 py-4 text-right">最終交渉価格 (円/kg)</th>}
-              {col("packagingWeight")       && <th className="px-4 py-4 text-right">梱包重量 (kg)</th>}
+              {col("sellingPrice")          && <th className="px-4 py-4 text-right">販売価格</th>}
+              {col("finalNegotiatedPrice") && <th className="px-4 py-4 text-right">最終交渉価格</th>}
+              {col("packagingWeight")       && <th className="px-4 py-4 text-right">梱包重量</th>}
               {col("plainMaker")            && <th className="px-4 py-4">無地・メーカー</th>}
               {col("usageType")             && <th className="px-4 py-4">ランニング・ワンウェイ</th>}
               {col("remarks")          && <th className="px-4 py-4">備考</th>}
