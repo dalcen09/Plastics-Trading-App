@@ -40,9 +40,12 @@ function serializeEntry(entry: typeof resinEntriesTable.$inferSelect) {
     ...entry,
     meltFlowIndexLower: toNumber(entry.meltFlowIndexLower),
     meltFlowIndexUpper: toNumber(entry.meltFlowIndexUpper),
-    charpy: toNumber(entry.charpy),
-    izod: toNumber(entry.izod),
-    density: toNumber(entry.density),
+    charpyLower: toNumber(entry.charpyLower),
+    charpyUpper: toNumber(entry.charpyUpper),
+    izodLower: toNumber(entry.izodLower),
+    izodUpper: toNumber(entry.izodUpper),
+    densityLower: toNumber(entry.densityLower),
+    densityUpper: toNumber(entry.densityUpper),
     price: toNumber(entry.price),
     storageLocation: entry.storageLocation,
     imageUrls: entry.imageUrls ?? [],
@@ -79,9 +82,12 @@ router.post("/sources", async (req, res) => {
     entryType: "source",
     meltFlowIndexLower: body.meltFlowIndexLower?.toString(),
     meltFlowIndexUpper: body.meltFlowIndexUpper?.toString(),
-    charpy: body.charpy?.toString(),
-    izod: body.izod?.toString(),
-    density: body.density?.toString(),
+    charpyLower: body.charpyLower?.toString(),
+    charpyUpper: body.charpyUpper?.toString(),
+    izodLower: body.izodLower?.toString(),
+    izodUpper: body.izodUpper?.toString(),
+    densityLower: body.densityLower?.toString(),
+    densityUpper: body.densityUpper?.toString(),
     price: body.price?.toString(),
       storageLocation: body.storageLocation ?? null,
       imageUrls: body.imageUrls ?? null,
@@ -99,9 +105,12 @@ router.put("/sources/:id", async (req, res) => {
     ...body,
     meltFlowIndexLower: body.meltFlowIndexLower?.toString(),
     meltFlowIndexUpper: body.meltFlowIndexUpper?.toString(),
-    charpy: body.charpy?.toString(),
-    izod: body.izod?.toString(),
-    density: body.density?.toString(),
+    charpyLower: body.charpyLower?.toString(),
+    charpyUpper: body.charpyUpper?.toString(),
+    izodLower: body.izodLower?.toString(),
+    izodUpper: body.izodUpper?.toString(),
+    densityLower: body.densityLower?.toString(),
+    densityUpper: body.densityUpper?.toString(),
     price: body.price?.toString(),
       storageLocation: body.storageLocation ?? null,
       imageUrls: body.imageUrls ?? null,
@@ -154,9 +163,12 @@ router.post("/demands", async (req, res) => {
     entryType: "demand",
     meltFlowIndexLower: body.meltFlowIndexLower?.toString(),
     meltFlowIndexUpper: body.meltFlowIndexUpper?.toString(),
-    charpy: body.charpy?.toString(),
-    izod: body.izod?.toString(),
-    density: body.density?.toString(),
+    charpyLower: body.charpyLower?.toString(),
+    charpyUpper: body.charpyUpper?.toString(),
+    izodLower: body.izodLower?.toString(),
+    izodUpper: body.izodUpper?.toString(),
+    densityLower: body.densityLower?.toString(),
+    densityUpper: body.densityUpper?.toString(),
     price: body.price?.toString(),
       storageLocation: body.storageLocation ?? null,
       imageUrls: body.imageUrls ?? null,
@@ -174,9 +186,12 @@ router.put("/demands/:id", async (req, res) => {
     ...body,
     meltFlowIndexLower: body.meltFlowIndexLower?.toString(),
     meltFlowIndexUpper: body.meltFlowIndexUpper?.toString(),
-    charpy: body.charpy?.toString(),
-    izod: body.izod?.toString(),
-    density: body.density?.toString(),
+    charpyLower: body.charpyLower?.toString(),
+    charpyUpper: body.charpyUpper?.toString(),
+    izodLower: body.izodLower?.toString(),
+    izodUpper: body.izodUpper?.toString(),
+    densityLower: body.densityLower?.toString(),
+    densityUpper: body.densityUpper?.toString(),
     price: body.price?.toString(),
       storageLocation: body.storageLocation ?? null,
       imageUrls: body.imageUrls ?? null,
@@ -332,9 +347,12 @@ async function getOrComputeAllMatches(): Promise<MatchResult[]> {
         score += 15;
       }
 
-      const srcDen = toNum(source.density), dmDen = toNum(demand.density);
-      if (withinAbs(srcDen, dmDen, 0.5)) {
-        reasons.push(`密度近似: ${srcDen} ↔ ${dmDen} g/cm³ (±0.5)`);
+      const srcDenLo = toNum(source.densityLower), srcDenHi = toNum(source.densityUpper);
+      const dmDenLo = toNum(demand.densityLower), dmDenHi = toNum(demand.densityUpper);
+      const srcDenMid = srcDenLo !== null && srcDenHi !== null ? (srcDenLo + srcDenHi) / 2 : srcDenLo;
+      const dmDenMid = dmDenLo !== null && dmDenHi !== null ? (dmDenLo + dmDenHi) / 2 : dmDenLo;
+      if (srcDenMid !== null && dmDenMid !== null && withinAbs(srcDenMid, dmDenMid, 0.5)) {
+        reasons.push(`密度近似: ${srcDenMid} ↔ ${dmDenMid} g/cm³ (±0.5)`);
         score += 15;
       }
 

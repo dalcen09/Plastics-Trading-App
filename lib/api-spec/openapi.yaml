@@ -408,13 +408,22 @@ components:
         meltFlowIndexUpper:
           type: number
           nullable: true
-        charpy:
+        charpyLower:
           type: number
           nullable: true
-        izod:
+        charpyUpper:
           type: number
           nullable: true
-        density:
+        izodLower:
+          type: number
+          nullable: true
+        izodUpper:
+          type: number
+          nullable: true
+        densityLower:
+          type: number
+          nullable: true
+        densityUpper:
           type: number
           nullable: true
         price:
@@ -542,13 +551,22 @@ components:
         meltFlowIndexUpper:
           type: number
           nullable: true
-        charpy:
+        charpyLower:
           type: number
           nullable: true
-        izod:
+        charpyUpper:
           type: number
           nullable: true
-        density:
+        izodLower:
+          type: number
+          nullable: true
+        izodUpper:
+          type: number
+          nullable: true
+        densityLower:
+          type: number
+          nullable: true
+        densityUpper:
           type: number
           nullable: true
         price:

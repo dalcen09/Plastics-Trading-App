@@ -66,13 +66,15 @@ export function ImportModal({ onClose, onSuccess }: ImportModalProps) {
     const headers = [
       "type", "category", "date", "counterparty", "person in charge",
       "resin type", "manufacturer", "grade", "pp type", "sample available",
-      "packaging", "melt flow index", "charpy", "izod", "density",
+      "packaging", "melt flow index",
+      "charpy lower", "charpy upper", "izod lower", "izod upper", "density lower", "density upper",
       "price", "quantity", "remarks"
     ];
     const example = [
       "source", "virgin", "2026-03-12", "ABC Chemical Co.", "Tanaka Taro",
       "PP", "ExxonMobil", "PP1014H2", "Homopolymer", "yes",
-      "Bags", "3.5", "", "", "0.905",
+      "Bags", "3.5",
+      "", "", "", "", "0.900", "0.910",
       "1200", "50", ""
     ];
     const csv = [headers.join(","), example.join(",")].join("\n");

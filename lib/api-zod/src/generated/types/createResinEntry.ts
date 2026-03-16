@@ -34,9 +34,12 @@ export interface CreateResinEntry {
   packaging?: PackagingType | null;
   meltFlowIndexLower?: number | null;
   meltFlowIndexUpper?: number | null;
-  charpy?: number | null;
-  izod?: number | null;
-  density?: number | null;
+  charpyLower?: number | null;
+  charpyUpper?: number | null;
+  izodLower?: number | null;
+  izodUpper?: number | null;
+  densityLower?: number | null;
+  densityUpper?: number | null;
   price?: number | null;
   storageLocation?: string | null;
   quantity?: number | null;

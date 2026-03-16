@@ -37,9 +37,12 @@ const formSchema = z.object({
   packaging: z.nativeEnum(PackagingType).nullable().optional(),
   meltFlowIndexLower: z.coerce.number().nullable().optional(),
   meltFlowIndexUpper: z.coerce.number().nullable().optional(),
-  charpy: z.coerce.number().nullable().optional(),
-  izod: z.coerce.number().nullable().optional(),
-  density: z.coerce.number().nullable().optional(),
+  charpyLower: z.coerce.number().nullable().optional(),
+  charpyUpper: z.coerce.number().nullable().optional(),
+  izodLower: z.coerce.number().nullable().optional(),
+  izodUpper: z.coerce.number().nullable().optional(),
+  densityLower: z.coerce.number().nullable().optional(),
+  densityUpper: z.coerce.number().nullable().optional(),
   price: z.coerce.number().nullable().optional(),
   storageLocation: z.string().nullable().optional(),
   quantity: z.coerce.number().nullable().optional(),
@@ -101,9 +104,12 @@ export function ResinForm({
       packaging: initialData?.packaging || PackagingType["紙袋"],
       meltFlowIndexLower: initialData?.meltFlowIndexLower ?? undefined,
       meltFlowIndexUpper: initialData?.meltFlowIndexUpper ?? undefined,
-      charpy: initialData?.charpy ?? undefined,
-      izod: initialData?.izod ?? undefined,
-      density: initialData?.density ?? undefined,
+      charpyLower: initialData?.charpyLower ?? undefined,
+      charpyUpper: initialData?.charpyUpper ?? undefined,
+      izodLower: initialData?.izodLower ?? undefined,
+      izodUpper: initialData?.izodUpper ?? undefined,
+      densityLower: initialData?.densityLower ?? undefined,
+      densityUpper: initialData?.densityUpper ?? undefined,
       price: initialData?.price ?? undefined,
       storageLocation: initialData?.storageLocation ?? "",
       quantity: initialData?.quantity ?? undefined,
@@ -297,14 +303,23 @@ export function ResinForm({
                 <FormGroup label="MI 上限" error={errors.meltFlowIndexUpper?.message}>
                   <input type="number" step="0.01" placeholder="g/10min" {...register("meltFlowIndexUpper")} className="input-field" />
                 </FormGroup>
-                <FormGroup label="シャルピー" error={errors.charpy?.message}>
-                  <input type="number" step="0.01" placeholder="kJ/m²" {...register("charpy")} className="input-field" />
+                <FormGroup label="シャルピー 下限" error={errors.charpyLower?.message}>
+                  <input type="number" step="0.01" placeholder="kJ/m²" {...register("charpyLower")} className="input-field" />
                 </FormGroup>
-                <FormGroup label="アイゾット" error={errors.izod?.message}>
-                  <input type="number" step="0.01" placeholder="kJ/m²" {...register("izod")} className="input-field" />
+                <FormGroup label="シャルピー 上限" error={errors.charpyUpper?.message}>
+                  <input type="number" step="0.01" placeholder="kJ/m²" {...register("charpyUpper")} className="input-field" />
                 </FormGroup>
-                <FormGroup label="密度" error={errors.density?.message}>
-                  <input type="number" step="0.001" placeholder="g/cm³" {...register("density")} className="input-field" />
+                <FormGroup label="アイゾット 下限" error={errors.izodLower?.message}>
+                  <input type="number" step="0.01" placeholder="kJ/m²" {...register("izodLower")} className="input-field" />
+                </FormGroup>
+                <FormGroup label="アイゾット 上限" error={errors.izodUpper?.message}>
+                  <input type="number" step="0.01" placeholder="kJ/m²" {...register("izodUpper")} className="input-field" />
+                </FormGroup>
+                <FormGroup label="密度 下限" error={errors.densityLower?.message}>
+                  <input type="number" step="0.001" placeholder="g/cm³" {...register("densityLower")} className="input-field" />
+                </FormGroup>
+                <FormGroup label="密度 上限" error={errors.densityUpper?.message}>
+                  <input type="number" step="0.001" placeholder="g/cm³" {...register("densityUpper")} className="input-field" />
                 </FormGroup>
               </div>
             </div>

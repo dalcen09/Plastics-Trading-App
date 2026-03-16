@@ -125,7 +125,9 @@ export function sortData(data: ResinEntry[], sort: SortConfig | null): ResinEntr
     let av: any = (a as any)[key];
     let bv: any = (b as any)[key];
 
-    // Numeric columns
+    // Numeric columns — charpy/izod sort by lower bound
+    if (key === "charpy") { av = (a as any).charpyLower; bv = (b as any).charpyLower; }
+    if (key === "izod")   { av = (a as any).izodLower;   bv = (b as any).izodLower; }
     if (["charpy", "izod", "price", "quantity"].includes(key)) {
       const an = av == null ? -Infinity : Number(av);
       const bn = bv == null ? -Infinity : Number(bv);
@@ -396,12 +398,16 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
                 )}
                 {col("charpy") && (
                   <td className="px-4 py-3 text-sm text-right text-muted-foreground">
-                    {row.charpy != null ? formatNumber(row.charpy) : dash}
+                    {row.charpyLower != null || row.charpyUpper != null
+                      ? [formatNumber(row.charpyLower), formatNumber(row.charpyUpper)].filter(v => v !== "-").join("〜")
+                      : dash}
                   </td>
                 )}
                 {col("izod") && (
                   <td className="px-4 py-3 text-sm text-right text-muted-foreground">
-                    {row.izod != null ? formatNumber(row.izod) : dash}
+                    {row.izodLower != null || row.izodUpper != null
+                      ? [formatNumber(row.izodLower), formatNumber(row.izodUpper)].filter(v => v !== "-").join("〜")
+                      : dash}
                   </td>
                 )}
                 {col("specs") && (
@@ -414,7 +420,11 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
                                 .filter(v => v !== "-").join("〜")
                             : "-"
                         }</span>
-                        <span title="密度">密度: {formatNumber(row.density)}</span>
+                        <span title="密度">密度: {
+                          row.densityLower != null || row.densityUpper != null
+                            ? [formatNumber(row.densityLower), formatNumber(row.densityUpper)].filter(v => v !== "-").join("〜")
+                            : "-"
+                        }</span>
                       </div>
                       <div className="flex gap-2 items-center mt-0.5">
                         {row.sampleAvailable && (

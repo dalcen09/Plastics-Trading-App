@@ -3,21 +3,25 @@ import { ResinEntry } from "@workspace/api-client-react";
 import { ColumnKey } from "@/components/ResinTable";
 
 const COL_LABEL: Record<string, string> = {
-  counterparty:  "取引先",
-  date:          "日付",
-  personInCharge:"担当者",
-  resinType:     "樹脂",
-  ppType:        "PP種類",
-  manufacturer:  "メーカー",
-  grade:         "グレード",
-  charpy:        "シャルピー",
-  izod:          "アイゾッド",
-  meltFlowIndex: "MI",
-  density:       "密度",
-  packaging:     "包装",
+  counterparty:   "取引先",
+  date:           "日付",
+  personInCharge: "担当者",
+  resinType:      "樹脂",
+  ppType:         "PP種類",
+  manufacturer:   "メーカー",
+  grade:          "グレード",
+  charpyLower:    "シャルピー 下限",
+  charpyUpper:    "シャルピー 上限",
+  izodLower:      "アイゾッド 下限",
+  izodUpper:      "アイゾッド 上限",
+  meltFlowIndexLower: "MI 下限",
+  meltFlowIndexUpper: "MI 上限",
+  densityLower:   "密度 下限",
+  densityUpper:   "密度 上限",
+  packaging:      "包装",
   sampleAvailable:"サンプル",
-  price:         "価格 (円/kg)",
-  quantity:      "数量 (kg)",
+  price:          "価格 (円/kg)",
+  quantity:       "数量 (kg)",
 };
 
 export function exportToExcel(
@@ -25,9 +29,6 @@ export function exportToExcel(
   visibleColumns: Set<ColumnKey>,
   filename?: string,
 ) {
-  // Build the ordered column list: counterparty always first, then visible columns
-  const colOrder: (keyof ResinEntry)[] = ["counterparty"];
-
   const colMap: { key: keyof ResinEntry; label: string }[] = [];
 
   // Map ColumnKey → one or more ResinEntry fields
@@ -37,9 +38,9 @@ export function exportToExcel(
     { colKey: "resinType",      fields: ["resinType", "ppType"] },
     { colKey: "manufacturer",   fields: ["manufacturer"] },
     { colKey: "grade",          fields: ["grade"] },
-    { colKey: "charpy",         fields: ["charpy"] },
-    { colKey: "izod",           fields: ["izod"] },
-    { colKey: "specs",          fields: ["meltFlowIndex", "density", "packaging", "sampleAvailable"] },
+    { colKey: "charpy",         fields: ["charpyLower", "charpyUpper"] },
+    { colKey: "izod",           fields: ["izodLower", "izodUpper"] },
+    { colKey: "specs",          fields: ["meltFlowIndexLower", "meltFlowIndexUpper", "densityLower", "densityUpper", "packaging", "sampleAvailable"] },
     { colKey: "price",          fields: ["price"] },
     { colKey: "quantity",       fields: ["quantity"] },
   ];
@@ -55,8 +56,7 @@ export function exportToExcel(
 
   const rows = data.map(entry =>
     Object.fromEntries(colMap.map(({ key, label }) => {
-      let val = entry[key];
-      if (key === "sampleAvailable") val = val ? "あり" : "" as any;
+      const val = entry[key];
       return [label, val ?? ""];
     }))
   );
