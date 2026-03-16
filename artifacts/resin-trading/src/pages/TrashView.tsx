@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Layout } from "@/components/Layout";
-import { Trash2, RotateCcw, AlertTriangle, CheckSquare, Square } from "lucide-react";
+import { Trash2, RotateCcw, AlertTriangle, CheckSquare, Square, ChevronLeft, ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { getGetMatchesQueryKey, getGetMatchCountQueryKey, getGetMatchCountByEntryQueryKey } from "@workspace/api-client-react";
 
@@ -70,12 +70,25 @@ export function TrashView() {
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [confirmPurgeId, setConfirmPurgeId] = useState<number | null>(null);
   const [confirmPurgeAll, setConfirmPurgeAll] = useState(false);
+  const [pageSize, setPageSize] = useState<number>(50);
+  const [page, setPage] = useState(1);
 
   const { data: items = [], isLoading } = useQuery<TrashEntry[]>({
     queryKey: ["trash"],
     queryFn: () => apiGet("/api/trash"),
     refetchInterval: 10000,
   });
+
+  // Pagination calculations
+  const totalPages = pageSize === 0 ? 1 : Math.max(1, Math.ceil(items.length / pageSize));
+  const safePage = Math.min(page, totalPages);
+  const pagedData = useMemo(() => {
+    if (pageSize === 0) return items;
+    const start = (safePage - 1) * pageSize;
+    return items.slice(start, start + pageSize);
+  }, [items, safePage, pageSize]);
+
+  useEffect(() => { setPage(1); }, [pageSize]);
 
   const invalidate = () => {
     qc.invalidateQueries({ queryKey: ["trash"] });
@@ -106,12 +119,15 @@ export function TrashView() {
     onSuccess: () => { invalidate(); setSelected(new Set()); setConfirmPurgeAll(false); },
   });
 
-  const allIds = items.map(i => i.id);
-  const allSelected = allIds.length > 0 && allIds.every(id => selected.has(id));
+  const pagedIds = pagedData.map(i => i.id);
+  const allPageSelected = pagedIds.length > 0 && pagedIds.every(id => selected.has(id));
 
   function toggleAll() {
-    if (allSelected) setSelected(new Set());
-    else setSelected(new Set(allIds));
+    if (allPageSelected) {
+      setSelected(prev => { const next = new Set(prev); pagedIds.forEach(id => next.delete(id)); return next; });
+    } else {
+      setSelected(prev => { const next = new Set(prev); pagedIds.forEach(id => next.add(id)); return next; });
+    }
   }
 
   function toggle(id: number) {
@@ -163,6 +179,31 @@ export function TrashView() {
           )}
         </div>
 
+        {/* Results count + page size */}
+        {items.length > 0 && (
+          <div className="flex items-center justify-between gap-2 text-sm text-muted-foreground -mt-1">
+            <span>
+              {pageSize === 0
+                ? `全 ${items.length} 件`
+                : `${(safePage - 1) * pageSize + 1}–${Math.min(safePage * pageSize, items.length)} 件表示 / 全 ${items.length} 件`
+              }
+            </span>
+            <div className="flex items-center gap-2 shrink-0">
+              <span className="text-xs font-medium">表示件数</span>
+              <select
+                value={pageSize}
+                onChange={e => setPageSize(Number(e.target.value))}
+                className="px-2.5 py-1.5 rounded-lg border border-border bg-card text-sm focus:outline-none focus:ring-2 focus:ring-primary/40"
+              >
+                <option value={25}>25件</option>
+                <option value={50}>50件</option>
+                <option value={100}>100件</option>
+                <option value={0}>すべて</option>
+              </select>
+            </div>
+          </div>
+        )}
+
         {/* Table */}
         <div className="flex-1 overflow-auto rounded-xl border border-border bg-card">
           {isLoading ? (
@@ -180,7 +221,7 @@ export function TrashView() {
                 <tr>
                   <th className="w-10 px-3 py-3 text-left">
                     <button onClick={toggleAll} className="text-muted-foreground hover:text-foreground transition-colors">
-                      {allSelected
+                      {allPageSelected
                         ? <CheckSquare className="w-4 h-4 text-primary" />
                         : <Square className="w-4 h-4" />}
                     </button>
@@ -196,7 +237,7 @@ export function TrashView() {
                 </tr>
               </thead>
               <tbody>
-                {items.map((item, idx) => (
+                {pagedData.map((item) => (
                   <tr
                     key={item.id}
                     className={cn(
@@ -256,6 +297,54 @@ export function TrashView() {
             </table>
           )}
         </div>
+
+        {/* Pagination controls */}
+        {pageSize > 0 && totalPages > 1 && (
+          <div className="flex items-center justify-center gap-2 pb-1 flex-shrink-0">
+            <button
+              onClick={() => setPage(p => Math.max(1, p - 1))}
+              disabled={safePage === 1}
+              className="p-2 rounded-lg border border-border bg-card hover:bg-secondary disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+
+            {Array.from({ length: totalPages }, (_, i) => i + 1)
+              .filter(p => p === 1 || p === totalPages || Math.abs(p - safePage) <= 2)
+              .reduce<(number | "…")[]>((acc, p, idx, arr) => {
+                if (idx > 0 && (p as number) - (arr[idx - 1] as number) > 1) acc.push("…");
+                acc.push(p);
+                return acc;
+              }, [])
+              .map((p, idx) =>
+                p === "…" ? (
+                  <span key={`ellipsis-${idx}`} className="px-1 text-muted-foreground text-sm">…</span>
+                ) : (
+                  <button
+                    key={p}
+                    onClick={() => setPage(p as number)}
+                    className={cn(
+                      "min-w-[36px] h-9 px-3 rounded-lg border text-sm font-medium transition-colors",
+                      safePage === p
+                        ? "bg-primary text-primary-foreground border-primary shadow-sm"
+                        : "border-border bg-card hover:bg-secondary text-foreground"
+                    )}
+                  >
+                    {p}
+                  </button>
+                )
+              )
+            }
+
+            <button
+              onClick={() => setPage(p => Math.min(totalPages, p + 1))}
+              disabled={safePage === totalPages}
+              className="p-2 rounded-lg border border-border bg-card hover:bg-secondary disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Confirm purge single */}
