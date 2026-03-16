@@ -92,7 +92,10 @@ export const ALL_COLUMNS: { key: ColumnKey; label: string }[] = [
   { key: "storageLocation", label: "場所" },
   { key: "quantity",        label: "数量 下限〜上限 (kg)" },
   { key: "quantityType",   label: "数量区分" },
-  { key: "packaging",      label: "梱包形態" },
+  { key: "packaging",             label: "梱包形態" },
+  { key: "packagingWeight",       label: "梱包重量" },
+  { key: "plainMaker",            label: "無地・メーカー" },
+  { key: "usageType",             label: "ランニング・ワンウェイ" },
   { key: "photo",            label: "写真" },
   { key: "tdsUrl",           label: "物性表" },
   { key: "sampleAvailable",  label: "サンプル" },
@@ -101,9 +104,6 @@ export const ALL_COLUMNS: { key: ColumnKey; label: string }[] = [
   { key: "proposedTo",       label: "提案先" },
   { key: "sellingPrice",          label: "販売価格" },
   { key: "finalNegotiatedPrice",  label: "最終交渉価格" },
-  { key: "packagingWeight",       label: "梱包重量" },
-  { key: "plainMaker",            label: "無地・メーカー" },
-  { key: "usageType",             label: "ランニング・ワンウェイ" },
   { key: "origin",           label: "由来" },
   { key: "colorTone",        label: "色目" },
   { key: "remarks",          label: "備考" },
@@ -293,7 +293,10 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
               {col("storageLocation") && <th className="px-4 py-4">場所</th>}
               {col("quantity")       && <SortTh colKey="quantity"  sort={sort} onSort={onSort} className="text-right">数量 (kg)</SortTh>}
               {col("quantityType")   && <th className="px-4 py-4">数量区分</th>}
-              {col("packaging")      && <th className="px-4 py-4">梱包形態</th>}
+              {col("packaging")             && <th className="px-4 py-4">梱包形態</th>}
+              {col("packagingWeight")       && <th className="px-4 py-4 text-right">梱包重量</th>}
+              {col("plainMaker")            && <th className="px-4 py-4">無地・メーカー</th>}
+              {col("usageType")             && <th className="px-4 py-4">ランニング・ワンウェイ</th>}
               {col("photo")          && <th className="px-4 py-4 text-center">写真</th>}
               {col("tdsUrl")         && <th className="px-4 py-4 text-center">物性表</th>}
               {col("sampleAvailable")  && <th className="px-4 py-4">サンプル</th>}
@@ -302,9 +305,6 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
               {col("proposedTo")       && <th className="px-4 py-4">提案先</th>}
               {col("sellingPrice")          && <th className="px-4 py-4 text-right">販売価格</th>}
               {col("finalNegotiatedPrice") && <th className="px-4 py-4 text-right">最終交渉価格</th>}
-              {col("packagingWeight")       && <th className="px-4 py-4 text-right">梱包重量</th>}
-              {col("plainMaker")            && <th className="px-4 py-4">無地・メーカー</th>}
-              {col("usageType")             && <th className="px-4 py-4">ランニング・ワンウェイ</th>}
               {col("remarks")          && <th className="px-4 py-4">備考</th>}
               {col("isClosed")         && <th className="px-4 py-4 text-center">クローズ</th>}
             </tr>
@@ -483,6 +483,17 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
                     ) : dash}
                   </td>
                 )}
+                {col("packagingWeight") && (
+                  <td className="px-4 py-3 text-right text-sm text-muted-foreground">
+                    {row.packagingWeight != null ? formatNumber(row.packagingWeight) : dash}
+                  </td>
+                )}
+                {col("plainMaker") && (
+                  <td className="px-4 py-3 text-sm text-muted-foreground">{row.plainMaker || dash}</td>
+                )}
+                {col("usageType") && (
+                  <td className="px-4 py-3 text-sm text-muted-foreground">{row.usageType || dash}</td>
+                )}
                 {col("photo") && (
                   <td className="pl-4 pr-8 py-3">
                     {(() => {
@@ -553,17 +564,6 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
                   <td className="px-4 py-3 text-right font-medium text-foreground">
                     {row.finalNegotiatedPrice != null ? formatCurrency(row.finalNegotiatedPrice) : dash}
                   </td>
-                )}
-                {col("packagingWeight") && (
-                  <td className="px-4 py-3 text-right text-sm text-muted-foreground">
-                    {row.packagingWeight != null ? formatNumber(row.packagingWeight) : dash}
-                  </td>
-                )}
-                {col("plainMaker") && (
-                  <td className="px-4 py-3 text-sm text-muted-foreground">{row.plainMaker || dash}</td>
-                )}
-                {col("usageType") && (
-                  <td className="px-4 py-3 text-sm text-muted-foreground">{row.usageType || dash}</td>
                 )}
                 {col("remarks") && (
                   <td className="px-4 py-3 text-sm text-muted-foreground min-w-[160px] max-w-[320px]">
