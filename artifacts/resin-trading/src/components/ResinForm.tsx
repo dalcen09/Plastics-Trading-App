@@ -168,9 +168,15 @@ export function ResinForm({
   useEffect(() => {
     fetch("/api/persons-in-charge")
       .then(r => r.json())
-      .then(setPersonOptions)
+      .then((names: string[]) => setPersonOptions(names))
       .catch(() => {});
   }, []);
+  // After options are rendered in the DOM, re-apply the current value so <select> shows the right item
+  useEffect(() => {
+    if (personOptions.length === 0) return;
+    const current = watch("personInCharge");
+    if (current) formSetValue("personInCharge", current, { shouldDirty: false, shouldValidate: false });
+  }, [personOptions]);
 
 
   useEffect(() => {
