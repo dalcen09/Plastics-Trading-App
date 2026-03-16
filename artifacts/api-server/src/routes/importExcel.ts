@@ -87,6 +87,14 @@ const FIELD_ALIASES: Record<string, string> = {
   "グレード名": "grade",
   "品番": "grade",
 
+  // ── resinSubType (generic "タイプ" column — routed at import time) ─────────
+  "タイプ": "resinSubType",
+  "ﾀｲﾌﾟ": "resinSubType",
+  "type": "resinSubType",
+  "resin subtype": "resinSubType",
+  "resin sub type": "resinSubType",
+  "subtype": "resinSubType",
+
   // ── ppType ───────────────────────────────────────────────────────────────
   "pp type": "ppType",
   "pp_type": "ppType",
@@ -95,8 +103,6 @@ const FIELD_ALIASES: Record<string, string> = {
   "タイプppの場合": "ppType",
   "ppのタイプ": "ppType",
   "ppタイプ": "ppType",
-  "タイプ": "ppType",
-  "ﾀｲﾌﾟ": "ppType",
 
   // ── sampleAvailable ──────────────────────────────────────────────────────
   "sample available": "sampleAvailable",
@@ -558,6 +564,19 @@ router.post("/import", upload.single("file"), async (req, res) => {
     return res.status(400).json({ error: "Excelファイルの読み込みに失敗しました。有効な .xlsx / .xls / .csv ファイルをアップロードしてください。" });
   }
 
+  // Debug mode: return header mapping without importing
+  if (req.query.debug === "1") {
+    const debugInfo: Record<string, { mapped: string | null; raw: string }[]> = {};
+    for (const sheetName of workbook.SheetNames) {
+      const sheet = workbook.Sheets[sheetName];
+      const rows: any[][] = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "" });
+      if (rows.length < 2) continue;
+      const headers = rows[0].map((h: any) => String(h));
+      debugInfo[sheetName] = headers.map(h => ({ raw: h, mapped: resolveField(h) }));
+    }
+    return res.json({ debug: debugInfo });
+  }
+
   const results = { imported: 0, skipped: 0, errors: [] as string[] };
 
   for (const sheetName of workbook.SheetNames) {
@@ -572,10 +591,16 @@ router.post("/import", upload.single("file"), async (req, res) => {
     // Build column → field mapping from header row
     const headers = rows[0].map((h: any) => String(h));
     const fieldMap: Record<number, string> = {};
+    const unmapped: string[] = [];
     headers.forEach((h, i) => {
       const field = resolveField(h);
       if (field) fieldMap[i] = field;
+      else if (h && h.trim()) unmapped.push(h);
     });
+    if (unmapped.length > 0) {
+      console.log(`[import] Sheet "${sheetName}" — unmapped headers:`, JSON.stringify(unmapped));
+    }
+    console.log(`[import] Sheet "${sheetName}" — mapped:`, JSON.stringify(Object.values(fieldMap)));
 
     for (let ri = 1; ri < rows.length; ri++) {
       const row = rows[ri];
@@ -602,6 +627,22 @@ router.post("/import", upload.single("file"), async (req, res) => {
       const counterparty = rawCounterparty ? String(rawCounterparty).trim() : null;
       const personInCharge = data.personInCharge ? String(data.personInCharge).trim() : null;
       const resinType = data.resinType ? normalizeResinType(String(data.resinType)) : null;
+
+      // Route generic "タイプ" value to the correct resin-specific type field
+      if (data.resinSubType && String(data.resinSubType).trim()) {
+        const sub = String(data.resinSubType).trim();
+        const rt = (resinType ?? "").toUpperCase();
+        if (["PE", "HDPE", "LDPE", "LLDPE"].includes(rt)) {
+          if (!data.peType) data.peType = sub;
+        } else if (rt === "PS") {
+          if (!data.psType) data.psType = sub;
+        } else if (rt === "ABS") {
+          if (!data.absType) data.absType = sub;
+        } else {
+          // Default / PP: route to ppType
+          if (!data.ppType) data.ppType = sub;
+        }
+      }
 
       // Validation
       if (!entryType) {
