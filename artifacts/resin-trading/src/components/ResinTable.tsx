@@ -58,7 +58,7 @@ function PhotoThumbnail({ url, index }: { url: string; index: number }) {
 
 export type ColumnKey =
   | "date" | "personInCharge" | "resinType" | "manufacturer"
-  | "grade" | "charpy" | "izod" | "specs" | "price" | "storageLocation" | "quantity" | "quantityType" | "packaging" | "photo" | "tdsUrl" | "isClosed" | "sampleAvailable"
+  | "grade" | "charpy" | "izod" | "specs" | "price" | "locationType" | "storageLocation" | "quantity" | "quantityType" | "packaging" | "photo" | "tdsUrl" | "isClosed" | "sampleAvailable"
   | "prospectiveBuyer" | "desiredQuantity" | "proposedTo" | "sellingPrice" | "remarks"
   | "origin" | "colorTone"
   | "packagingWeight" | "plainMaker" | "usageType" | "finalNegotiatedPrice";
@@ -86,7 +86,8 @@ export const ALL_COLUMNS: { key: ColumnKey; label: string }[] = [
   { key: "izod",           label: "アイゾッド" },
   { key: "specs",          label: "仕様 (MI/密度)" },
   { key: "price",           label: "価格 (円/kg)" },
-  { key: "storageLocation", label: "置場" },
+  { key: "locationType",    label: "納入・置場" },
+  { key: "storageLocation", label: "場所" },
   { key: "quantity",        label: "数量 (kg)" },
   { key: "quantityType",   label: "数量区分" },
   { key: "packaging",      label: "梱包形態" },
@@ -282,7 +283,8 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
               {col("izod")           && <SortTh colKey="izod"           sort={sort} onSort={onSort} className="text-right">アイゾッド</SortTh>}
               {col("specs")          && <th className="px-4 py-4">仕様</th>}
               {col("price")          && <SortTh colKey="price"    sort={sort} onSort={onSort} className="text-right">価格 (円/kg)</SortTh>}
-              {col("storageLocation") && <th className="px-4 py-4">置場</th>}
+              {col("locationType")    && <th className="px-4 py-4">納入・置場</th>}
+              {col("storageLocation") && <th className="px-4 py-4">場所</th>}
               {col("quantity")       && <SortTh colKey="quantity"  sort={sort} onSort={onSort} className="text-right">数量 (kg)</SortTh>}
               {col("quantityType")   && <th className="px-4 py-4">数量区分</th>}
               {col("packaging")      && <th className="px-4 py-4">梱包形態</th>}
@@ -441,6 +443,9 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
                     {formatCurrency(row.price)}
                   </td>
                 )}
+                {col("locationType") && (
+                  <td className="px-4 py-3 text-muted-foreground">{row.locationType ?? dash}</td>
+                )}
                 {col("storageLocation") && (
                   <td className="px-4 py-3 text-muted-foreground">{row.storageLocation ?? dash}</td>
                 )}
@@ -557,8 +562,8 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
                   <td className="px-4 py-3 text-sm text-muted-foreground">{row.usageType || dash}</td>
                 )}
                 {col("remarks") && (
-                  <td className="px-4 py-3 text-sm text-muted-foreground max-w-[200px]">
-                    <span className="line-clamp-2 whitespace-pre-wrap">{row.remarks || dash}</span>
+                  <td className="px-4 py-3 text-sm text-muted-foreground min-w-[160px] max-w-[320px]">
+                    <span className="whitespace-pre-wrap break-words">{row.remarks || dash}</span>
                   </td>
                 )}
                 {col("isClosed") && (
