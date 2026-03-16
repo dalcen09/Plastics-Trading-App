@@ -429,6 +429,12 @@ components:
         price:
           type: number
           nullable: true
+        priceLower:
+          type: number
+          nullable: true
+        priceUpper:
+          type: number
+          nullable: true
         locationType:
           type: string
           nullable: true
@@ -573,6 +579,12 @@ components:
           type: number
           nullable: true
         price:
+          type: number
+          nullable: true
+        priceLower:
+          type: number
+          nullable: true
+        priceUpper:
           type: number
           nullable: true
         locationType:

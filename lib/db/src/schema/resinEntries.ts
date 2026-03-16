@@ -45,6 +45,8 @@ export const resinEntriesTable = pgTable("resin_entries", {
   densityLower: numeric("density_lower", { precision: 10, scale: 4 }),
   densityUpper: numeric("density_upper", { precision: 10, scale: 4 }),
   price: numeric("price", { precision: 12, scale: 2 }),
+  priceLower: numeric("price_lower", { precision: 12, scale: 2 }),
+  priceUpper: numeric("price_upper", { precision: 12, scale: 2 }),
   quantity: numeric("quantity", { precision: 12, scale: 2 }),
   quantityType: quantityTypeEnum("quantity_type"),
   remarks: text("remarks"),

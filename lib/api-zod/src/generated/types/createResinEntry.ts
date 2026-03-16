@@ -41,6 +41,8 @@ export interface CreateResinEntry {
   densityLower?: number | null;
   densityUpper?: number | null;
   price?: number | null;
+  priceLower?: number | null;
+  priceUpper?: number | null;
   locationType?: string | null;
   storageLocation?: string | null;
   quantity?: number | null;

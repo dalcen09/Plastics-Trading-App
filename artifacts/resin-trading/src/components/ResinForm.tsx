@@ -44,6 +44,8 @@ const formSchema = z.object({
   densityLower: z.coerce.number().nullable().optional(),
   densityUpper: z.coerce.number().nullable().optional(),
   price: z.coerce.number().nullable().optional(),
+  priceLower: z.coerce.number().nullable().optional(),
+  priceUpper: z.coerce.number().nullable().optional(),
   locationType: z.preprocess(v => v === "" ? null : v, z.enum(["納入", "置場"]).nullable().optional()),
   storageLocation: z.string().nullable().optional(),
   quantity: z.coerce.number().nullable().optional(),
@@ -112,6 +114,8 @@ export function ResinForm({
       densityLower: initialData?.densityLower ?? undefined,
       densityUpper: initialData?.densityUpper ?? undefined,
       price: initialData?.price ?? undefined,
+      priceLower: initialData?.priceLower ?? undefined,
+      priceUpper: initialData?.priceUpper ?? undefined,
       locationType: (initialData?.locationType as "納入" | "置場" | null) ?? null,
       storageLocation: initialData?.storageLocation ?? "",
       quantity: initialData?.quantity ?? undefined,
@@ -329,8 +333,8 @@ export function ResinForm({
             {/* Section: Commercial Info */}
             <div>
               <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4 pt-4 border-t border-border/50">取引情報</h3>
-              {/* Row 1: 数量 / 数量区分 / 価格 / 納入・置場 / 場所 */}
-              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-5 mb-5">
+              {/* Row 1: 数量 / 数量区分 / 価格 下限 / 価格 上限 / 納入・置場 / 場所 */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-5 mb-5">
                 <FormGroup label="数量 (kg)" error={errors.quantity?.message}>
                   <input type="number" step="0.01" placeholder="kg" {...register("quantity")} className="input-field" />
                 </FormGroup>
@@ -341,8 +345,11 @@ export function ResinForm({
                     <option value="スポット">スポット</option>
                   </select>
                 </FormGroup>
-                <FormGroup label="価格 (円/kg)" error={errors.price?.message}>
-                  <input type="number" step="0.01" placeholder="円" {...register("price")} className="input-field" />
+                <FormGroup label="価格 下限 (円/kg)" error={errors.priceLower?.message}>
+                  <input type="number" step="0.01" placeholder="円" {...register("priceLower")} className="input-field" />
+                </FormGroup>
+                <FormGroup label="価格 上限 (円/kg)" error={errors.priceUpper?.message}>
+                  <input type="number" step="0.01" placeholder="円" {...register("priceUpper")} className="input-field" />
                 </FormGroup>
                 <FormGroup label="納入・置場" error={errors.locationType?.message}>
                   <select {...register("locationType")} className="input-field">

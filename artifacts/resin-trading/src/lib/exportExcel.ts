@@ -21,6 +21,8 @@ const COL_LABEL: Record<string, string> = {
   packaging:      "包装",
   sampleAvailable:"サンプル",
   price:          "価格 (円/kg)",
+  priceLower:     "価格 下限 (円/kg)",
+  priceUpper:     "価格 上限 (円/kg)",
   quantity:       "数量 (kg)",
 };
 
@@ -41,7 +43,7 @@ export function exportToExcel(
     { colKey: "charpy",         fields: ["charpyLower", "charpyUpper"] },
     { colKey: "izod",           fields: ["izodLower", "izodUpper"] },
     { colKey: "specs",          fields: ["meltFlowIndexLower", "meltFlowIndexUpper", "densityLower", "densityUpper", "packaging", "sampleAvailable"] },
-    { colKey: "price",          fields: ["price"] },
+    { colKey: "price",          fields: ["priceLower", "priceUpper"] },
     { colKey: "quantity",       fields: ["quantity"] },
   ];
 

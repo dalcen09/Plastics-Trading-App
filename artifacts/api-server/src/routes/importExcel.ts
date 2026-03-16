@@ -185,6 +185,17 @@ const FIELD_ALIASES: Record<string, string> = {
   "仕入価格": "price",
   "購入価格": "price",
   "単価": "price",
+  // price lower/upper
+  "price lower": "priceLower",
+  "price (lower)": "priceLower",
+  "価格 下限": "priceLower",
+  "価格（下限）": "priceLower",
+  "価格下限": "priceLower",
+  "price upper": "priceUpper",
+  "price (upper)": "priceUpper",
+  "価格 上限": "priceUpper",
+  "価格（上限）": "priceUpper",
+  "価格上限": "priceUpper",
 
   // ── finalNegotiatedPrice ──────────────────────────────────────────────────
   "final negotiated price": "finalNegotiatedPrice",

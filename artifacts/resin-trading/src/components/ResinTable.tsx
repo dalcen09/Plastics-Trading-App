@@ -85,7 +85,7 @@ export const ALL_COLUMNS: { key: ColumnKey; label: string }[] = [
   { key: "charpy",         label: "シャルピー" },
   { key: "izod",           label: "アイゾッド" },
   { key: "specs",          label: "仕様 (MI/密度)" },
-  { key: "price",           label: "価格 (円/kg)" },
+  { key: "price",           label: "価格 下限〜上限 (円/kg)" },
   { key: "locationType",    label: "納入・置場" },
   { key: "storageLocation", label: "場所" },
   { key: "quantity",        label: "数量 (kg)" },
@@ -439,8 +439,14 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
                   </td>
                 )}
                 {col("price") && (
-                  <td className="px-4 py-3 text-right font-medium text-foreground">
-                    {formatCurrency(row.price)}
+                  <td className="px-4 py-3 text-right font-medium text-foreground whitespace-nowrap">
+                    {row.priceLower != null || row.priceUpper != null ? (
+                      <span>
+                        {row.priceLower != null ? formatCurrency(row.priceLower) : "—"}
+                        <span className="text-muted-foreground mx-1">〜</span>
+                        {row.priceUpper != null ? formatCurrency(row.priceUpper) : "—"}
+                      </span>
+                    ) : row.price != null ? formatCurrency(row.price) : dash}
                   </td>
                 )}
                 {col("locationType") && (
