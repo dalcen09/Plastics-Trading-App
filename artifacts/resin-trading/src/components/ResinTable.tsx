@@ -170,6 +170,21 @@ interface ResinTableProps {
 
 const dash = <span className="text-border">—</span>;
 
+/** Show `lower〜upper` but collapse to a single value when both are equal or only one exists. */
+function formatRange(
+  lower: number | string | null | undefined,
+  upper: number | string | null | undefined,
+  fmt: (v: number | string) => string,
+): string {
+  const l = lower != null && lower !== "" ? fmt(lower) : null;
+  const u = upper != null && upper !== "" ? fmt(upper) : null;
+  if (!l && !u) return "—";
+  if (!l) return u!;
+  if (!u) return l;
+  if (l === u) return l;
+  return `${l}〜${u}`;
+}
+
 function SortIcon({ colKey, sort }: { colKey: SortKey; sort: SortConfig | null }) {
   if (!sort || sort.key !== colKey)
     return <ArrowUpDown className="w-3.5 h-3.5 opacity-30 ml-1 inline-block" />;
@@ -404,41 +419,27 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
                 )}
                 {col("charpy") && (
                   <td className="px-4 py-3 text-sm text-right text-muted-foreground">
-                    {row.charpyLower != null || row.charpyUpper != null
-                      ? [formatNumber(row.charpyLower), formatNumber(row.charpyUpper)].filter(v => v !== "-").join("〜")
-                      : dash}
+                    {formatRange(row.charpyLower, row.charpyUpper, v => formatNumber(v as number))}
                   </td>
                 )}
                 {col("izod") && (
                   <td className="px-4 py-3 text-sm text-right text-muted-foreground">
-                    {row.izodLower != null || row.izodUpper != null
-                      ? [formatNumber(row.izodLower), formatNumber(row.izodUpper)].filter(v => v !== "-").join("〜")
-                      : dash}
+                    {formatRange(row.izodLower, row.izodUpper, v => formatNumber(v as number))}
                   </td>
                 )}
                 {col("mi") && (
                   <td className="px-4 py-3 text-sm text-right text-muted-foreground">
-                    {row.meltFlowIndexLower != null || row.meltFlowIndexUpper != null
-                      ? [formatNumber(row.meltFlowIndexLower), formatNumber(row.meltFlowIndexUpper)].filter(v => v !== "-").join("〜")
-                      : dash}
+                    {formatRange(row.meltFlowIndexLower, row.meltFlowIndexUpper, v => formatNumber(v as number))}
                   </td>
                 )}
                 {col("density") && (
                   <td className="px-4 py-3 text-sm text-right text-muted-foreground">
-                    {row.densityLower != null || row.densityUpper != null
-                      ? [formatNumber(row.densityLower), formatNumber(row.densityUpper)].filter(v => v !== "-").join("〜")
-                      : dash}
+                    {formatRange(row.densityLower, row.densityUpper, v => formatNumber(v as number))}
                   </td>
                 )}
                 {col("price") && (
                   <td className="px-4 py-3 text-right font-medium text-foreground whitespace-nowrap">
-                    {row.priceLower != null || row.priceUpper != null ? (
-                      <span>
-                        {row.priceLower != null ? formatCurrency(row.priceLower) : "—"}
-                        <span className="text-muted-foreground mx-1">〜</span>
-                        {row.priceUpper != null ? formatCurrency(row.priceUpper) : "—"}
-                      </span>
-                    ) : row.price != null ? formatCurrency(row.price) : dash}
+                    {formatRange(row.priceLower ?? row.price, row.priceUpper ?? row.price, v => formatCurrency(v as number))}
                   </td>
                 )}
                 {col("locationType") && (
@@ -449,15 +450,11 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
                 )}
                 {col("quantity") && (
                   <td className="px-4 py-3 text-right whitespace-nowrap">
-                    {row.quantityLower != null || row.quantityUpper != null ? (
-                      <span className="font-medium">
-                        {row.quantityLower != null ? formatNumber(row.quantityLower, "kg") : "—"}
-                        <span className="text-muted-foreground mx-1">〜</span>
-                        {row.quantityUpper != null ? formatNumber(row.quantityUpper, "kg") : "—"}
-                      </span>
-                    ) : row.quantity != null ? (
-                      <span className="font-medium px-2 py-1 rounded-lg bg-secondary/80">{formatNumber(row.quantity, "kg")}</span>
-                    ) : dash}
+                    {formatRange(
+                      row.quantityLower ?? row.quantity,
+                      row.quantityUpper ?? row.quantity,
+                      v => formatNumber(v as number, "kg")
+                    )}
                   </td>
                 )}
                 {col("quantityType") && (
