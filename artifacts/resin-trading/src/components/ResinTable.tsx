@@ -60,7 +60,8 @@ export type ColumnKey =
   | "date" | "personInCharge" | "resinType" | "manufacturer"
   | "grade" | "charpy" | "izod" | "specs" | "price" | "storageLocation" | "quantity" | "quantityType" | "packaging" | "photo" | "tdsUrl" | "isClosed" | "sampleAvailable"
   | "prospectiveBuyer" | "desiredQuantity" | "proposedTo" | "sellingPrice" | "remarks"
-  | "origin" | "colorTone";
+  | "origin" | "colorTone"
+  | "packagingWeight" | "plainMaker" | "usageType" | "finalNegotiatedPrice";
 
 export const RECYCLED_ONLY_COLUMNS: ColumnKey[] = ["origin", "colorTone"];
 
@@ -95,7 +96,11 @@ export const ALL_COLUMNS: { key: ColumnKey; label: string }[] = [
   { key: "prospectiveBuyer", label: "ワーク希望者" },
   { key: "desiredQuantity",  label: "希望数量 (kg)" },
   { key: "proposedTo",       label: "提案先" },
-  { key: "sellingPrice",     label: "販売価格 (円/kg)" },
+  { key: "sellingPrice",          label: "販売価格 (円/kg)" },
+  { key: "finalNegotiatedPrice",  label: "最終交渉価格 (円/kg)" },
+  { key: "packagingWeight",       label: "梱包重量 (kg)" },
+  { key: "plainMaker",            label: "無地・メーカー" },
+  { key: "usageType",             label: "ランニング・ワンウェイ" },
   { key: "origin",           label: "由来" },
   { key: "colorTone",        label: "色目" },
   { key: "remarks",          label: "備考" },
@@ -106,7 +111,8 @@ export const DEFAULT_VISIBLE: Set<ColumnKey> = new Set(
   ALL_COLUMNS.map(c => c.key).filter(k =>
     k !== "charpy" && k !== "izod" && k !== "photo" && k !== "sampleAvailable" &&
     k !== "prospectiveBuyer" && k !== "desiredQuantity" && k !== "proposedTo" && k !== "sellingPrice" &&
-    k !== "origin" && k !== "colorTone"
+    k !== "origin" && k !== "colorTone" &&
+    k !== "packagingWeight" && k !== "plainMaker" && k !== "usageType" && k !== "finalNegotiatedPrice"
   )
 );
 
@@ -284,7 +290,11 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
               {col("prospectiveBuyer") && <th className="px-4 py-4">ワーク希望者</th>}
               {col("desiredQuantity")  && <th className="px-4 py-4 text-right">希望数量 (kg)</th>}
               {col("proposedTo")       && <th className="px-4 py-4">提案先</th>}
-              {col("sellingPrice")     && <th className="px-4 py-4 text-right">販売価格 (円/kg)</th>}
+              {col("sellingPrice")          && <th className="px-4 py-4 text-right">販売価格 (円/kg)</th>}
+              {col("finalNegotiatedPrice") && <th className="px-4 py-4 text-right">最終交渉価格 (円/kg)</th>}
+              {col("packagingWeight")       && <th className="px-4 py-4 text-right">梱包重量 (kg)</th>}
+              {col("plainMaker")            && <th className="px-4 py-4">無地・メーカー</th>}
+              {col("usageType")             && <th className="px-4 py-4">ランニング・ワンウェイ</th>}
               {col("remarks")          && <th className="px-4 py-4">備考</th>}
               {col("isClosed")         && <th className="px-4 py-4 text-center">クローズ</th>}
             </tr>
@@ -522,6 +532,22 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
                   <td className="px-4 py-3 text-right font-medium text-foreground">
                     {row.sellingPrice != null ? formatCurrency(row.sellingPrice) : dash}
                   </td>
+                )}
+                {col("finalNegotiatedPrice") && (
+                  <td className="px-4 py-3 text-right font-medium text-foreground">
+                    {row.finalNegotiatedPrice != null ? formatCurrency(row.finalNegotiatedPrice) : dash}
+                  </td>
+                )}
+                {col("packagingWeight") && (
+                  <td className="px-4 py-3 text-right text-sm text-muted-foreground">
+                    {row.packagingWeight != null ? formatNumber(row.packagingWeight) : dash}
+                  </td>
+                )}
+                {col("plainMaker") && (
+                  <td className="px-4 py-3 text-sm text-muted-foreground">{row.plainMaker || dash}</td>
+                )}
+                {col("usageType") && (
+                  <td className="px-4 py-3 text-sm text-muted-foreground">{row.usageType || dash}</td>
                 )}
                 {col("remarks") && (
                   <td className="px-4 py-3 text-sm text-muted-foreground max-w-[200px]">

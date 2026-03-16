@@ -444,6 +444,18 @@ components:
         sellingPrice:
           type: number
           nullable: true
+        packagingWeight:
+          type: number
+          nullable: true
+        plainMaker:
+          type: string
+          nullable: true
+        usageType:
+          type: string
+          nullable: true
+        finalNegotiatedPrice:
+          type: number
+          nullable: true
         origin:
           type: string
           nullable: true
@@ -564,6 +576,18 @@ components:
           type: string
           nullable: true
         sellingPrice:
+          type: number
+          nullable: true
+        packagingWeight:
+          type: number
+          nullable: true
+        plainMaker:
+          type: string
+          nullable: true
+        usageType:
+          type: string
+          nullable: true
+        finalNegotiatedPrice:
           type: number
           nullable: true
         origin:

@@ -53,6 +53,10 @@ export const resinEntriesTable = pgTable("resin_entries", {
   desiredQuantity: numeric("desired_quantity", { precision: 12, scale: 2 }), // 希望数量
   proposedTo: text("proposed_to"),                 // 提案先
   sellingPrice: numeric("selling_price", { precision: 12, scale: 2 }), // 販売価格
+  packagingWeight: numeric("packaging_weight", { precision: 12, scale: 2 }),
+  plainMaker: text("plain_maker"),
+  usageType: text("usage_type"),
+  finalNegotiatedPrice: numeric("final_negotiated_price", { precision: 12, scale: 2 }),
   origin: text("origin"),
   colorTone: text("color_tone"),
   imageUrl: text("image_url"),

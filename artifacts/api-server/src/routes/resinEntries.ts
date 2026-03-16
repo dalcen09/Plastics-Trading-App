@@ -52,6 +52,8 @@ function serializeEntry(entry: typeof resinEntriesTable.$inferSelect) {
     spotPrice: toNumber(entry.spotPrice),
     desiredQuantity: toNumber(entry.desiredQuantity),
     sellingPrice: toNumber(entry.sellingPrice),
+    packagingWeight: toNumber(entry.packagingWeight),
+    finalNegotiatedPrice: toNumber(entry.finalNegotiatedPrice),
     createdAt: entry.createdAt.toISOString(),
     updatedAt: entry.updatedAt.toISOString(),
     deletedAt: entry.deletedAt ? entry.deletedAt.toISOString() : null,

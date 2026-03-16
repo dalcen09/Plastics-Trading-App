@@ -48,6 +48,10 @@ const formSchema = z.object({
   desiredQuantity: z.coerce.number().nullable().optional(),
   proposedTo: z.string().nullable().optional(),
   sellingPrice: z.coerce.number().nullable().optional(),
+  packagingWeight: z.coerce.number().nullable().optional(),
+  plainMaker: z.string().nullable().optional(),
+  usageType: z.preprocess(v => v === "" ? null : v, z.enum(["ランニング", "ワンウェイ"]).nullable().optional()),
+  finalNegotiatedPrice: z.coerce.number().nullable().optional(),
   origin: z.string().nullable().optional(),
   colorTone: z.string().nullable().optional(),
   remarks: z.string().nullable().optional(),
@@ -108,6 +112,10 @@ export function ResinForm({
       desiredQuantity: initialData?.desiredQuantity ?? undefined,
       proposedTo: initialData?.proposedTo || "",
       sellingPrice: initialData?.sellingPrice ?? undefined,
+      packagingWeight: initialData?.packagingWeight ?? undefined,
+      plainMaker: initialData?.plainMaker || "",
+      usageType: initialData?.usageType as "ランニング" | "ワンウェイ" | null ?? null,
+      finalNegotiatedPrice: initialData?.finalNegotiatedPrice ?? undefined,
       origin: initialData?.origin || "",
       colorTone: initialData?.colorTone || "",
       remarks: initialData?.remarks || "",
@@ -315,6 +323,13 @@ export function ResinForm({
                     <option value="スポット">スポット</option>
                   </select>
                 </FormGroup>
+                <FormGroup label="ランニング・ワンウェイ" error={errors.usageType?.message}>
+                  <select {...register("usageType")} className="input-field">
+                    <option value="">— 未選択 —</option>
+                    <option value="ランニング">ランニング</option>
+                    <option value="ワンウェイ">ワンウェイ</option>
+                  </select>
+                </FormGroup>
                 <FormGroup label="価格 (円/kg)" error={errors.price?.message}>
                   <input type="number" step="0.01" placeholder="円" {...register("price")} className="input-field" />
                 </FormGroup>
@@ -326,7 +341,13 @@ export function ResinForm({
                     {Object.values(PackagingType).map(t => <option key={t} value={t}>{t}</option>)}
                   </select>
                 </FormGroup>
-                
+                <FormGroup label="梱包重量 (kg)" error={errors.packagingWeight?.message}>
+                  <input type="number" step="0.01" placeholder="例: 500" {...register("packagingWeight")} className="input-field" />
+                </FormGroup>
+                <FormGroup label="無地・メーカー" error={errors.plainMaker?.message}>
+                  <input type="text" placeholder="例: 無地 / メーカー名" {...register("plainMaker")} className="input-field" />
+                </FormGroup>
+
                 <div className="flex flex-col justify-end pb-2">
                   <label className="flex items-center gap-2 cursor-pointer group">
                     <Controller
@@ -383,6 +404,9 @@ export function ResinForm({
                 </FormGroup>
                 <FormGroup label="販売価格 (円/kg)" error={errors.sellingPrice?.message}>
                   <input type="number" step="0.01" placeholder="0" {...register("sellingPrice")} className="input-field" />
+                </FormGroup>
+                <FormGroup label="最終交渉価格 (円/kg)" error={errors.finalNegotiatedPrice?.message}>
+                  <input type="number" step="0.01" placeholder="0" {...register("finalNegotiatedPrice")} className="input-field" />
                 </FormGroup>
               </div>
             </div>
