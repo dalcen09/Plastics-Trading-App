@@ -262,6 +262,7 @@ const FIELD_ALIASES: Record<string, string> = {
   "月間・スポット": "quantityType",
   "スポット/月間": "quantityType",
   "月間/スポット": "quantityType",
+  "数量区分": "quantityType",
   "取引区分": "quantityType",
   "取引形態": "quantityType",
   "受注区分": "quantityType",
@@ -318,7 +319,10 @@ const FIELD_ALIASES: Record<string, string> = {
   "他県置場": "storageLocation",
   "置き場": "storageLocation",
   "置場": "storageLocation",
+  "場所": "storageLocation",
   "保管場所": "storageLocation",
+  "在庫場所": "storageLocation",
+  "保管先": "storageLocation",
 
   // ── arrivalPrice (丸喜着) ─────────────────────────────────────────────────
   "arrival price": "arrivalPrice",
