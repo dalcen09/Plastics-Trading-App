@@ -58,7 +58,7 @@ function PhotoThumbnail({ url, index }: { url: string; index: number }) {
 
 export type ColumnKey =
   | "date" | "personInCharge" | "resinType" | "resinSubType" | "manufacturer"
-  | "grade" | "charpy" | "izod" | "specs" | "price" | "locationType" | "storageLocation" | "quantity" | "quantityType" | "packaging" | "photo" | "tdsUrl" | "isClosed" | "sampleAvailable"
+  | "grade" | "charpy" | "izod" | "mi" | "density" | "price" | "locationType" | "storageLocation" | "quantity" | "quantityType" | "packaging" | "photo" | "tdsUrl" | "isClosed" | "sampleAvailable"
   | "prospectiveBuyer" | "desiredQuantity" | "proposedTo" | "sellingPrice" | "remarks"
   | "origin" | "colorTone"
   | "packagingWeight" | "plainMaker" | "usageType" | "finalNegotiatedPrice";
@@ -67,7 +67,7 @@ export const RECYCLED_ONLY_COLUMNS: ColumnKey[] = ["origin", "colorTone"];
 
 export type SortKey =
   | "counterparty" | "date" | "personInCharge" | "resinType"
-  | "manufacturer" | "grade" | "charpy" | "izod" | "price" | "quantity";
+  | "manufacturer" | "grade" | "charpy" | "izod" | "mi" | "density" | "price" | "quantity";
 
 export type SortDirection = "asc" | "desc";
 
@@ -85,7 +85,8 @@ export const ALL_COLUMNS: { key: ColumnKey; label: string }[] = [
   { key: "grade",          label: "グレード" },
   { key: "charpy",         label: "シャルピー" },
   { key: "izod",           label: "アイゾッド" },
-  { key: "specs",          label: "仕様 (MI/密度)" },
+  { key: "mi",             label: "MI" },
+  { key: "density",        label: "比重" },
   { key: "price",           label: "価格 下限〜上限 (円/kg)" },
   { key: "locationType",    label: "納入・置場" },
   { key: "storageLocation", label: "場所" },
@@ -111,7 +112,7 @@ export const ALL_COLUMNS: { key: ColumnKey; label: string }[] = [
 
 export const DEFAULT_VISIBLE: Set<ColumnKey> = new Set(
   ALL_COLUMNS.map(c => c.key).filter(k =>
-    k !== "charpy" && k !== "izod" && k !== "photo" && k !== "sampleAvailable" &&
+    k !== "charpy" && k !== "izod" && k !== "photo" &&
     k !== "prospectiveBuyer" && k !== "desiredQuantity" && k !== "proposedTo" && k !== "sellingPrice" &&
     k !== "origin" && k !== "colorTone" &&
     k !== "packagingWeight" && k !== "plainMaker" && k !== "usageType" && k !== "finalNegotiatedPrice"
@@ -127,10 +128,12 @@ export function sortData(data: ResinEntry[], sort: SortConfig | null): ResinEntr
     let av: any = (a as any)[key];
     let bv: any = (b as any)[key];
 
-    // Numeric columns — charpy/izod sort by lower bound
-    if (key === "charpy") { av = (a as any).charpyLower; bv = (b as any).charpyLower; }
-    if (key === "izod")   { av = (a as any).izodLower;   bv = (b as any).izodLower; }
-    if (["charpy", "izod", "price", "quantity"].includes(key)) {
+    // Numeric columns — sort by lower bound
+    if (key === "charpy")   { av = (a as any).charpyLower;         bv = (b as any).charpyLower; }
+    if (key === "izod")     { av = (a as any).izodLower;           bv = (b as any).izodLower; }
+    if (key === "mi")       { av = (a as any).meltFlowIndexLower;  bv = (b as any).meltFlowIndexLower; }
+    if (key === "density")  { av = (a as any).densityLower;        bv = (b as any).densityLower; }
+    if (["charpy", "izod", "mi", "density", "price", "quantity"].includes(key)) {
       const an = av == null ? -Infinity : Number(av);
       const bn = bv == null ? -Infinity : Number(bv);
       return mul * (an - bn);
@@ -281,9 +284,10 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
               {col("grade")          && <SortTh colKey="grade"          sort={sort} onSort={onSort}>グレード</SortTh>}
               {col("origin")         && <th className="px-4 py-4">由来</th>}
               {col("colorTone")      && <th className="px-4 py-4">色目</th>}
-              {col("charpy")         && <SortTh colKey="charpy"         sort={sort} onSort={onSort} className="text-right">シャルピー</SortTh>}
-              {col("izod")           && <SortTh colKey="izod"           sort={sort} onSort={onSort} className="text-right">アイゾッド</SortTh>}
-              {col("specs")          && <th className="px-4 py-4">仕様</th>}
+              {col("charpy")   && <SortTh colKey="charpy"   sort={sort} onSort={onSort} className="text-right">シャルピー</SortTh>}
+              {col("izod")     && <SortTh colKey="izod"     sort={sort} onSort={onSort} className="text-right">アイゾッド</SortTh>}
+              {col("mi")       && <SortTh colKey="mi"       sort={sort} onSort={onSort} className="text-right">MI</SortTh>}
+              {col("density")  && <SortTh colKey="density"  sort={sort} onSort={onSort} className="text-right">比重</SortTh>}
               {col("price")          && <SortTh colKey="price"    sort={sort} onSort={onSort} className="text-right">価格 (円/kg)</SortTh>}
               {col("locationType")    && <th className="px-4 py-4">納入・置場</th>}
               {col("storageLocation") && <th className="px-4 py-4">場所</th>}
@@ -412,30 +416,18 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
                       : dash}
                   </td>
                 )}
-                {col("specs") && (
-                  <td className="px-4 py-3">
-                    <div className="flex flex-col gap-1 text-xs">
-                      <div className="flex gap-3 text-muted-foreground">
-                        <span title="MI">MI: {
-                          row.meltFlowIndexLower != null || row.meltFlowIndexUpper != null
-                            ? [formatNumber(row.meltFlowIndexLower), formatNumber(row.meltFlowIndexUpper)]
-                                .filter(v => v !== "-").join("〜")
-                            : "-"
-                        }</span>
-                        <span title="密度">密度: {
-                          row.densityLower != null || row.densityUpper != null
-                            ? [formatNumber(row.densityLower), formatNumber(row.densityUpper)].filter(v => v !== "-").join("〜")
-                            : "-"
-                        }</span>
-                      </div>
-                      <div className="flex gap-2 items-center mt-0.5">
-                        {row.sampleAvailable && (
-                          <span className="inline-flex items-center px-1.5 py-0.5 rounded-md bg-primary/10 text-primary text-[10px] font-bold">
-                            サンプル: {row.sampleAvailable}
-                          </span>
-                        )}
-                      </div>
-                    </div>
+                {col("mi") && (
+                  <td className="px-4 py-3 text-sm text-right text-muted-foreground">
+                    {row.meltFlowIndexLower != null || row.meltFlowIndexUpper != null
+                      ? [formatNumber(row.meltFlowIndexLower), formatNumber(row.meltFlowIndexUpper)].filter(v => v !== "-").join("〜")
+                      : dash}
+                  </td>
+                )}
+                {col("density") && (
+                  <td className="px-4 py-3 text-sm text-right text-muted-foreground">
+                    {row.densityLower != null || row.densityUpper != null
+                      ? [formatNumber(row.densityLower), formatNumber(row.densityUpper)].filter(v => v !== "-").join("〜")
+                      : dash}
                   </td>
                 )}
                 {col("price") && (
