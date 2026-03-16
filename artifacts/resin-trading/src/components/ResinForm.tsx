@@ -312,45 +312,35 @@ export function ResinForm({
             {/* Section: Technical Specs */}
             <div>
               <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4 pt-4 border-t border-border/50">物性</h3>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
-                <FormGroup label="MI 下限" error={errors.meltFlowIndexLower?.message}>
-                  <input type="number" step="0.01" placeholder="g/10min" {...register("meltFlowIndexLower")} className="input-field" />
-                </FormGroup>
-                <FormGroup label="MI 上限" error={errors.meltFlowIndexUpper?.message}>
-                  <input type="number" step="0.01" placeholder="g/10min" {...register("meltFlowIndexUpper")} className="input-field" />
-                </FormGroup>
-                <FormGroup label="シャルピー 下限" error={errors.charpyLower?.message}>
-                  <input type="number" step="0.01" placeholder="kJ/m²" {...register("charpyLower")} className="input-field" />
-                </FormGroup>
-                <FormGroup label="シャルピー 上限" error={errors.charpyUpper?.message}>
-                  <input type="number" step="0.01" placeholder="kJ/m²" {...register("charpyUpper")} className="input-field" />
-                </FormGroup>
-                <FormGroup label="アイゾット 下限" error={errors.izodLower?.message}>
-                  <input type="number" step="0.01" placeholder="kJ/m²" {...register("izodLower")} className="input-field" />
-                </FormGroup>
-                <FormGroup label="アイゾット 上限" error={errors.izodUpper?.message}>
-                  <input type="number" step="0.01" placeholder="kJ/m²" {...register("izodUpper")} className="input-field" />
-                </FormGroup>
-                <FormGroup label="密度 下限" error={errors.densityLower?.message}>
-                  <input type="number" step="0.001" placeholder="g/cm³" {...register("densityLower")} className="input-field" />
-                </FormGroup>
-                <FormGroup label="密度 上限" error={errors.densityUpper?.message}>
-                  <input type="number" step="0.001" placeholder="g/cm³" {...register("densityUpper")} className="input-field" />
-                </FormGroup>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                <RangeGroup label="MI (g/10min)" errorLower={errors.meltFlowIndexLower?.message} errorUpper={errors.meltFlowIndexUpper?.message}>
+                  <input type="number" step="0.01" placeholder="下限" {...register("meltFlowIndexLower")} className="input-field" />
+                  <input type="number" step="0.01" placeholder="上限" {...register("meltFlowIndexUpper")} className="input-field" />
+                </RangeGroup>
+                <RangeGroup label="シャルピー (kJ/m²)" errorLower={errors.charpyLower?.message} errorUpper={errors.charpyUpper?.message}>
+                  <input type="number" step="0.01" placeholder="下限" {...register("charpyLower")} className="input-field" />
+                  <input type="number" step="0.01" placeholder="上限" {...register("charpyUpper")} className="input-field" />
+                </RangeGroup>
+                <RangeGroup label="アイゾット (kJ/m²)" errorLower={errors.izodLower?.message} errorUpper={errors.izodUpper?.message}>
+                  <input type="number" step="0.01" placeholder="下限" {...register("izodLower")} className="input-field" />
+                  <input type="number" step="0.01" placeholder="上限" {...register("izodUpper")} className="input-field" />
+                </RangeGroup>
+                <RangeGroup label="密度 (g/cm³)" errorLower={errors.densityLower?.message} errorUpper={errors.densityUpper?.message}>
+                  <input type="number" step="0.001" placeholder="下限" {...register("densityLower")} className="input-field" />
+                  <input type="number" step="0.001" placeholder="上限" {...register("densityUpper")} className="input-field" />
+                </RangeGroup>
               </div>
             </div>
 
             {/* Section: Commercial Info */}
             <div>
               <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4 pt-4 border-t border-border/50">詳細</h3>
-              {/* Row 1: 数量 下限 / 数量 上限 / 数量区分 / 価格 下限 / 価格 上限 / 納入・置場 / 場所 */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-5 mb-5">
-                <FormGroup label="数量 下限" error={errors.quantityLower?.message}>
-                  <input type="number" step="0.01" placeholder="kg" {...register("quantityLower")} className="input-field" />
-                </FormGroup>
-                <FormGroup label="数量 上限" error={errors.quantityUpper?.message}>
-                  <input type="number" step="0.01" placeholder="kg" {...register("quantityUpper")} className="input-field" />
-                </FormGroup>
+              {/* Row 1: 数量 / 数量区分 / 価格 / 納入・置場 / 場所 */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-5 mb-5">
+                <RangeGroup label="数量 (kg)" errorLower={errors.quantityLower?.message} errorUpper={errors.quantityUpper?.message}>
+                  <input type="number" step="0.01" placeholder="下限" {...register("quantityLower")} className="input-field" />
+                  <input type="number" step="0.01" placeholder="上限" {...register("quantityUpper")} className="input-field" />
+                </RangeGroup>
                 <FormGroup label="数量区分" error={errors.quantityType?.message}>
                   <select {...register("quantityType")} className="input-field">
                     <option value="">— 未選択 —</option>
@@ -358,12 +348,10 @@ export function ResinForm({
                     <option value="スポット">スポット</option>
                   </select>
                 </FormGroup>
-                <FormGroup label="価格 下限" error={errors.priceLower?.message}>
-                  <input type="number" step="0.01" placeholder="円/kg" {...register("priceLower")} className="input-field" />
-                </FormGroup>
-                <FormGroup label="価格 上限" error={errors.priceUpper?.message}>
-                  <input type="number" step="0.01" placeholder="円/kg" {...register("priceUpper")} className="input-field" />
-                </FormGroup>
+                <RangeGroup label="価格 (円/kg)" errorLower={errors.priceLower?.message} errorUpper={errors.priceUpper?.message}>
+                  <input type="number" step="0.01" placeholder="下限" {...register("priceLower")} className="input-field" />
+                  <input type="number" step="0.01" placeholder="上限" {...register("priceUpper")} className="input-field" />
+                </RangeGroup>
                 <FormGroup label="納入・置場" error={errors.locationType?.message}>
                   <select {...register("locationType")} className="input-field">
                     <option value="">— 未選択 —</option>
@@ -644,6 +632,21 @@ function FormGroup({ label, error, children }: { label: string, error?: string, 
       <label className="text-sm font-medium text-foreground">{label}</label>
       {children}
       {error && <span className="text-xs text-destructive animate-in fade-in slide-in-from-top-1">{error}</span>}
+    </div>
+  );
+}
+
+function RangeGroup({ label, errorLower, errorUpper, children }: { label: string, errorLower?: string, errorUpper?: string, children: [React.ReactNode, React.ReactNode] }) {
+  return (
+    <div className="flex flex-col gap-1.5">
+      <label className="text-sm font-medium text-foreground">{label}</label>
+      <div className="flex items-center gap-1.5">
+        <div className="flex-1">{children[0]}</div>
+        <span className="text-muted-foreground text-sm select-none">〜</span>
+        <div className="flex-1">{children[1]}</div>
+      </div>
+      {errorLower && <span className="text-xs text-destructive animate-in fade-in slide-in-from-top-1">{errorLower}</span>}
+      {errorUpper && !errorLower && <span className="text-xs text-destructive animate-in fade-in slide-in-from-top-1">{errorUpper}</span>}
     </div>
   );
 }
