@@ -116,7 +116,7 @@ export interface ResinEntry {
   psType?: PSType | null;
   absType?: ABSType | null;
   isClosed?: boolean;
-  sampleAvailable?: boolean | null;
+  sampleAvailable?: string | null;
   packaging?: PackagingType | null;
   meltFlowIndexLower?: number | null;
   meltFlowIndexUpper?: number | null;
@@ -168,7 +168,7 @@ export interface CreateResinEntry {
   psType?: PSType | null;
   absType?: ABSType | null;
   isClosed?: boolean;
-  sampleAvailable?: boolean | null;
+  sampleAvailable?: string | null;
   packaging?: PackagingType | null;
   meltFlowIndexLower?: number | null;
   meltFlowIndexUpper?: number | null;

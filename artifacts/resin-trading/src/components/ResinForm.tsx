@@ -33,7 +33,7 @@ const formSchema = z.object({
   psType: z.preprocess(v => v === "" ? null : v, z.nativeEnum(PSType).nullable().optional()),
   absType: z.preprocess(v => v === "" ? null : v, z.nativeEnum(ABSType).nullable().optional()),
   isClosed: z.boolean(),
-  sampleAvailable: z.boolean().nullable().optional(),
+  sampleAvailable: z.preprocess(v => v === "" ? null : v, z.enum(["あり", "なし", "要相談", "有償"]).nullable().optional()),
   packaging: z.nativeEnum(PackagingType).nullable().optional(),
   meltFlowIndexLower: z.coerce.number().nullable().optional(),
   meltFlowIndexUpper: z.coerce.number().nullable().optional(),
@@ -97,7 +97,7 @@ export function ResinForm({
       psType: initialData?.psType || null,
       absType: initialData?.absType || null,
       isClosed: initialData?.isClosed ?? false,
-      sampleAvailable: initialData?.sampleAvailable || false,
+      sampleAvailable: (initialData?.sampleAvailable as "あり" | "なし" | "要相談" | "有償" | null) ?? null,
       packaging: initialData?.packaging || PackagingType["紙袋"],
       meltFlowIndexLower: initialData?.meltFlowIndexLower ?? undefined,
       meltFlowIndexUpper: initialData?.meltFlowIndexUpper ?? undefined,
@@ -376,23 +376,15 @@ export function ResinForm({
                   </label>
                 </div>
 
-                <div className="flex flex-col justify-end pb-2">
-                  <label className="flex items-center gap-2 cursor-pointer group">
-                    <Controller
-                      name="sampleAvailable"
-                      control={control}
-                      render={({ field }) => (
-                        <input 
-                          type="checkbox" 
-                          className="w-5 h-5 rounded border-border text-primary focus:ring-primary/20 transition-colors cursor-pointer"
-                          checked={field.value || false}
-                          onChange={(e) => field.onChange(e.target.checked)}
-                        />
-                      )}
-                    />
-                    <span className="text-sm font-medium text-foreground group-hover:text-primary transition-colors">{entryType === "demand" ? "サンプル要" : "サンプルあり"}</span>
-                  </label>
-                </div>
+                <FormGroup label="サンプル" error={errors.sampleAvailable?.message}>
+                  <select {...register("sampleAvailable")} className="input-field">
+                    <option value="">— 未選択 —</option>
+                    <option value="あり">あり</option>
+                    <option value="なし">なし</option>
+                    <option value="要相談">要相談</option>
+                    <option value="有償">有償</option>
+                  </select>
+                </FormGroup>
               </div>
             </div>
 

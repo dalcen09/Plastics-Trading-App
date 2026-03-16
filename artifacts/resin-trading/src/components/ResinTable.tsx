@@ -92,7 +92,7 @@ export const ALL_COLUMNS: { key: ColumnKey; label: string }[] = [
   { key: "packaging",      label: "梱包形態" },
   { key: "photo",            label: "写真" },
   { key: "tdsUrl",           label: "物性表" },
-  { key: "sampleAvailable",  label: "サンプルあり" },
+  { key: "sampleAvailable",  label: "サンプル" },
   { key: "prospectiveBuyer", label: "ワーク希望者" },
   { key: "desiredQuantity",  label: "希望数量 (kg)" },
   { key: "proposedTo",       label: "提案先" },
@@ -286,7 +286,7 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
               {col("packaging")      && <th className="px-4 py-4">梱包形態</th>}
               {col("photo")          && <th className="px-4 py-4 text-center">写真</th>}
               {col("tdsUrl")         && <th className="px-4 py-4 text-center">物性表</th>}
-              {col("sampleAvailable")  && <th className="px-4 py-4 text-center">サンプル</th>}
+              {col("sampleAvailable")  && <th className="px-4 py-4">サンプル</th>}
               {col("prospectiveBuyer") && <th className="px-4 py-4">ワーク希望者</th>}
               {col("desiredQuantity")  && <th className="px-4 py-4 text-right">希望数量 (kg)</th>}
               {col("proposedTo")       && <th className="px-4 py-4">提案先</th>}
@@ -418,8 +418,8 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
                       </div>
                       <div className="flex gap-2 items-center mt-0.5">
                         {row.sampleAvailable && (
-                          <span className="inline-flex items-center px-1.5 py-0.5 rounded-md bg-primary/10 text-primary text-[10px] uppercase font-bold">
-                            サンプル
+                          <span className="inline-flex items-center px-1.5 py-0.5 rounded-md bg-primary/10 text-primary text-[10px] font-bold">
+                            サンプル: {row.sampleAvailable}
                           </span>
                         )}
                       </div>
@@ -510,11 +510,8 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
                   </td>
                 )}
                 {col("sampleAvailable") && (
-                  <td className="px-4 py-3 text-center">
-                    {row.sampleAvailable
-                      ? <span className="inline-flex items-center px-1.5 py-0.5 rounded-md bg-primary/10 text-primary text-xs font-bold">✓</span>
-                      : <span className="text-muted-foreground/40">―</span>
-                    }
+                  <td className="px-4 py-3 text-sm text-muted-foreground">
+                    {row.sampleAvailable || dash}
                   </td>
                 )}
                 {col("prospectiveBuyer") && (

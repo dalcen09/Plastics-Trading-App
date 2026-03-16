@@ -397,7 +397,7 @@ components:
         isClosed:
           type: boolean
         sampleAvailable:
-          type: boolean
+          type: string
           nullable: true
         packaging:
           $ref: "#/components/schemas/PackagingType"
@@ -531,7 +531,7 @@ components:
         isClosed:
           type: boolean
         sampleAvailable:
-          type: boolean
+          type: string
           nullable: true
         packaging:
           $ref: "#/components/schemas/PackagingType"
