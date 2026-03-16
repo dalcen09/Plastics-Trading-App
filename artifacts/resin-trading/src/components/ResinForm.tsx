@@ -370,7 +370,11 @@ export function ResinForm({
                   <input type="number" step="0.01" placeholder="例: 500" {...register("packagingWeight")} className="input-field" />
                 </FormGroup>
                 <FormGroup label="無地・メーカー" error={errors.plainMaker?.message}>
-                  <input type="text" placeholder="例: 無地 / メーカー名" {...register("plainMaker")} className="input-field" />
+                  <select {...register("plainMaker")} className="input-field">
+                    <option value="">— 未選択 —</option>
+                    <option value="無地">無地</option>
+                    <option value="メーカー">メーカー</option>
+                  </select>
                 </FormGroup>
                 <FormGroup label="ランニング・ワンウェイ" error={errors.usageType?.message}>
                   <select {...register("usageType")} className="input-field">
