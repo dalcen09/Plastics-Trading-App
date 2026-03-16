@@ -96,6 +96,7 @@ const FIELD_ALIASES: Record<string, string> = {
   "ppのタイプ": "ppType",
   "ppタイプ": "ppType",
   "タイプ": "ppType",
+  "ﾀｲﾌﾟ": "ppType",
 
   // ── sampleAvailable ──────────────────────────────────────────────────────
   "sample available": "sampleAvailable",
@@ -114,15 +115,23 @@ const FIELD_ALIASES: Record<string, string> = {
   "梱包": "packaging",
   "荷形態": "packaging",
 
-  // ── meltFlowIndex ────────────────────────────────────────────────────────
-  "melt flow index": "meltFlowIndex",
-  "mfi": "meltFlowIndex",
-  "melt flow": "meltFlowIndex",
-  "melt_flow_index": "meltFlowIndex",
-  "ﾒﾙﾄ": "meltFlowIndex",
-  "メルト": "meltFlowIndex",
-  "メルトフロー": "meltFlowIndex",
-  "mfr": "meltFlowIndex",
+  // ── meltFlowIndexLower / meltFlowIndexUpper ──────────────────────────────
+  "melt flow index": "meltFlowIndexLower",
+  "mfi": "meltFlowIndexLower",
+  "melt flow": "meltFlowIndexLower",
+  "melt_flow_index": "meltFlowIndexLower",
+  "ﾒﾙﾄ": "meltFlowIndexLower",
+  "メルト": "meltFlowIndexLower",
+  "メルトフロー": "meltFlowIndexLower",
+  "mfr": "meltFlowIndexLower",
+  "melt flow index lower": "meltFlowIndexLower",
+  "mi 下限": "meltFlowIndexLower",
+  "mi下限": "meltFlowIndexLower",
+  "ﾒﾙﾄ（下限）": "meltFlowIndexLower",
+  "melt flow index upper": "meltFlowIndexUpper",
+  "mi 上限": "meltFlowIndexUpper",
+  "mi上限": "meltFlowIndexUpper",
+  "ﾒﾙﾄ（上限）": "meltFlowIndexUpper",
 
   // ── charpyLower / charpyUpper ────────────────────────────────────────────
   "charpy": "charpyLower",
@@ -133,9 +142,11 @@ const FIELD_ALIASES: Record<string, string> = {
   "charpy lower": "charpyLower",
   "シャルピー 下限": "charpyLower",
   "シャルピー下限": "charpyLower",
+  "ｼｬﾙﾋﾟｰ（下限）": "charpyLower",
   "charpy upper": "charpyUpper",
   "シャルピー 上限": "charpyUpper",
   "シャルピー上限": "charpyUpper",
+  "ｼｬﾙﾋﾟｰ（上限）": "charpyUpper",
 
   // ── izodLower / izodUpper ────────────────────────────────────────────────
   "izod": "izodLower",
@@ -147,9 +158,11 @@ const FIELD_ALIASES: Record<string, string> = {
   "izod lower": "izodLower",
   "アイゾット 下限": "izodLower",
   "アイゾット下限": "izodLower",
+  "ｱｲｿﾞｯﾄﾞ（下限）": "izodLower",
   "izod upper": "izodUpper",
   "アイゾット 上限": "izodUpper",
   "アイゾット上限": "izodUpper",
+  "ｱｲｿﾞｯﾄﾞ（上限）": "izodUpper",
 
   // ── densityLower / densityUpper ──────────────────────────────────────────
   "density": "densityLower",
@@ -158,28 +171,70 @@ const FIELD_ALIASES: Record<string, string> = {
   "density lower": "densityLower",
   "密度 下限": "densityLower",
   "密度下限": "densityLower",
+  "比重（下限）": "densityLower",
   "density upper": "densityUpper",
   "密度 上限": "densityUpper",
   "密度上限": "densityUpper",
+  "比重（上限）": "densityUpper",
 
-  // ── price (最終交渉価格 / negotiated price) ───────────────────────────────
+  // ── price ─────────────────────────────────────────────────────────────────
   "price": "price",
   "price (usd/mt)": "price",
   "price usd": "price",
-  "最終交渉価格": "price",
-  "交渉価格": "price",
+  "価格": "price",
   "仕入価格": "price",
   "購入価格": "price",
   "単価": "price",
 
-  // ── quantity ─────────────────────────────────────────────────────────────
+  // ── finalNegotiatedPrice ──────────────────────────────────────────────────
+  "final negotiated price": "finalNegotiatedPrice",
+  "最終交渉価格": "finalNegotiatedPrice",
+  "交渉価格": "finalNegotiatedPrice",
+  "最終価格": "finalNegotiatedPrice",
+
+  // ── quantity ──────────────────────────────────────────────────────────────
   "quantity": "quantity",
   "qty": "quantity",
   "quantity (mt)": "quantity",
   "qty (mt)": "quantity",
-  "希望数量": "quantity",
+  "発生数量": "quantity",
   "数量": "quantity",
   "ロット": "quantity",
+
+  // ── desiredQuantity ───────────────────────────────────────────────────────
+  "desired quantity": "desiredQuantity",
+  "希望数量": "desiredQuantity",
+  "要望数量": "desiredQuantity",
+
+  // ── quantityType (スポット・月間) ──────────────────────────────────────────
+  "quantity type": "quantityType",
+  "スポット・月間": "quantityType",
+  "取引区分": "quantityType",
+
+  // ── packagingWeight (梱包重量) ────────────────────────────────────────────
+  "packaging weight": "packagingWeight",
+  "梱包重量": "packagingWeight",
+  "梱包重量（kg)": "packagingWeight",
+  "梱包重量(kg)": "packagingWeight",
+  "梱包重量（kg）": "packagingWeight",
+
+  // ── plainMaker (無地・メーカー) ───────────────────────────────────────────
+  "plain maker": "plainMaker",
+  "無地・メーカー": "plainMaker",
+  "無地メーカー": "plainMaker",
+  "plain/maker": "plainMaker",
+
+  // ── usageType (ランニング・ワンウェイ) ────────────────────────────────────
+  "usage type": "usageType",
+  "ランニング・ワンウェイ": "usageType",
+  "ランニングワンウェイ": "usageType",
+  "running/oneway": "usageType",
+
+  // ── isClosed (クローズ・オープン) ─────────────────────────────────────────
+  "is closed": "isClosed",
+  "クローズ・オープン": "isClosed",
+  "クローズ": "isClosed",
+  "open/close": "isClosed",
 
   // ── remarks ──────────────────────────────────────────────────────────────
   "remarks": "remarks",
@@ -246,7 +301,7 @@ function detectCategoryFromSheet(name: string): "virgin" | "offgrade" | "recycle
 
 function detectEntryTypeFromSheet(name: string): "source" | "demand" | null {
   const n = name.toLowerCase();
-  if (n.includes("仕入") || n.includes("source") || n.includes("supply")) return "source";
+  if (n.includes("仕入") || n.includes("供給") || n.includes("source") || n.includes("supply")) return "source";
   if (n.includes("需要") || n.includes("販売先") || n.includes("demand") || n.includes("buy")) return "demand";
   return null;
 }
@@ -262,7 +317,14 @@ const VALID_RESIN_TYPES = [
   "Other",
 ];
 const VALID_PP_TYPES = ["Homopolymer", "Copolymer", "Random", "Impact", "Terpolymer", "N/A"];
-const VALID_PACKAGING = ["Bags", "Octabin", "Bulk", "Jumbo_Bag", "Box", "Other"];
+const VALID_PACKAGING_JP = ["紙袋", "フレコン", "カートン", "鉄箱", "ポリ袋"];
+const PACKAGING_ALIASES: Record<string, string> = {
+  "bags": "紙袋", "bag": "紙袋", "紙袋": "紙袋",
+  "jumbo_bag": "フレコン", "jumbo bag": "フレコン", "フレコン": "フレコン", "フレキシブルコンテナ": "フレコン",
+  "octabin": "カートン", "box": "カートン", "carton": "カートン", "カートン": "カートン",
+  "鉄箱": "鉄箱", "metal box": "鉄箱",
+  "ポリ袋": "ポリ袋", "poly bag": "ポリ袋", "bulk": "ポリ袋",
+};
 
 function resolveField(colName: string): string | null {
   return FIELD_ALIASES[colName.trim().toLowerCase()] ?? null;
@@ -316,17 +378,34 @@ function normalizePPType(val: string): string | null {
 
 function normalizePackaging(val: string): string | null {
   if (!val || !val.trim() || val.trim() === "-") return null;
-  const v = val.trim().replace(/\s+/g, "_");
-  return VALID_PACKAGING.find(p => p.toLowerCase() === v.toLowerCase()) ?? null;
+  const v = val.trim();
+  if (VALID_PACKAGING_JP.includes(v)) return v;
+  return PACKAGING_ALIASES[v.toLowerCase()] ?? null;
 }
 
-function normalizeBool(val: any): boolean | null {
-  if (val === null || val === undefined || val === "") return null;
-  if (typeof val === "boolean") return val;
-  const s = String(val).trim().toLowerCase();
-  if (["yes", "true", "1", "y", "あり", "はい", "○", "◯"].includes(s)) return true;
-  if (["no", "false", "0", "n", "なし", "いいえ", "×", "x"].includes(s)) return false;
+function normalizeSampleAvailable(val: any): string | null {
+  if (val === null || val === undefined || val === "" || val === "-") return null;
+  const s = String(val).trim();
+  if (["有償", "有償サンプル"].includes(s)) return "有償";
+  if (["要相談"].includes(s)) return "要相談";
+  const low = s.toLowerCase();
+  if (["yes", "true", "1", "y", "あり", "はい", "○", "◯"].includes(low)) return "あり";
+  if (["no", "false", "0", "n", "なし", "いいえ", "×", "x"].includes(low)) return "なし";
   return null;
+}
+
+function normalizeQuantityType(val: string): "スポット" | "月間" | null {
+  if (!val || !val.trim()) return null;
+  const v = val.trim().toLowerCase();
+  if (v.includes("スポット") || v.includes("spot") || v.includes("ワンウェイ")) return "スポット";
+  if (v.includes("月間") || v.includes("monthly") || v.includes("ランニング")) return "月間";
+  return null;
+}
+
+function normalizeIsClosed(val: string): "クローズ" | "オープン" {
+  const v = val.trim().toLowerCase();
+  if (v.includes("クローズ") || v.includes("close") || v === "1" || v === "true") return "クローズ";
+  return "オープン";
 }
 
 function parseDate(val: any): string | null {
@@ -455,9 +534,13 @@ router.post("/import", upload.single("file"), async (req, res) => {
           manufacturer: data.manufacturer ? String(data.manufacturer).trim() || null : null,
           grade: data.grade ? String(data.grade).trim() || null : null,
           ppType: data.ppType ? normalizePPType(String(data.ppType)) as any : null,
-          sampleAvailable: data.sampleAvailable !== undefined ? normalizeBool(data.sampleAvailable) : null,
+          sampleAvailable: data.sampleAvailable !== undefined ? normalizeSampleAvailable(data.sampleAvailable) : null,
           packaging: data.packaging ? normalizePackaging(String(data.packaging)) as any : null,
-          meltFlowIndex: numStr(data.meltFlowIndex),
+          packagingWeight: numStr(data.packagingWeight),
+          plainMaker: data.plainMaker ? String(data.plainMaker).trim() || null : null,
+          usageType: data.usageType ? String(data.usageType).trim() || null : null,
+          meltFlowIndexLower: numStr(data.meltFlowIndexLower),
+          meltFlowIndexUpper: numStr(data.meltFlowIndexUpper),
           charpyLower: numStr(data.charpyLower),
           charpyUpper: numStr(data.charpyUpper),
           izodLower: numStr(data.izodLower),
@@ -465,15 +548,19 @@ router.post("/import", upload.single("file"), async (req, res) => {
           densityLower: numStr(data.densityLower),
           densityUpper: numStr(data.densityUpper),
           price: numStr(data.price),
+          finalNegotiatedPrice: numStr(data.finalNegotiatedPrice),
           quantity: numStr(data.quantity),
+          quantityType: data.quantityType ? normalizeQuantityType(String(data.quantityType)) as any : null,
           remarks: data.remarks ? String(data.remarks).trim() || null : null,
           // Extended fields
           storageLocation: data.storageLocation ? String(data.storageLocation).trim() || null : null,
           arrivalPrice: numStr(data.arrivalPrice),
           spotPrice: numStr(data.spotPrice),
           prospectiveBuyer: data.prospectiveBuyer ? String(data.prospectiveBuyer).trim() || null : null,
+          desiredQuantity: numStr(data.desiredQuantity),
           proposedTo: data.proposedTo ? String(data.proposedTo).trim() || null : null,
           sellingPrice: numStr(data.sellingPrice),
+          isClosed: data.isClosed ? normalizeIsClosed(String(data.isClosed)) : "オープン",
         });
         results.imported++;
       } catch (err) {
