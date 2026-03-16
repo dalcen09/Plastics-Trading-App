@@ -352,7 +352,7 @@ components:
 
     PackagingType:
       type: string
-      enum: ["25㎏紙袋", "フレコン", "そのほか"]
+      enum: ["紙袋", "フレコン", "カートン", "鉄箱", "ポリ袋"]
 
     ResinEntry:
       type: object

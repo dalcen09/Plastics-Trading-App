@@ -85,9 +85,11 @@ export const QuantityType = {
 export type PackagingType = (typeof PackagingType)[keyof typeof PackagingType];
 
 export const PackagingType = {
-  "25㎏紙袋": "25㎏紙袋",
+  紙袋: "紙袋",
   フレコン: "フレコン",
-  そのほか: "そのほか",
+  カートン: "カートン",
+  鉄箱: "鉄箱",
+  ポリ袋: "ポリ袋",
 } as const;
 
 export type ResinEntryEntryType =

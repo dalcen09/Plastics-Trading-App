@@ -98,7 +98,7 @@ export function ResinForm({
       absType: initialData?.absType || null,
       isClosed: initialData?.isClosed ?? false,
       sampleAvailable: initialData?.sampleAvailable || false,
-      packaging: initialData?.packaging || PackagingType["25㎏紙袋"],
+      packaging: initialData?.packaging || PackagingType["紙袋"],
       meltFlowIndexLower: initialData?.meltFlowIndexLower ?? undefined,
       meltFlowIndexUpper: initialData?.meltFlowIndexUpper ?? undefined,
       charpy: initialData?.charpy ?? undefined,
@@ -312,9 +312,16 @@ export function ResinForm({
             {/* Section: Commercial Info */}
             <div>
               <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4 pt-4 border-t border-border/50">取引情報</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5">
+              {/* Row 1: 数量 / 置場 / 価格 / 数量区分 */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5 mb-5">
                 <FormGroup label="数量 (kg)" error={errors.quantity?.message}>
                   <input type="number" step="0.01" placeholder="kg" {...register("quantity")} className="input-field" />
+                </FormGroup>
+                <FormGroup label="置場" error={errors.storageLocation?.message}>
+                  <input type="text" placeholder="例: 大阪倉庫" {...register("storageLocation")} className="input-field" />
+                </FormGroup>
+                <FormGroup label="価格 (円/kg)" error={errors.price?.message}>
+                  <input type="number" step="0.01" placeholder="円" {...register("price")} className="input-field" />
                 </FormGroup>
                 <FormGroup label="数量区分" error={errors.quantityType?.message}>
                   <select {...register("quantityType")} className="input-field">
@@ -323,22 +330,16 @@ export function ResinForm({
                     <option value="スポット">スポット</option>
                   </select>
                 </FormGroup>
-                <FormGroup label="ランニング・ワンウェイ" error={errors.usageType?.message}>
-                  <select {...register("usageType")} className="input-field">
-                    <option value="">— 未選択 —</option>
-                    <option value="ランニング">ランニング</option>
-                    <option value="ワンウェイ">ワンウェイ</option>
-                  </select>
-                </FormGroup>
-                <FormGroup label="価格 (円/kg)" error={errors.price?.message}>
-                  <input type="number" step="0.01" placeholder="円" {...register("price")} className="input-field" />
-                </FormGroup>
-                <FormGroup label="置場" error={errors.storageLocation?.message}>
-                  <input type="text" placeholder="例: 大阪倉庫" {...register("storageLocation")} className="input-field" />
-                </FormGroup>
+              </div>
+              {/* Row 2: 梱包形態 / 梱包重量 / 無地・メーカー / ランニング・ワンウェイ */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5 mb-5">
                 <FormGroup label="梱包形態" error={errors.packaging?.message}>
                   <select {...register("packaging")} className="input-field">
-                    {Object.values(PackagingType).map(t => <option key={t} value={t}>{t}</option>)}
+                    <option value="紙袋">紙袋</option>
+                    <option value="フレコン">フレコン</option>
+                    <option value="カートン">カートン</option>
+                    <option value="鉄箱">鉄箱</option>
+                    <option value="ポリ袋">ポリ袋</option>
                   </select>
                 </FormGroup>
                 <FormGroup label="梱包重量 (kg)" error={errors.packagingWeight?.message}>
@@ -347,7 +348,16 @@ export function ResinForm({
                 <FormGroup label="無地・メーカー" error={errors.plainMaker?.message}>
                   <input type="text" placeholder="例: 無地 / メーカー名" {...register("plainMaker")} className="input-field" />
                 </FormGroup>
-
+                <FormGroup label="ランニング・ワンウェイ" error={errors.usageType?.message}>
+                  <select {...register("usageType")} className="input-field">
+                    <option value="">— 未選択 —</option>
+                    <option value="ランニング">ランニング</option>
+                    <option value="ワンウェイ">ワンウェイ</option>
+                  </select>
+                </FormGroup>
+              </div>
+              {/* Checkboxes */}
+              <div className="flex items-center gap-6">
                 <div className="flex flex-col justify-end pb-2">
                   <label className="flex items-center gap-2 cursor-pointer group">
                     <Controller
