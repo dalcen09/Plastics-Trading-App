@@ -6,3 +6,9 @@ id = "tDMCjgG8vUHeXPYvtd0GG"
 uri = "file://maruki-app-introduction.md"
 type = "text"
 title = "MARUKI App — General Introduction"
+
+[[outputs]]
+id = "jhIEn8bVqiTfhtdTsDht6"
+uri = "file://attached_assets/オフグレード供給テンプレート_updated.xlsx"
+type = "table"
+title = "オフグレード供給テンプレート（更新版）"
