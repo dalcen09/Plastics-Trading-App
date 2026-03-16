@@ -1,7 +1,7 @@
 import { Router, type IRouter } from "express";
 import { db } from "@workspace/db";
 import { resinEntriesTable, staffTable, prospectiveBuyersTable } from "@workspace/db/schema";
-import { eq, and, inArray, isNull, isNotNull } from "drizzle-orm";
+import { eq, and, inArray, isNull, isNotNull, sql } from "drizzle-orm";
 import {
   CreateSourceBody,
   UpdateSourceBody,
@@ -17,10 +17,19 @@ import {
 
 const router: IRouter = Router();
 
-// GET /api/persons-in-charge — managed staff list
+// GET /api/persons-in-charge — managed staff list merged with names already in data
 router.get("/persons-in-charge", async (_req, res) => {
-  const rows = await db.select({ name: staffTable.name }).from(staffTable).orderBy(staffTable.name);
-  res.json(rows.map(r => r.name));
+  const [staffRows, dataRows] = await Promise.all([
+    db.select({ name: staffTable.name }).from(staffTable),
+    db.selectDistinct({ name: resinEntriesTable.personInCharge })
+      .from(resinEntriesTable)
+      .where(and(isNotNull(resinEntriesTable.personInCharge), isNull(resinEntriesTable.deletedAt))),
+  ]);
+  const names = Array.from(new Set([
+    ...staffRows.map(r => r.name),
+    ...dataRows.map(r => r.name).filter(Boolean),
+  ])).sort((a, b) => a!.localeCompare(b!, "ja"));
+  res.json(names);
 });
 
 // GET /api/prospective-buyers — managed prospective buyer list
