@@ -57,7 +57,7 @@ function PhotoThumbnail({ url, index }: { url: string; index: number }) {
 }
 
 export type ColumnKey =
-  | "date" | "personInCharge" | "resinType" | "manufacturer"
+  | "date" | "personInCharge" | "resinType" | "resinSubType" | "manufacturer"
   | "grade" | "charpy" | "izod" | "specs" | "price" | "locationType" | "storageLocation" | "quantity" | "quantityType" | "packaging" | "photo" | "tdsUrl" | "isClosed" | "sampleAvailable"
   | "prospectiveBuyer" | "desiredQuantity" | "proposedTo" | "sellingPrice" | "remarks"
   | "origin" | "colorTone"
@@ -80,6 +80,7 @@ export const ALL_COLUMNS: { key: ColumnKey; label: string }[] = [
   { key: "date",           label: "日付" },
   { key: "personInCharge", label: "担当者" },
   { key: "resinType",      label: "樹脂" },
+  { key: "resinSubType",   label: "タイプ" },
   { key: "manufacturer",   label: "メーカー" },
   { key: "grade",          label: "グレード" },
   { key: "charpy",         label: "シャルピー" },
@@ -275,6 +276,7 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
               {col("date")           && <SortTh colKey="date"          sort={sort} onSort={onSort}>日付</SortTh>}
               {col("personInCharge") && <SortTh colKey="personInCharge" sort={sort} onSort={onSort}>担当者</SortTh>}
               {col("resinType")      && <SortTh colKey="resinType"      sort={sort} onSort={onSort}>樹脂</SortTh>}
+              {col("resinSubType")   && <th className="px-4 py-4">タイプ</th>}
               {col("manufacturer")   && <SortTh colKey="manufacturer"   sort={sort} onSort={onSort}>メーカー</SortTh>}
               {col("grade")          && <SortTh colKey="grade"          sort={sort} onSort={onSort}>グレード</SortTh>}
               {col("origin")         && <th className="px-4 py-4">由来</th>}
@@ -368,22 +370,20 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
                           </>
                         );
                       })()}
-                      {row.ppType && (
-                        <span className="text-xs px-1.5 py-0.5 rounded-md bg-secondary text-muted-foreground font-medium">{row.ppType}</span>
-                      )}
-                      {row.peType && (
-                        <span className="text-xs px-1.5 py-0.5 rounded-md bg-secondary text-muted-foreground font-medium">{row.peType}</span>
-                      )}
-                      {row.psType && (
-                        <span className="text-xs px-1.5 py-0.5 rounded-md bg-secondary text-muted-foreground font-medium">{row.psType}</span>
-                      )}
-                      {row.absType && (
-                        <span className="text-xs px-1.5 py-0.5 rounded-md bg-secondary text-muted-foreground font-medium">{row.absType}</span>
-                      )}
                       {row.otherResinType && (
                         <span className="text-xs px-1.5 py-0.5 rounded-md bg-secondary text-muted-foreground font-medium">{row.otherResinType}</span>
                       )}
                     </span>
+                  </td>
+                )}
+                {col("resinSubType") && (
+                  <td className="px-4 py-3 text-sm text-muted-foreground">
+                    {(() => {
+                      const t = row.ppType ?? row.peType ?? row.psType ?? row.absType;
+                      return t ? (
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-md text-xs font-semibold bg-secondary text-muted-foreground">{t}</span>
+                      ) : dash;
+                    })()}
                   </td>
                 )}
                 {col("manufacturer") && (
