@@ -49,6 +49,7 @@ export const resinEntriesTable = pgTable("resin_entries", {
   quantityType: quantityTypeEnum("quantity_type"),
   remarks: text("remarks"),
   // Extended fields from Japanese spreadsheets
+  locationType: text("location_type"),
   storageLocation: text("storage_location"),       // 他県置場
   arrivalPrice: numeric("arrival_price", { precision: 12, scale: 2 }), // 丸喜着
   spotPrice: numeric("spot_price", { precision: 12, scale: 2 }),       // スポット

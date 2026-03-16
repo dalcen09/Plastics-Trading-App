@@ -44,6 +44,7 @@ const formSchema = z.object({
   densityLower: z.coerce.number().nullable().optional(),
   densityUpper: z.coerce.number().nullable().optional(),
   price: z.coerce.number().nullable().optional(),
+  locationType: z.preprocess(v => v === "" ? null : v, z.enum(["納入", "置場"]).nullable().optional()),
   storageLocation: z.string().nullable().optional(),
   quantity: z.coerce.number().nullable().optional(),
   quantityType: z.preprocess(v => v === "" ? null : v, z.enum(["月間", "スポット"]).nullable().optional()),
@@ -111,6 +112,7 @@ export function ResinForm({
       densityLower: initialData?.densityLower ?? undefined,
       densityUpper: initialData?.densityUpper ?? undefined,
       price: initialData?.price ?? undefined,
+      locationType: (initialData?.locationType as "納入" | "置場" | null) ?? null,
       storageLocation: initialData?.storageLocation ?? "",
       quantity: initialData?.quantity ?? undefined,
       quantityType: initialData?.quantityType ?? null,
@@ -327,16 +329,10 @@ export function ResinForm({
             {/* Section: Commercial Info */}
             <div>
               <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4 pt-4 border-t border-border/50">取引情報</h3>
-              {/* Row 1: 数量 / 置場 / 価格 / 数量区分 */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5 mb-5">
+              {/* Row 1: 数量 / 数量区分 / 価格 / 納入・置場 / 場所 */}
+              <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-5 mb-5">
                 <FormGroup label="数量 (kg)" error={errors.quantity?.message}>
                   <input type="number" step="0.01" placeholder="kg" {...register("quantity")} className="input-field" />
-                </FormGroup>
-                <FormGroup label="置場" error={errors.storageLocation?.message}>
-                  <input type="text" placeholder="例: 大阪倉庫" {...register("storageLocation")} className="input-field" />
-                </FormGroup>
-                <FormGroup label="価格 (円/kg)" error={errors.price?.message}>
-                  <input type="number" step="0.01" placeholder="円" {...register("price")} className="input-field" />
                 </FormGroup>
                 <FormGroup label="数量区分" error={errors.quantityType?.message}>
                   <select {...register("quantityType")} className="input-field">
@@ -344,6 +340,19 @@ export function ResinForm({
                     <option value="月間">月間</option>
                     <option value="スポット">スポット</option>
                   </select>
+                </FormGroup>
+                <FormGroup label="価格 (円/kg)" error={errors.price?.message}>
+                  <input type="number" step="0.01" placeholder="円" {...register("price")} className="input-field" />
+                </FormGroup>
+                <FormGroup label="納入・置場" error={errors.locationType?.message}>
+                  <select {...register("locationType")} className="input-field">
+                    <option value="">— 未選択 —</option>
+                    <option value="納入">納入</option>
+                    <option value="置場">置場</option>
+                  </select>
+                </FormGroup>
+                <FormGroup label="場所" error={errors.storageLocation?.message}>
+                  <input type="text" placeholder="例: 大阪倉庫" {...register("storageLocation")} className="input-field" />
                 </FormGroup>
               </div>
               {/* Row 2: 梱包形態 / 梱包重量 / 無地・メーカー / ランニング・ワンウェイ */}
@@ -371,7 +380,7 @@ export function ResinForm({
                   </select>
                 </FormGroup>
               </div>
-              {/* Status fields */}
+              {/* Row 3: クローズ・オープン / サンプル */}
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5">
                 <FormGroup label="クローズ・オープン" error={errors.isClosed?.message}>
                   <select {...register("isClosed")} className="input-field">
@@ -379,7 +388,6 @@ export function ResinForm({
                     <option value="クローズ">クローズ</option>
                   </select>
                 </FormGroup>
-
                 <FormGroup label="サンプル" error={errors.sampleAvailable?.message}>
                   <select {...register("sampleAvailable")} className="input-field">
                     <option value="">— 未選択 —</option>
