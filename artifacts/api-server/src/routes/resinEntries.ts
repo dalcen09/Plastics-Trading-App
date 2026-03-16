@@ -49,6 +49,8 @@ function serializeEntry(entry: typeof resinEntriesTable.$inferSelect) {
     price: toNumber(entry.price),
     priceLower: toNumber(entry.priceLower),
     priceUpper: toNumber(entry.priceUpper),
+    quantityLower: toNumber(entry.quantityLower),
+    quantityUpper: toNumber(entry.quantityUpper),
     locationType: entry.locationType,
     storageLocation: entry.storageLocation,
     imageUrls: entry.imageUrls ?? [],
@@ -99,6 +101,8 @@ router.post("/sources", async (req, res) => {
     imageUrls: body.imageUrls ?? null,
     tdsUrl: body.tdsUrl ?? null,
     quantity: body.quantity?.toString(),
+    quantityLower: body.quantityLower?.toString(),
+    quantityUpper: body.quantityUpper?.toString(),
   }).returning();
   invalidateMatchCache();
   res.status(201).json(serializeEntry(row));
@@ -125,6 +129,8 @@ router.put("/sources/:id", async (req, res) => {
     imageUrls: body.imageUrls ?? null,
     tdsUrl: body.tdsUrl ?? null,
     quantity: body.quantity?.toString(),
+    quantityLower: body.quantityLower?.toString(),
+    quantityUpper: body.quantityUpper?.toString(),
     updatedAt: new Date(),
   }).where(and(eq(resinEntriesTable.id, id), eq(resinEntriesTable.entryType, "source"), isNull(resinEntriesTable.deletedAt))).returning();
   if (!row) return res.status(404).json({ error: "Not found" });
@@ -186,6 +192,8 @@ router.post("/demands", async (req, res) => {
     imageUrls: body.imageUrls ?? null,
     tdsUrl: body.tdsUrl ?? null,
     quantity: body.quantity?.toString(),
+    quantityLower: body.quantityLower?.toString(),
+    quantityUpper: body.quantityUpper?.toString(),
   }).returning();
   invalidateMatchCache();
   res.status(201).json(serializeEntry(row));
@@ -212,6 +220,8 @@ router.put("/demands/:id", async (req, res) => {
     imageUrls: body.imageUrls ?? null,
     tdsUrl: body.tdsUrl ?? null,
     quantity: body.quantity?.toString(),
+    quantityLower: body.quantityLower?.toString(),
+    quantityUpper: body.quantityUpper?.toString(),
     updatedAt: new Date(),
   }).where(and(eq(resinEntriesTable.id, id), eq(resinEntriesTable.entryType, "demand"), isNull(resinEntriesTable.deletedAt))).returning();
   if (!row) return res.status(404).json({ error: "Not found" });

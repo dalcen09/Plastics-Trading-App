@@ -48,6 +48,8 @@ export const resinEntriesTable = pgTable("resin_entries", {
   priceLower: numeric("price_lower", { precision: 12, scale: 2 }),
   priceUpper: numeric("price_upper", { precision: 12, scale: 2 }),
   quantity: numeric("quantity", { precision: 12, scale: 2 }),
+  quantityLower: numeric("quantity_lower", { precision: 12, scale: 2 }),
+  quantityUpper: numeric("quantity_upper", { precision: 12, scale: 2 }),
   quantityType: quantityTypeEnum("quantity_type"),
   remarks: text("remarks"),
   // Extended fields from Japanese spreadsheets

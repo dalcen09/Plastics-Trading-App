@@ -211,6 +211,17 @@ const FIELD_ALIASES: Record<string, string> = {
   "発生数量": "quantity",
   "数量": "quantity",
   "ロット": "quantity",
+  // quantity lower/upper
+  "quantity lower": "quantityLower",
+  "quantity (lower)": "quantityLower",
+  "数量 下限": "quantityLower",
+  "数量（下限）": "quantityLower",
+  "数量下限": "quantityLower",
+  "quantity upper": "quantityUpper",
+  "quantity (upper)": "quantityUpper",
+  "数量 上限": "quantityUpper",
+  "数量（上限）": "quantityUpper",
+  "数量上限": "quantityUpper",
 
   // ── desiredQuantity ───────────────────────────────────────────────────────
   "desired quantity": "desiredQuantity",

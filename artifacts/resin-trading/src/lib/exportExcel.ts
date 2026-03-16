@@ -24,6 +24,8 @@ const COL_LABEL: Record<string, string> = {
   priceLower:     "価格 下限 (円/kg)",
   priceUpper:     "価格 上限 (円/kg)",
   quantity:       "数量 (kg)",
+  quantityLower:  "数量 下限 (kg)",
+  quantityUpper:  "数量 上限 (kg)",
 };
 
 export function exportToExcel(
@@ -44,7 +46,7 @@ export function exportToExcel(
     { colKey: "izod",           fields: ["izodLower", "izodUpper"] },
     { colKey: "specs",          fields: ["meltFlowIndexLower", "meltFlowIndexUpper", "densityLower", "densityUpper", "packaging", "sampleAvailable"] },
     { colKey: "price",          fields: ["priceLower", "priceUpper"] },
-    { colKey: "quantity",       fields: ["quantity"] },
+    { colKey: "quantity",       fields: ["quantityLower", "quantityUpper"] },
   ];
 
   colMap.push({ key: "counterparty", label: COL_LABEL["counterparty"] });

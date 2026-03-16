@@ -444,6 +444,12 @@ components:
         quantity:
           type: number
           nullable: true
+        quantityLower:
+          type: number
+          nullable: true
+        quantityUpper:
+          type: number
+          nullable: true
         quantityType:
           $ref: "#/components/schemas/QuantityType"
           nullable: true
@@ -594,6 +600,12 @@ components:
           type: string
           nullable: true
         quantity:
+          type: number
+          nullable: true
+        quantityLower:
+          type: number
+          nullable: true
+        quantityUpper:
           type: number
           nullable: true
         quantityType:

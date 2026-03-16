@@ -88,7 +88,7 @@ export const ALL_COLUMNS: { key: ColumnKey; label: string }[] = [
   { key: "price",           label: "価格 下限〜上限 (円/kg)" },
   { key: "locationType",    label: "納入・置場" },
   { key: "storageLocation", label: "場所" },
-  { key: "quantity",        label: "数量 (kg)" },
+  { key: "quantity",        label: "数量 下限〜上限 (kg)" },
   { key: "quantityType",   label: "数量区分" },
   { key: "packaging",      label: "梱包形態" },
   { key: "photo",            label: "写真" },
@@ -456,10 +456,16 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
                   <td className="px-4 py-3 text-muted-foreground">{row.storageLocation ?? dash}</td>
                 )}
                 {col("quantity") && (
-                  <td className="px-4 py-3 text-right">
-                    <span className="font-medium px-2 py-1 rounded-lg bg-secondary/80">
-                      {formatNumber(row.quantity, "kg")}
-                    </span>
+                  <td className="px-4 py-3 text-right whitespace-nowrap">
+                    {row.quantityLower != null || row.quantityUpper != null ? (
+                      <span className="font-medium">
+                        {row.quantityLower != null ? formatNumber(row.quantityLower, "kg") : "—"}
+                        <span className="text-muted-foreground mx-1">〜</span>
+                        {row.quantityUpper != null ? formatNumber(row.quantityUpper, "kg") : "—"}
+                      </span>
+                    ) : row.quantity != null ? (
+                      <span className="font-medium px-2 py-1 rounded-lg bg-secondary/80">{formatNumber(row.quantity, "kg")}</span>
+                    ) : dash}
                   </td>
                 )}
                 {col("quantityType") && (

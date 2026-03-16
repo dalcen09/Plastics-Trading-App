@@ -46,6 +46,8 @@ export interface CreateResinEntry {
   locationType?: string | null;
   storageLocation?: string | null;
   quantity?: number | null;
+  quantityLower?: number | null;
+  quantityUpper?: number | null;
   quantityType?: QuantityType | null;
   remarks?: string | null;
   prospectiveBuyer?: string | null;
