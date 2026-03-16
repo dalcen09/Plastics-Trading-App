@@ -336,7 +336,7 @@ export function ResinForm({
 
             {/* Section: Commercial Info */}
             <div>
-              <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4 pt-4 border-t border-border/50">取引情報</h3>
+              <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4 pt-4 border-t border-border/50">詳細</h3>
               {/* Row 1: 数量 下限 / 数量 上限 / 数量区分 / 価格 下限 / 価格 上限 / 納入・置場 / 場所 */}
               <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-7 gap-5 mb-5">
                 <FormGroup label="数量 下限" error={errors.quantityLower?.message}>
