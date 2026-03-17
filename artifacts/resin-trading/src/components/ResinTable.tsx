@@ -179,8 +179,8 @@ function formatRange(
   const l = lower != null && lower !== "" ? fmt(lower) : null;
   const u = upper != null && upper !== "" ? fmt(upper) : null;
   if (!l && !u) return "—";
-  if (!l) return u!;
-  if (!u) return l;
+  if (!l) return `${u}以下`;
+  if (!u) return `${l}以上`;
   if (l === u) return l;
   return `${l}〜${u}`;
 }

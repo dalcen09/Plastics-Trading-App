@@ -10,9 +10,10 @@ const PAGE_SIZE = 30;
 function formatMI(lower: number | string | null | undefined, upper: number | string | null | undefined): string | null {
   const lo = lower != null && lower !== "" ? Number(lower) : null;
   const hi = upper != null && upper !== "" ? Number(upper) : null;
+  if (lo !== null && hi !== null && lo === hi) return String(lo);
   if (lo !== null && hi !== null) return `${lo}〜${hi}`;
-  if (lo !== null) return String(lo);
-  if (hi !== null) return String(hi);
+  if (lo !== null) return `${lo}以上`;
+  if (hi !== null) return `${hi}以下`;
   return null;
 }
 
@@ -26,8 +27,8 @@ function formatQty(lower: number | string | null | undefined, upper: number | st
   const lo = toN(lower), hi = toN(upper), s = toN(single);
   if (lo !== null && hi !== null && lo === hi) return `${formatNumber(lo)} kg`;
   if (lo !== null && hi !== null) return `${formatNumber(lo)}〜${formatNumber(hi)} kg`;
-  if (lo !== null) return `${formatNumber(lo)} kg`;
-  if (hi !== null) return `${formatNumber(hi)} kg`;
+  if (lo !== null) return `${formatNumber(lo)} kg以上`;
+  if (hi !== null) return `${formatNumber(hi)} kg以下`;
   if (s !== null) return `${formatNumber(s)} kg`;
   return "—";
 }
@@ -37,8 +38,8 @@ function formatPriceRange(lower: number | string | null | undefined, upper: numb
   const fmt = (n: number) => formatCurrency(n) ?? "—";
   if (lo !== null && hi !== null && lo === hi) return fmt(lo);
   if (lo !== null && hi !== null) return `${fmt(lo)}〜${fmt(hi)}`;
-  if (lo !== null) return fmt(lo);
-  if (hi !== null) return fmt(hi);
+  if (lo !== null) return `${fmt(lo)}以上`;
+  if (hi !== null) return `${fmt(hi)}以下`;
   if (s !== null) return fmt(s);
   return "—";
 }
