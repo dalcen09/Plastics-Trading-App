@@ -606,6 +606,14 @@ router.post("/import", upload.single("file"), async (req, res) => {
       console.log(`[import] Sheet "${sheetName}" — unmapped headers:`, JSON.stringify(unmapped));
     }
     console.log(`[import] Sheet "${sheetName}" — mapped:`, JSON.stringify(Object.values(fieldMap)));
+    console.log(`[import] Sheet "${sheetName}" — total rows (incl. header): ${rows.length}, data rows to process: ${rows.length - 1}`);
+    // Log first and last few data rows for diagnostics
+    for (const debugRi of [1, 2, rows.length - 2, rows.length - 1].filter(i => i >= 1 && i < rows.length)) {
+      const r = rows[debugRi];
+      const dateCol = Object.entries(fieldMap).find(([, f]) => f === "date")?.[0];
+      const cpCol = Object.entries(fieldMap).find(([, f]) => f === "counterparty")?.[0];
+      console.log(`[import]   row[${debugRi}] date="${dateCol ? r[+dateCol] : "?"}" counterparty="${cpCol ? r[+cpCol] : "?"}"`);
+    }
 
     for (let ri = 1; ri < rows.length; ri++) {
       const row = rows[ri];
