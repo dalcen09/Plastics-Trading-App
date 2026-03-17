@@ -212,6 +212,16 @@ export function Matches() {
   );
 }
 
+function getResinSubType(entry: any): string | null {
+  switch (entry.resinType) {
+    case "PP":  return entry.ppType  || null;
+    case "PE":  return entry.peType  || null;
+    case "PS":  return entry.psType  || null;
+    case "ABS": return entry.absType || null;
+    default:    return entry.otherResinType || null;
+  }
+}
+
 function MatchCard({ match, highlightEntryId }: { match: any; highlightEntryId?: number }) {
   const isHighMatch = match.score >= 80;
   const scoreColor = isHighMatch
@@ -272,6 +282,8 @@ function MatchCard({ match, highlightEntryId }: { match: any; highlightEntryId?:
               </div>
             </div>
             <div className="grid grid-cols-2 gap-3 text-sm">
+              <InfoBadge label="樹脂" value={match.source.resinType ?? '—'} />
+              <InfoBadge label="タイプ" value={getResinSubType(match.source) ?? '—'} />
               <InfoBadge icon={<Gauge className="w-3.5 h-3.5"/>} label="製品" value={`${match.source.manufacturer || '未指定'} ${match.source.grade || ''}`} />
               <InfoBadge icon={<DollarSign className="w-3.5 h-3.5"/>} label="価格" value={formatCurrency(match.source.price)} />
               <InfoBadge label="MI" value={formatMI(match.source.meltFlowIndexLower, match.source.meltFlowIndexUpper) ?? '指定なし'} />
@@ -311,6 +323,8 @@ function MatchCard({ match, highlightEntryId }: { match: any; highlightEntryId?:
               </div>
             </div>
             <div className="grid grid-cols-2 gap-3 text-sm">
+              <InfoBadge label="樹脂" value={match.demand.resinType ?? '—'} />
+              <InfoBadge label="タイプ" value={getResinSubType(match.demand) ?? '—'} />
               <InfoBadge icon={<Gauge className="w-3.5 h-3.5"/>} label="希望製品" value={`${match.demand.manufacturer || '指定なし'} ${match.demand.grade || ''}`} />
               <InfoBadge icon={<DollarSign className="w-3.5 h-3.5"/>} label="目標価格" value={formatCurrency(match.demand.price)} />
               <InfoBadge label="目標MI" value={formatMI(match.demand.meltFlowIndexLower, match.demand.meltFlowIndexUpper) ?? '指定なし'} />
