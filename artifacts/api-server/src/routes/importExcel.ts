@@ -589,46 +589,72 @@ router.post("/import", upload.single("file"), async (req, res) => {
   // Uses all key business fields so that two genuinely different deals for the same counterparty
   // and resin type are NOT treated as duplicates.
   const existingRows = await db.select({
-    entryType:     resinEntriesTable.entryType,
-    resinCategory: resinEntriesTable.resinCategory,
-    date:          resinEntriesTable.date,
-    counterparty:  resinEntriesTable.counterparty,
+    entryType:      resinEntriesTable.entryType,
+    resinCategory:  resinEntriesTable.resinCategory,
+    date:           resinEntriesTable.date,
+    counterparty:   resinEntriesTable.counterparty,
     personInCharge: resinEntriesTable.personInCharge,
-    resinType:     resinEntriesTable.resinType,
-    grade:         resinEntriesTable.grade,
-    manufacturer:  resinEntriesTable.manufacturer,
-    priceLower:    resinEntriesTable.priceLower,
-    priceUpper:    resinEntriesTable.priceUpper,
-    price:         resinEntriesTable.price,
-    quantityLower: resinEntriesTable.quantityLower,
-    quantityUpper: resinEntriesTable.quantityUpper,
-    quantity:      resinEntriesTable.quantity,
+    resinType:      resinEntriesTable.resinType,
+    grade:          resinEntriesTable.grade,
+    manufacturer:   resinEntriesTable.manufacturer,
+    ppType:          resinEntriesTable.ppType,
+    peType:          resinEntriesTable.peType,
+    psType:          resinEntriesTable.psType,
+    absType:         resinEntriesTable.absType,
+    priceLower:      resinEntriesTable.priceLower,
+    priceUpper:      resinEntriesTable.priceUpper,
+    price:           resinEntriesTable.price,
+    quantityLower:   resinEntriesTable.quantityLower,
+    quantityUpper:   resinEntriesTable.quantityUpper,
+    quantity:        resinEntriesTable.quantity,
+    remarks:         resinEntriesTable.remarks,
+    packaging:       resinEntriesTable.packaging,
+    packagingWeight: resinEntriesTable.packagingWeight,
+    plainMaker:      resinEntriesTable.plainMaker,
+    usageType:       resinEntriesTable.usageType,
+    isClosed:        resinEntriesTable.isClosed,
+    sampleAvailable: resinEntriesTable.sampleAvailable,
   }).from(resinEntriesTable).where(isNull(resinEntriesTable.deletedAt));
 
-  function makeFingerprint(
-    entryType: string, resinCategory: string, date: string,
-    counterparty: string, personInCharge: string,
-    resinType: string, grade: string, manufacturer: string,
-    priceLower: unknown, priceUpper: unknown, price: unknown,
-    quantityLower: unknown, quantityUpper: unknown, quantity: unknown,
-  ) {
+  function makeFingerprint(r: {
+    entryType: string; resinCategory: string; date: string;
+    counterparty: string; personInCharge: string;
+    resinType: string; grade: string; manufacturer: string;
+    ppType: unknown; peType: unknown; psType: unknown; absType: unknown;
+    priceLower: unknown; priceUpper: unknown; price: unknown;
+    quantityLower: unknown; quantityUpper: unknown; quantity: unknown;
+    remarks: unknown;
+    packaging: unknown; packagingWeight: unknown;
+    plainMaker: unknown; usageType: unknown;
+    isClosed: unknown; sampleAvailable: unknown;
+  }) {
     return [
-      entryType, resinCategory, date,
-      counterparty.trim(), personInCharge.trim(),
-      resinType, grade.trim(), manufacturer.trim(),
-      String(priceLower ?? ""), String(priceUpper ?? ""), String(price ?? ""),
-      String(quantityLower ?? ""), String(quantityUpper ?? ""), String(quantity ?? ""),
+      r.entryType, r.resinCategory, r.date,
+      r.counterparty.trim(), r.personInCharge.trim(),
+      r.resinType, r.grade.trim(), r.manufacturer.trim(),
+      String(r.ppType ?? ""), String(r.peType ?? ""), String(r.psType ?? ""), String(r.absType ?? ""),
+      String(r.priceLower ?? ""), String(r.priceUpper ?? ""), String(r.price ?? ""),
+      String(r.quantityLower ?? ""), String(r.quantityUpper ?? ""), String(r.quantity ?? ""),
+      String(r.remarks ?? "").trim(),
+      String(r.packaging ?? ""), String(r.packagingWeight ?? ""),
+      String(r.plainMaker ?? "").trim(), String(r.usageType ?? "").trim(),
+      String(r.isClosed ?? ""), String(r.sampleAvailable ?? ""),
     ].join("|");
   }
 
   const existingFingerprints = new Set(
-    existingRows.map(r => makeFingerprint(
-      r.entryType, r.resinCategory, r.date ?? "",
-      r.counterparty ?? "", r.personInCharge ?? "",
-      r.resinType, r.grade ?? "", r.manufacturer ?? "",
-      r.priceLower, r.priceUpper, r.price,
-      r.quantityLower, r.quantityUpper, r.quantity,
-    ))
+    existingRows.map(r => makeFingerprint({
+      entryType: r.entryType, resinCategory: r.resinCategory, date: r.date ?? "",
+      counterparty: r.counterparty ?? "", personInCharge: r.personInCharge ?? "",
+      resinType: r.resinType, grade: r.grade ?? "", manufacturer: r.manufacturer ?? "",
+      ppType: r.ppType, peType: r.peType, psType: r.psType, absType: r.absType,
+      priceLower: r.priceLower, priceUpper: r.priceUpper, price: r.price,
+      quantityLower: r.quantityLower, quantityUpper: r.quantityUpper, quantity: r.quantity,
+      remarks: r.remarks,
+      packaging: r.packaging, packagingWeight: r.packagingWeight,
+      plainMaker: r.plainMaker, usageType: r.usageType,
+      isClosed: r.isClosed, sampleAvailable: r.sampleAvailable,
+    }))
   );
 
   for (const sheetName of workbook.SheetNames) {
@@ -725,13 +751,26 @@ router.post("/import", upload.single("file"), async (req, res) => {
       // Skip rows that already exist in the DB (exact dedup)
       const gradeNorm = data.grade ? String(data.grade).trim() : "";
       const mfrNorm = data.manufacturer ? String(data.manufacturer).trim() : "";
-      const fingerprint = makeFingerprint(
-        entryType, resinCategory, date ?? "",
-        counterparty ?? "", personInCharge ?? "",
-        resinType, gradeNorm, mfrNorm,
-        numStr(data.priceLower), numStr(data.priceUpper), numStr(data.price),
-        numStr(data.quantityLower), numStr(data.quantityUpper), numStr(data.quantity),
-      );
+      const ppTypeNorm  = data.ppType  ? normalizePPType(String(data.ppType))   : null;
+      const peTypeNorm  = data.peType  ? normalizePEType(String(data.peType))   : null;
+      const psTypeNorm  = data.psType  ? normalizePSType(String(data.psType))   : null;
+      const absTypeNorm = data.absType ? normalizeABSType(String(data.absType)) : null;
+      const packagingNorm    = data.packaging ? normalizePackaging(String(data.packaging)) : null;
+      const sampleAvailNorm  = data.sampleAvailable !== undefined ? normalizeSampleAvailable(data.sampleAvailable) : null;
+      const isClosedNorm     = data.isClosed   ? normalizeIsClosed(String(data.isClosed)) : "オープン";
+      const fingerprint = makeFingerprint({
+        entryType, resinCategory, date: date ?? "",
+        counterparty: counterparty ?? "", personInCharge: personInCharge ?? "",
+        resinType, grade: gradeNorm, manufacturer: mfrNorm,
+        ppType: ppTypeNorm, peType: peTypeNorm, psType: psTypeNorm, absType: absTypeNorm,
+        priceLower:    numStr(data.priceLower),    priceUpper:    numStr(data.priceUpper),    price:    numStr(data.price),
+        quantityLower: numStr(data.quantityLower), quantityUpper: numStr(data.quantityUpper), quantity: numStr(data.quantity),
+        remarks: data.remarks ? String(data.remarks).trim() : null,
+        packaging: packagingNorm, packagingWeight: numStr(data.packagingWeight),
+        plainMaker: data.plainMaker ? String(data.plainMaker).trim() : null,
+        usageType:  data.usageType  ? String(data.usageType).trim()  : null,
+        isClosed: isClosedNorm, sampleAvailable: sampleAvailNorm,
+      });
       if (existingFingerprints.has(fingerprint)) {
         results.errors.push(`[重複スキップ] 行 ${ri + 1} (シート: ${sheetName}): ${counterparty ?? ""} / ${resinType} ${gradeNorm || "不問"} — 既に登録済みのため省略`);
         results.skipped++;
