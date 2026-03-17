@@ -16,6 +16,33 @@ function formatMI(lower: number | string | null | undefined, upper: number | str
   return null;
 }
 
+function toN(v: number | string | null | undefined): number | null {
+  if (v === null || v === undefined || v === "") return null;
+  const n = Number(v);
+  return isNaN(n) ? null : n;
+}
+
+function formatQty(lower: number | string | null | undefined, upper: number | string | null | undefined, single?: number | string | null | undefined): string {
+  const lo = toN(lower), hi = toN(upper), s = toN(single);
+  if (lo !== null && hi !== null && lo === hi) return `${formatNumber(lo)} kg`;
+  if (lo !== null && hi !== null) return `${formatNumber(lo)}〜${formatNumber(hi)} kg`;
+  if (lo !== null) return `${formatNumber(lo)} kg`;
+  if (hi !== null) return `${formatNumber(hi)} kg`;
+  if (s !== null) return `${formatNumber(s)} kg`;
+  return "—";
+}
+
+function formatPriceRange(lower: number | string | null | undefined, upper: number | string | null | undefined, single?: number | string | null | undefined): string {
+  const lo = toN(lower), hi = toN(upper), s = toN(single);
+  const fmt = (n: number) => formatCurrency(n) ?? "—";
+  if (lo !== null && hi !== null && lo === hi) return fmt(lo);
+  if (lo !== null && hi !== null) return `${fmt(lo)}〜${fmt(hi)}`;
+  if (lo !== null) return fmt(lo);
+  if (hi !== null) return fmt(hi);
+  if (s !== null) return fmt(s);
+  return "—";
+}
+
 function useSearchParam(name: string): string | null {
   if (typeof window === "undefined") return null;
   return new URLSearchParams(window.location.search).get(name);
@@ -282,9 +309,9 @@ function MatchCard({ match, highlightEntryId }: { match: any; highlightEntryId?:
               <InfoBadge label="樹脂" value={match.source.resinType ?? '—'} />
               <InfoBadge label="タイプ" value={getResinSubType(match.source) ?? '—'} />
               <InfoBadge icon={<Gauge className="w-3.5 h-3.5"/>} label="製品" value={`${match.source.manufacturer || '未指定'} ${match.source.grade || ''}`} />
-              <InfoBadge icon={<DollarSign className="w-3.5 h-3.5"/>} label="価格" value={formatCurrency(match.source.price)} />
+              <InfoBadge icon={<DollarSign className="w-3.5 h-3.5"/>} label="価格" value={formatPriceRange(match.source.priceLower, match.source.priceUpper, match.source.price)} />
               <InfoBadge label="MI" value={formatMI(match.source.meltFlowIndexLower, match.source.meltFlowIndexUpper) ?? '指定なし'} />
-              <InfoBadge label="数量" value={`${formatNumber(match.source.quantity)} kg`} />
+              <InfoBadge label="数量" value={formatQty(match.source.quantityLower, match.source.quantityUpper, match.source.quantity)} />
             </div>
           </div>
         </Link>
@@ -323,9 +350,9 @@ function MatchCard({ match, highlightEntryId }: { match: any; highlightEntryId?:
               <InfoBadge label="樹脂" value={match.demand.resinType ?? '—'} />
               <InfoBadge label="タイプ" value={getResinSubType(match.demand) ?? '—'} />
               <InfoBadge icon={<Gauge className="w-3.5 h-3.5"/>} label="希望製品" value={`${match.demand.manufacturer || '指定なし'} ${match.demand.grade || ''}`} />
-              <InfoBadge icon={<DollarSign className="w-3.5 h-3.5"/>} label="目標価格" value={formatCurrency(match.demand.price)} />
+              <InfoBadge icon={<DollarSign className="w-3.5 h-3.5"/>} label="目標価格" value={formatPriceRange(match.demand.priceLower, match.demand.priceUpper, match.demand.price)} />
               <InfoBadge label="目標MI" value={formatMI(match.demand.meltFlowIndexLower, match.demand.meltFlowIndexUpper) ?? '指定なし'} />
-              <InfoBadge label="希望数量" value={`${formatNumber(match.demand.quantity)} kg`} />
+              <InfoBadge label="希望数量" value={formatQty(match.demand.quantityLower, match.demand.quantityUpper, match.demand.quantity)} />
             </div>
           </div>
         </Link>
