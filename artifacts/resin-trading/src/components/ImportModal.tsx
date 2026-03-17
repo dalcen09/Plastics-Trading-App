@@ -201,12 +201,19 @@ export function ImportModal({ onClose, onSuccess }: ImportModalProps) {
               </div>
 
               {result.errors.length > 0 && (
-                <div className="max-h-40 overflow-y-auto p-4 rounded-xl bg-secondary/40 border border-border/50">
-                  <p className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wider">エラー詳細</p>
-                  <ul className="space-y-1">
-                    {result.errors.map((e, i) => (
-                      <li key={i} className="text-xs text-destructive/80">{e}</li>
-                    ))}
+                <div className="max-h-48 overflow-y-auto p-4 rounded-xl bg-secondary/40 border border-border/50">
+                  <p className="text-xs font-semibold text-muted-foreground mb-2 uppercase tracking-wider">スキップ・エラー詳細</p>
+                  <ul className="space-y-1.5">
+                    {result.errors.map((e, i) => {
+                      const isSkip = e.startsWith("[重複スキップ]");
+                      const text = isSkip ? e.replace("[重複スキップ] ", "") : e;
+                      return (
+                        <li key={i} className={`text-xs flex items-start gap-1.5 ${isSkip ? "text-amber-700/80" : "text-destructive/80"}`}>
+                          <span className="flex-shrink-0 mt-0.5">{isSkip ? "⟳" : "✕"}</span>
+                          <span>{text}</span>
+                        </li>
+                      );
+                    })}
                   </ul>
                 </div>
               )}

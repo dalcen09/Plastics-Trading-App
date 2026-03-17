@@ -696,6 +696,7 @@ router.post("/import", upload.single("file"), async (req, res) => {
       const mfrNorm = data.manufacturer ? String(data.manufacturer).trim() : "";
       const fingerprint = `${entryType}|${resinCategory}|${date ?? ""}|${(counterparty ?? "").trim()}|${resinType}|${gradeNorm}|${mfrNorm}`;
       if (existingFingerprints.has(fingerprint)) {
+        results.errors.push(`[重複スキップ] 行 ${ri + 1} (シート: ${sheetName}): ${counterparty ?? ""} / ${resinType} ${gradeNorm} ${mfrNorm} — 既に登録済みのため省略`);
         results.skipped++;
         continue;
       }
