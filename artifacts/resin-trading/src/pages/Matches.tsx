@@ -253,9 +253,6 @@ function MatchCard({ match, highlightEntryId }: { match: any; highlightEntryId?:
             </div>
           </div>
         </div>
-        <button className="px-4 py-2 bg-primary/10 text-primary hover:bg-primary hover:text-primary-foreground font-semibold text-sm rounded-xl transition-colors">
-          取引開始
-        </button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-6 items-stretch relative">
