@@ -336,7 +336,7 @@ let _matchCache: MatchResult[] | null = null;
 let _matchCacheAt = 0;
 const MATCH_CACHE_TTL = 60_000;
 
-function invalidateMatchCache() { _matchCache = null; }
+export function invalidateMatchCache() { _matchCache = null; }
 
 async function getOrComputeAllMatches(): Promise<MatchResult[]> {
   if (_matchCache && Date.now() - _matchCacheAt < MATCH_CACHE_TTL) return _matchCache;

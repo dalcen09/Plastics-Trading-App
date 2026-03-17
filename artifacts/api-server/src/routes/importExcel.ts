@@ -3,6 +3,7 @@ import multer from "multer";
 import * as XLSX from "xlsx";
 import { db } from "@workspace/db";
 import { resinEntriesTable } from "@workspace/db/schema";
+import { invalidateMatchCache } from "./resinEntries";
 
 const router: IRouter = Router();
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 20 * 1024 * 1024 } });
@@ -583,6 +584,22 @@ router.post("/import", upload.single("file"), async (req, res) => {
 
   const results = { imported: 0, skipped: 0, errors: [] as string[] };
 
+  // Build a fingerprint set of all existing (non-deleted) rows to skip duplicates on re-import
+  const existingRows = await db.select({
+    entryType: resinEntriesTable.entryType,
+    resinCategory: resinEntriesTable.resinCategory,
+    date: resinEntriesTable.date,
+    counterparty: resinEntriesTable.counterparty,
+    resinType: resinEntriesTable.resinType,
+    grade: resinEntriesTable.grade,
+    manufacturer: resinEntriesTable.manufacturer,
+  }).from(resinEntriesTable);
+  const existingFingerprints = new Set(
+    existingRows.map(r =>
+      `${r.entryType}|${r.resinCategory}|${r.date ?? ""}|${(r.counterparty ?? "").trim()}|${r.resinType}|${(r.grade ?? "").trim()}|${(r.manufacturer ?? "").trim()}`
+    )
+  );
+
   for (const sheetName of workbook.SheetNames) {
     const sheet = workbook.Sheets[sheetName];
     const rows: any[][] = XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "" });
@@ -674,6 +691,16 @@ router.post("/import", upload.single("file"), async (req, res) => {
         results.skipped++; continue;
       }
 
+      // Skip rows that already exist in the DB (dedup by key fields)
+      const gradeNorm = data.grade ? String(data.grade).trim() : "";
+      const mfrNorm = data.manufacturer ? String(data.manufacturer).trim() : "";
+      const fingerprint = `${entryType}|${resinCategory}|${date ?? ""}|${(counterparty ?? "").trim()}|${resinType}|${gradeNorm}|${mfrNorm}`;
+      if (existingFingerprints.has(fingerprint)) {
+        results.skipped++;
+        continue;
+      }
+      existingFingerprints.add(fingerprint); // prevent within-file duplication too
+
       try {
         await db.insert(resinEntriesTable).values({
           entryType,
@@ -682,8 +709,8 @@ router.post("/import", upload.single("file"), async (req, res) => {
           counterparty,
           personInCharge,
           resinType: resinType as any,
-          manufacturer: data.manufacturer ? String(data.manufacturer).trim() || null : null,
-          grade: data.grade ? String(data.grade).trim() || null : null,
+          manufacturer: mfrNorm || null,
+          grade: gradeNorm || null,
           ppType: data.ppType ? normalizePPType(String(data.ppType)) as any : null,
           sampleAvailable: data.sampleAvailable !== undefined ? normalizeSampleAvailable(data.sampleAvailable) : null,
           packaging: data.packaging ? normalizePackaging(String(data.packaging)) as any : null,
@@ -731,6 +758,8 @@ router.post("/import", upload.single("file"), async (req, res) => {
       }
     }
   }
+
+  if (results.imported > 0) invalidateMatchCache();
 
   res.json(results);
 });

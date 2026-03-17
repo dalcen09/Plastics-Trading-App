@@ -42,12 +42,15 @@ export function Matches() {
   const entryName = useSearchParam("name");
   const resinCategory = useSearchParam("resinCategory") ?? undefined;
 
-  const { data, isLoading } = useGetMatches({
-    limit: PAGE_SIZE,
-    offset: page * PAGE_SIZE,
-    ...(entryId ? { entryId } : {}),
-    ...(resinCategory ? { resinCategory } : {}),
-  });
+  const { data, isLoading } = useGetMatches(
+    {
+      limit: PAGE_SIZE,
+      offset: page * PAGE_SIZE,
+      ...(entryId ? { entryId } : {}),
+      ...(resinCategory ? { resinCategory } : {}),
+    },
+    { query: { refetchInterval: 10_000, refetchOnWindowFocus: true } }
+  );
 
   const items = data?.items ?? [];
   const total = data?.total ?? 0;
