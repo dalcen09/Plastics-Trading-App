@@ -585,20 +585,50 @@ router.post("/import", upload.single("file"), async (req, res) => {
 
   const results = { imported: 0, skipped: 0, errors: [] as string[] };
 
-  // Build a fingerprint set of all existing (non-deleted) rows to skip duplicates on re-import
+  // Build a fingerprint set of all existing (non-deleted) rows to skip exact duplicates on re-import.
+  // Uses all key business fields so that two genuinely different deals for the same counterparty
+  // and resin type are NOT treated as duplicates.
   const existingRows = await db.select({
-    entryType: resinEntriesTable.entryType,
+    entryType:     resinEntriesTable.entryType,
     resinCategory: resinEntriesTable.resinCategory,
-    date: resinEntriesTable.date,
-    counterparty: resinEntriesTable.counterparty,
-    resinType: resinEntriesTable.resinType,
-    grade: resinEntriesTable.grade,
-    manufacturer: resinEntriesTable.manufacturer,
+    date:          resinEntriesTable.date,
+    counterparty:  resinEntriesTable.counterparty,
+    personInCharge: resinEntriesTable.personInCharge,
+    resinType:     resinEntriesTable.resinType,
+    grade:         resinEntriesTable.grade,
+    manufacturer:  resinEntriesTable.manufacturer,
+    priceLower:    resinEntriesTable.priceLower,
+    priceUpper:    resinEntriesTable.priceUpper,
+    price:         resinEntriesTable.price,
+    quantityLower: resinEntriesTable.quantityLower,
+    quantityUpper: resinEntriesTable.quantityUpper,
+    quantity:      resinEntriesTable.quantity,
   }).from(resinEntriesTable).where(isNull(resinEntriesTable.deletedAt));
+
+  function makeFingerprint(
+    entryType: string, resinCategory: string, date: string,
+    counterparty: string, personInCharge: string,
+    resinType: string, grade: string, manufacturer: string,
+    priceLower: unknown, priceUpper: unknown, price: unknown,
+    quantityLower: unknown, quantityUpper: unknown, quantity: unknown,
+  ) {
+    return [
+      entryType, resinCategory, date,
+      counterparty.trim(), personInCharge.trim(),
+      resinType, grade.trim(), manufacturer.trim(),
+      String(priceLower ?? ""), String(priceUpper ?? ""), String(price ?? ""),
+      String(quantityLower ?? ""), String(quantityUpper ?? ""), String(quantity ?? ""),
+    ].join("|");
+  }
+
   const existingFingerprints = new Set(
-    existingRows.map(r =>
-      `${r.entryType}|${r.resinCategory}|${r.date ?? ""}|${(r.counterparty ?? "").trim()}|${r.resinType}|${(r.grade ?? "").trim()}|${(r.manufacturer ?? "").trim()}`
-    )
+    existingRows.map(r => makeFingerprint(
+      r.entryType, r.resinCategory, r.date ?? "",
+      r.counterparty ?? "", r.personInCharge ?? "",
+      r.resinType, r.grade ?? "", r.manufacturer ?? "",
+      r.priceLower, r.priceUpper, r.price,
+      r.quantityLower, r.quantityUpper, r.quantity,
+    ))
   );
 
   for (const sheetName of workbook.SheetNames) {
@@ -692,12 +722,18 @@ router.post("/import", upload.single("file"), async (req, res) => {
         results.skipped++; continue;
       }
 
-      // Skip rows that already exist in the DB (dedup by key fields)
+      // Skip rows that already exist in the DB (exact dedup)
       const gradeNorm = data.grade ? String(data.grade).trim() : "";
       const mfrNorm = data.manufacturer ? String(data.manufacturer).trim() : "";
-      const fingerprint = `${entryType}|${resinCategory}|${date ?? ""}|${(counterparty ?? "").trim()}|${resinType}|${gradeNorm}|${mfrNorm}`;
+      const fingerprint = makeFingerprint(
+        entryType, resinCategory, date ?? "",
+        counterparty ?? "", personInCharge ?? "",
+        resinType, gradeNorm, mfrNorm,
+        numStr(data.priceLower), numStr(data.priceUpper), numStr(data.price),
+        numStr(data.quantityLower), numStr(data.quantityUpper), numStr(data.quantity),
+      );
       if (existingFingerprints.has(fingerprint)) {
-        results.errors.push(`[重複スキップ] 行 ${ri + 1} (シート: ${sheetName}): ${counterparty ?? ""} / ${resinType} ${gradeNorm} ${mfrNorm} — 既に登録済みのため省略`);
+        results.errors.push(`[重複スキップ] 行 ${ri + 1} (シート: ${sheetName}): ${counterparty ?? ""} / ${resinType} ${gradeNorm || "不問"} — 既に登録済みのため省略`);
         results.skipped++;
         continue;
       }
