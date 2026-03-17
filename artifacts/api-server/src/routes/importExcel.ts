@@ -1,6 +1,7 @@
 import { Router, type IRouter } from "express";
 import multer from "multer";
 import * as XLSX from "xlsx";
+import { isNull } from "drizzle-orm";
 import { db } from "@workspace/db";
 import { resinEntriesTable } from "@workspace/db/schema";
 import { invalidateMatchCache } from "./resinEntries";
@@ -593,7 +594,7 @@ router.post("/import", upload.single("file"), async (req, res) => {
     resinType: resinEntriesTable.resinType,
     grade: resinEntriesTable.grade,
     manufacturer: resinEntriesTable.manufacturer,
-  }).from(resinEntriesTable);
+  }).from(resinEntriesTable).where(isNull(resinEntriesTable.deletedAt));
   const existingFingerprints = new Set(
     existingRows.map(r =>
       `${r.entryType}|${r.resinCategory}|${r.date ?? ""}|${(r.counterparty ?? "").trim()}|${r.resinType}|${(r.grade ?? "").trim()}|${(r.manufacturer ?? "").trim()}`
