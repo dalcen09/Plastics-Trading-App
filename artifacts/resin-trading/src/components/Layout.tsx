@@ -30,7 +30,6 @@ export function Layout({ children }: LayoutProps) {
   const { data: countData } = useGetMatchCount({ query: { refetchInterval: 60000 } });
   const matchCount = countData?.count ?? 0;
 
-  const { data: virginCount }   = useGetMatchCount({ resinCategory: "virgin" },   { query: { refetchInterval: 60000 } });
   const { data: offgradeCount } = useGetMatchCount({ resinCategory: "offgrade" }, { query: { refetchInterval: 60000 } });
   const { data: recycledCount } = useGetMatchCount({ resinCategory: "recycled" }, { query: { refetchInterval: 60000 } });
 
@@ -39,7 +38,6 @@ export function Layout({ children }: LayoutProps) {
     : null;
 
   const categoryMatchItems = [
-    { cat: "virgin",   label: "バージン",     count: virginCount?.count   ?? 0, color: "bg-green-500" },
     { cat: "offgrade", label: "オフグレード",  count: offgradeCount?.count ?? 0, color: "bg-amber-500" },
     { cat: "recycled", label: "リサイクル",    count: recycledCount?.count ?? 0, color: "bg-teal-500"  },
   ];
@@ -57,7 +55,6 @@ export function Layout({ children }: LayoutProps) {
   const trashCount = trashItems.length;
 
   const navItems = [
-    { href: "/virgin",   label: "バージン",    badge: "VG",  icon: null, matchPrefix: true },
     { href: "/offgrade", label: "オフグレード", badge: "OG",  icon: null, matchPrefix: true },
     { href: "/recycled", label: "リサイクル",   badge: "再生", icon: null, matchPrefix: true },
   ];
