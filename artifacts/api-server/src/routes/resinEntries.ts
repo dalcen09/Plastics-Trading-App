@@ -334,6 +334,11 @@ function toNum(val: string | null | undefined): number | null {
   return isNaN(n) ? null : n;
 }
 
+/** Format a number without floating-point noise (e.g. 0.3000000000000004 → "0.3") */
+function fmtN(n: number): string {
+  return parseFloat(n.toPrecision(10)).toString();
+}
+
 function withinAbs(a: number | null, b: number | null, tol: number): boolean {
   if (a === null || b === null) return false;
   return Math.abs(a - b) <= tol;
@@ -389,8 +394,8 @@ async function getOrComputeAllMatches(): Promise<MatchResult[]> {
         const srcMid = srcLo !== null ? (srcHi !== null ? (srcLo + srcHi) / 2 : srcLo) : srcHi!;
         const inRange = (dmLo === null || srcMid >= dmLo) && (dmHi === null || srcMid <= dmHi);
         if (!inRange) continue;
-        const dmRange = dmLo !== null && dmHi !== null ? `${dmLo}〜${dmHi}` : dmLo !== null ? `≥${dmLo}` : `≤${dmHi}`;
-        reasons.push(`MI範囲内: ${srcMid} ∈ ${dmRange} g/10min`);
+        const dmRange = dmLo !== null && dmHi !== null ? `${fmtN(dmLo)}〜${fmtN(dmHi)}` : dmLo !== null ? `≥${fmtN(dmLo)}` : `≤${fmtN(dmHi!)}`;
+        reasons.push(`MI範囲内: ${fmtN(srcMid)} ∈ ${dmRange} g/10min`);
         score += 15;
       }
 
@@ -399,7 +404,7 @@ async function getOrComputeAllMatches(): Promise<MatchResult[]> {
       const srcDenMid = srcDenLo !== null && srcDenHi !== null ? (srcDenLo + srcDenHi) / 2 : srcDenLo;
       const dmDenMid = dmDenLo !== null && dmDenHi !== null ? (dmDenLo + dmDenHi) / 2 : dmDenLo;
       if (srcDenMid !== null && dmDenMid !== null && withinAbs(srcDenMid, dmDenMid, 0.5)) {
-        reasons.push(`密度近似: ${srcDenMid} ↔ ${dmDenMid} g/cm³ (±0.5)`);
+        reasons.push(`密度近似: ${fmtN(srcDenMid)} ↔ ${fmtN(dmDenMid)} g/cm³ (±0.5)`);
         score += 15;
       }
 

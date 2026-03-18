@@ -7,13 +7,17 @@ import { Link, useLocation } from "wouter";
 
 const PAGE_SIZE = 30;
 
+function fmtN(n: number): string {
+  return parseFloat(n.toPrecision(10)).toString();
+}
+
 function formatMI(lower: number | string | null | undefined, upper: number | string | null | undefined): string | null {
   const lo = lower != null && lower !== "" ? Number(lower) : null;
   const hi = upper != null && upper !== "" ? Number(upper) : null;
-  if (lo !== null && hi !== null && lo === hi) return String(lo);
-  if (lo !== null && hi !== null) return `${lo}〜${hi}`;
-  if (lo !== null) return `${lo}以上`;
-  if (hi !== null) return `${hi}以下`;
+  if (lo !== null && hi !== null && lo === hi) return fmtN(lo);
+  if (lo !== null && hi !== null) return `${fmtN(lo)}〜${fmtN(hi)}`;
+  if (lo !== null) return `${fmtN(lo)}以上`;
+  if (hi !== null) return `${fmtN(hi)}以下`;
   return null;
 }
 
