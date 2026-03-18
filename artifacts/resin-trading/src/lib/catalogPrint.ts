@@ -128,43 +128,22 @@ export function openCatalogPrint(row: ResinEntry) {
         </div>
         <div class="header-right">
           ${categoryLabel ? `<div class="badge">${categoryLabel}</div>` : ""}
-          <div class="badge-sub">${typeLabel}</div>
         </div>
       </div>
-      <div class="meta-bar">
+      ${
+        fmtDate(row.date)
+          ? `<div class="meta-bar">
         <div class="meta-item">
-          <span class="meta-label">取引先</span>
-          <span class="meta-value">${row.counterparty ?? "—"}</span>
-        </div>
-        ${
-          fmtDate(row.date)
-            ? `<div class="meta-item">
           <span class="meta-label">日付</span>
           <span class="meta-value">${fmtDate(row.date)}</span>
-        </div>`
-            : ""
-        }
-        ${
-          row.personInCharge
-            ? `<div class="meta-item">
-          <span class="meta-label">担当者</span>
-          <span class="meta-value">${row.personInCharge}</span>
-        </div>`
-            : ""
-        }
-      </div>
+        </div>
+      </div>`
+          : ""
+      }
       <div class="content">
         ${sectionHtml("製品", productFields)}
         ${sectionHtml("物性データ", physicalFields)}
         ${sectionHtml("詳細", detailFields)}
-        ${
-          row.remarks
-            ? `<div class="section">
-              <h3 class="section-title">備考</h3>
-              <div class="remarks">${row.remarks.replace(/\n/g, "<br>")}</div>
-            </div>`
-            : ""
-        }
       </div>
       ${footerHtml(1)}
     </div>`;
