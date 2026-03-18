@@ -661,12 +661,16 @@ router.post("/import", upload.single("file"), async (req, res) => {
       const date = rawDate ? parseDate(rawDate) : null;
       const counterparty = rawCounterparty ? String(rawCounterparty).trim() : null;
       const personInCharge = data.personInCharge ? String(data.personInCharge).trim() : null;
-      const resinType = data.resinType ? normalizeResinType(String(data.resinType)) : null;
+      const rawResinType = data.resinType ? String(data.resinType).trim() : "";
+      const normalizedResinType = rawResinType ? normalizeResinType(rawResinType) : null;
+      // If the resin type is unknown, store as "Other" with the raw value in otherResinType
+      const resinType = normalizedResinType ?? (rawResinType ? "Other" : null);
+      const importedOtherResinType = normalizedResinType === null && rawResinType ? rawResinType : (data.otherResinType ? String(data.otherResinType).trim() : null);
 
       // Route generic "タイプ" value to the correct resin-specific type field
       if (data.resinSubType && String(data.resinSubType).trim()) {
         const sub = String(data.resinSubType).trim();
-        const rt = (resinType ?? "").toUpperCase();
+        const rt = (normalizedResinType ?? "").toUpperCase();
         if (["PE", "HDPE", "LDPE", "LLDPE"].includes(rt)) {
           if (!data.peType) data.peType = sub;
         } else if (rt === "PS") {
@@ -701,7 +705,7 @@ router.post("/import", upload.single("file"), async (req, res) => {
         results.skipped++; continue;
       }
       if (!resinType) {
-        results.errors.push(`行 ${ri + 1} (シート: ${sheetName}): 樹脂種別が無効 "${data.resinType ?? ""}"`);
+        results.errors.push(`行 ${ri + 1} (シート: ${sheetName}): 樹脂種別が空です`);
         results.skipped++; continue;
       }
 
@@ -735,7 +739,7 @@ router.post("/import", upload.single("file"), async (req, res) => {
           peType: data.peType ? normalizePEType(String(data.peType)) as any : null,
           psType: data.psType ? normalizePSType(String(data.psType)) as any : null,
           absType: data.absType ? normalizeABSType(String(data.absType)) as any : null,
-          otherResinType: data.otherResinType ? String(data.otherResinType).trim() || null : null,
+          otherResinType: importedOtherResinType || null,
           price: numStr(data.price),
           priceLower: numStr(data.priceLower),
           priceUpper: numStr(data.priceUpper),

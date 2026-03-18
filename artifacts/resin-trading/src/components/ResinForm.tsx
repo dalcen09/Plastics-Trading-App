@@ -148,6 +148,41 @@ export function ResinForm({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
 
+  // Custom resin types fetched from DB (otherResinType values already in use)
+  const [customResinTypes, setCustomResinTypes] = useState<string[]>([]);
+  // Visual key for the composite resin type select:
+  //   "PP" | "PE" | ... (standard)  |  "custom:PVDF" (custom from DB)  |  "Other" (manual input)
+  const initialResinKey = () => {
+    if (initialData?.resinType === ResinType.Other && initialData?.otherResinType) {
+      return `custom:${initialData.otherResinType}`;
+    }
+    return initialData?.resinType ?? ResinType.PP;
+  };
+  const [resinTypeKey, setResinTypeKey] = useState<string>(initialResinKey);
+
+  useEffect(() => {
+    fetch("/api/custom-resin-types")
+      .then(r => r.json())
+      .then((list: string[]) => setCustomResinTypes(list))
+      .catch(() => {});
+  }, []);
+
+  const handleResinTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
+    const key = e.target.value;
+    setResinTypeKey(key);
+    if (key === "Other") {
+      formSetValue("resinType", ResinType.Other, { shouldValidate: true });
+      formSetValue("otherResinType", "");
+    } else if (key.startsWith("custom:")) {
+      const customVal = key.slice("custom:".length);
+      formSetValue("resinType", ResinType.Other, { shouldValidate: true });
+      formSetValue("otherResinType", customVal);
+    } else {
+      formSetValue("resinType", key as ResinType, { shouldValidate: true });
+      formSetValue("otherResinType", "");
+    }
+  };
+
   const { uploadFile, isUploading } = useUpload({
     onSuccess: (response: { objectPath: string }) => {
       const url = `/api/storage${response.objectPath}`;
@@ -238,19 +273,34 @@ export function ResinForm({
               <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4 pt-4 border-t border-border/50">製品</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5">
                 <FormGroup label="樹脂種別" error={errors.resinType?.message}>
-                  <select {...register("resinType")} className="input-field">
-                    {Object.values(ResinType).filter(t => !["LLDPE","HDPE","LDPE","GPPS","HIPS"].includes(t)).map(t => <option key={t} value={t}>{t}</option>)}
+                  <select value={resinTypeKey} onChange={handleResinTypeChange} className="input-field">
+                    <optgroup label="標準種別">
+                      {Object.values(ResinType).filter(t => !["LLDPE","HDPE","LDPE","GPPS","HIPS","Other"].includes(t)).map(t => <option key={t} value={t}>{t}</option>)}
+                    </optgroup>
+                    {customResinTypes.length > 0 && (
+                      <optgroup label="登録済みカスタム種別">
+                        {customResinTypes.map(t => (
+                          <option key={`custom:${t}`} value={`custom:${t}`}>{t}</option>
+                        ))}
+                      </optgroup>
+                    )}
+                    <optgroup label="">
+                      <option value="Other">その他（手動入力）</option>
+                    </optgroup>
                   </select>
                 </FormGroup>
 
                 {selectedResinType === ResinType.Other && (
-                  <FormGroup label="樹脂タイプ（その他）" error={errors.otherResinType?.message}>
+                  <FormGroup label={resinTypeKey.startsWith("custom:") ? "樹脂種別（カスタム）" : "樹脂種別（新規登録）"} error={errors.otherResinType?.message}>
                     <input
                       type="text"
-                      placeholder="樹脂タイプを入力..."
+                      placeholder="例: PVDF、CPE、TPE…"
                       {...register("otherResinType")}
                       className="input-field"
                     />
+                    {!resinTypeKey.startsWith("custom:") && (
+                      <p className="text-xs text-muted-foreground mt-1">登録後、次回からドロップダウンに表示されます</p>
+                    )}
                   </FormGroup>
                 )}
                 

@@ -38,6 +38,19 @@ router.get("/prospective-buyers", async (_req, res) => {
   res.json(rows.map(r => r.name));
 });
 
+// GET /api/resin-entries/custom-resin-types — distinct non-null otherResinType values in use
+router.get("/custom-resin-types", async (_req, res) => {
+  const rows = await db
+    .selectDistinct({ value: resinEntriesTable.otherResinType })
+    .from(resinEntriesTable)
+    .where(and(isNotNull(resinEntriesTable.otherResinType), isNull(resinEntriesTable.deletedAt)));
+  const values = rows
+    .map(r => r.value)
+    .filter((v): v is string => typeof v === "string" && v.trim() !== "")
+    .sort();
+  res.json(values);
+});
+
 function toNumber(val: string | null | undefined): number | null {
   if (val === null || val === undefined) return null;
   const n = parseFloat(val);
