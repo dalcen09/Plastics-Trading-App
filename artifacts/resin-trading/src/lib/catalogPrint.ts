@@ -95,13 +95,21 @@ export function openCatalogPrint(row: ResinEntry) {
     ["サンプル", row.sampleAvailable],
   ]);
 
-  const photos: string[] = row.imageUrls?.length
+  const allPhotos: string[] = row.imageUrls?.length
     ? (row.imageUrls as string[])
     : row.imageUrl
     ? [row.imageUrl as string]
     : [];
+  const photos = allPhotos.slice(0, 10);
   const hasPhotos = photos.length > 0;
   const hasTds = !!row.tdsUrl;
+
+  // Determine grid columns based on photo count
+  const photoCols =
+    photos.length <= 2 ? 2 :
+    photos.length <= 4 ? 2 :
+    photos.length <= 6 ? 3 :
+    5; // 7-10: 5 columns (2 rows)
 
   const categoryLabel =
     row.resinCategory === "offgrade"
@@ -119,15 +127,16 @@ export function openCatalogPrint(row: ResinEntry) {
       <span>${pageNum} / ${totalPages}</span>
     </div>`;
 
+  const photoAspect = photoCols >= 5 ? "1 / 1" : "4 / 3";
   const photosSection = hasPhotos
     ? `
     <div class="section">
-      <h3 class="section-title">写真</h3>
-      <div class="photos-inline-grid">
+      <h3 class="section-title">写真（${photos.length}枚${allPhotos.length > 10 ? " / 最大10枚表示" : ""}）</h3>
+      <div class="photos-inline-grid" style="grid-template-columns: repeat(${photoCols}, 1fr);">
         ${photos
           .map(
             (url) =>
-              `<div class="photo-cell"><img src="${url}" alt="製品写真" loading="eager" /></div>`
+              `<div class="photo-cell" style="aspect-ratio: ${photoAspect};"><img src="${url}" alt="製品写真" loading="eager" /></div>`
           )
           .join("")}
       </div>
@@ -304,12 +313,10 @@ export function openCatalogPrint(row: ResinEntry) {
     /* ── Photos inline ── */
     .photos-inline-grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
+      gap: 10px;
       margin-top: 6px;
     }
     .photo-cell {
-      aspect-ratio: 4/3;
       overflow: hidden;
       border-radius: 6px;
       border: 1px solid #e2e8f0;
