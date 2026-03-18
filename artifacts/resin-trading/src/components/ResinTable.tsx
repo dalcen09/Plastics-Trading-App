@@ -1,5 +1,5 @@
 import { ResinEntry } from "@workspace/api-client-react";
-import { Edit2, Trash2, Box, Package, ArrowUp, ArrowDown, ArrowUpDown, ImageIcon, Download, FileText } from "lucide-react";
+import { Edit2, Trash2, Copy, Box, Package, ArrowUp, ArrowDown, ArrowUpDown, ImageIcon, Download, FileText } from "lucide-react";
 import { formatCurrency, formatDate, formatNumber, cn } from "@/lib/utils";
 import { useState, useRef, useCallback, useEffect } from "react";
 import { createPortal } from "react-dom";
@@ -157,6 +157,7 @@ interface ResinTableProps {
   data: ResinEntry[];
   onEdit: (entry: ResinEntry) => void;
   onDelete: (id: number) => void;
+  onDuplicate?: (entry: ResinEntry) => void;
   onToggleClosed?: (entry: ResinEntry) => void;
   isLoading: boolean;
   visibleColumns: Set<ColumnKey>;
@@ -224,7 +225,7 @@ function resinVariant(type: string): { main: string; badge: string | null } {
   return { main: type, badge: null };
 }
 
-export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, visibleColumns, sort, onSort, selectedIds = new Set(), onToggleSelect, onToggleSelectAll, matchCounts, lastEditedId, highlightId }: ResinTableProps) {
+export function ResinTable({ data, onEdit, onDelete, onDuplicate, onToggleClosed, isLoading, visibleColumns, sort, onSort, selectedIds = new Set(), onToggleSelect, onToggleSelectAll, matchCounts, lastEditedId, highlightId }: ResinTableProps) {
   const col = (key: ColumnKey) => visibleColumns.has(key);
   const allIds = data.map(r => r.id);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -350,6 +351,15 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
                     >
                       <Edit2 className="w-4 h-4" />
                     </button>
+                    {onDuplicate && (
+                      <button
+                        onClick={() => onDuplicate(row)}
+                        className="p-1.5 text-muted-foreground hover:text-sky-600 hover:bg-sky-500/10 rounded-lg transition-colors"
+                        title="複製"
+                      >
+                        <Copy className="w-4 h-4" />
+                      </button>
+                    )}
                     <button
                       onClick={() => {
                         if (window.confirm("このエントリを削除してもよろしいですか？")) {

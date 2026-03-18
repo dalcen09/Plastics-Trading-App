@@ -377,6 +377,15 @@ export function CategoryView({ category }: CategoryViewProps) {
     }
   };
 
+  const handleDuplicate = (entry: ResinEntry) => {
+    const { id: _id, createdAt: _c, updatedAt: _u, deletedAt: _d, ...rest } = entry as any;
+    if (activeTab === "sources") {
+      createSource.mutate({ data: rest });
+    } else {
+      createDemand.mutate({ data: rest });
+    }
+  };
+
   const handleToggleClosed = (entry: ResinEntry) => {
     const updated = { ...entry, isClosed: entry.isClosed === "クローズ" ? "オープン" : "クローズ" };
     if (activeTab === "sources") {
@@ -730,6 +739,7 @@ export function CategoryView({ category }: CategoryViewProps) {
               isLoading={activeTab === "sources" ? sourcesLoading : demandsLoading}
               onEdit={handleOpenForm}
               onDelete={handleDelete}
+              onDuplicate={category !== "virgin" ? handleDuplicate : undefined}
               onToggleClosed={handleToggleClosed}
               visibleColumns={visibleColumns}
               sort={sort}
