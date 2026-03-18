@@ -49,7 +49,7 @@ type TrashEntry = {
 const CATEGORY_LABEL: Record<string, string> = {
   virgin: "バージン",
   offgrade: "オフグレード",
-  recycled: "リサイクル",
+  recycled: "再生",
 };
 
 const TYPE_LABEL: Record<string, string> = {

@@ -7,6 +7,7 @@ import {
   Handshake,
   Menu,
   X,
+  Recycle,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
@@ -39,7 +40,7 @@ export function Layout({ children }: LayoutProps) {
 
   const categoryMatchItems = [
     { cat: "offgrade", label: "オフグレード",  count: offgradeCount?.count ?? 0, color: "bg-amber-500" },
-    { cat: "recycled", label: "リサイクル",    count: recycledCount?.count ?? 0, color: "bg-teal-500"  },
+    { cat: "recycled", label: "再生",          count: recycledCount?.count ?? 0, color: "bg-teal-500"  },
   ];
 
   const { data: trashItems = [] } = useQuery<unknown[]>({
@@ -56,7 +57,7 @@ export function Layout({ children }: LayoutProps) {
 
   const navItems = [
     { href: "/offgrade", label: "オフグレード", badge: "OG",  icon: null, matchPrefix: true },
-    { href: "/recycled", label: "リサイクル",   badge: "再生", icon: null, matchPrefix: true },
+    { href: "/recycled", label: "再生",          badge: null,   icon: Recycle, matchPrefix: true },
   ];
 
   const sidebarContent = (

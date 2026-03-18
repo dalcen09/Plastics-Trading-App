@@ -61,7 +61,7 @@ function useSearchParam(name: string): string | null {
 const CATEGORY_LABEL: Record<string, string> = {
   virgin: "バージン",
   offgrade: "オフグレード",
-  recycled: "リサイクル",
+  recycled: "再生",
 };
 
 const CATEGORY_THEME: Record<string, string> = {
@@ -279,7 +279,7 @@ function MatchCard({ match, highlightEntryId }: { match: any; highlightEntryId?:
           </div>
           <div>
             <h3 className="text-lg font-bold text-foreground capitalize flex items-center gap-2">
-              {match.source.resinType} {match.source.resinCategory === "virgin" ? "バージン" : match.source.resinCategory === "offgrade" ? "オフグレード" : "リサイクル"} マッチ
+              {match.source.resinType} {match.source.resinCategory === "virgin" ? "バージン" : match.source.resinCategory === "offgrade" ? "オフグレード" : "再生"} マッチ
             </h3>
             <div className="flex flex-wrap gap-2 mt-1">
               {match.reasons.map((reason: string, i: number) => (

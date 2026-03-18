@@ -234,7 +234,7 @@ export function ResinForm({
               {initialData ? "編集" : "追加"}
             </h2>
             <p className="text-sm text-muted-foreground mt-0.5 capitalize">
-              {resinCategory === "virgin" ? "バージン" : resinCategory === "offgrade" ? "オフグレード" : "リサイクル"} 樹脂
+              {resinCategory === "virgin" ? "バージン" : resinCategory === "offgrade" ? "オフグレード" : "再生"} 樹脂
             </p>
           </div>
           <button 

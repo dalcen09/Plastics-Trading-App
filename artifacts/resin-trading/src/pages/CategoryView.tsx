@@ -35,7 +35,7 @@ interface CategoryViewProps {
 const categoryLabels: Record<string, string> = {
   virgin: "バージン",
   offgrade: "オフグレード",
-  recycled: "リサイクル",
+  recycled: "再生",
 };
 
 interface Filters {
