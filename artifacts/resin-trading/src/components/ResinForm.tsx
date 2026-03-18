@@ -274,19 +274,8 @@ export function ResinForm({
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5">
                 <FormGroup label="樹脂種別" error={errors.resinType?.message}>
                   <select value={resinTypeKey} onChange={handleResinTypeChange} className="input-field">
-                    <optgroup label="標準種別">
-                      {Object.values(ResinType).filter(t => !["LLDPE","HDPE","LDPE","GPPS","HIPS","Other"].includes(t)).map(t => <option key={t} value={t}>{t}</option>)}
-                    </optgroup>
-                    {customResinTypes.length > 0 && (
-                      <optgroup label="登録済みカスタム種別">
-                        {customResinTypes.map(t => (
-                          <option key={`custom:${t}`} value={`custom:${t}`}>{t}</option>
-                        ))}
-                      </optgroup>
-                    )}
-                    <optgroup label="">
-                      <option value="Other">その他（手動入力）</option>
-                    </optgroup>
+                    {Object.values(ResinType).filter(t => !["LLDPE","HDPE","LDPE","GPPS","HIPS","Other"].includes(t)).map(t => <option key={t} value={t}>{t}</option>)}
+                    <option value="Other">その他（手動入力）</option>
                   </select>
                 </FormGroup>
 
