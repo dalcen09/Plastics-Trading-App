@@ -1,7 +1,7 @@
 import { Router, type IRouter } from "express";
 import { db } from "@workspace/db";
 import { resinEntriesTable, staffTable, prospectiveBuyersTable } from "@workspace/db/schema";
-import { eq, and, inArray, isNull, isNotNull, sql } from "drizzle-orm";
+import { eq, and, inArray, isNull, isNotNull, ne, sql } from "drizzle-orm";
 import {
   CreateSourceBody,
   UpdateSourceBody,
@@ -383,8 +383,8 @@ export function invalidateMatchCache() { _matchCache = null; }
 async function getOrComputeAllMatches(): Promise<MatchResult[]> {
   if (_matchCache && Date.now() - _matchCacheAt < MATCH_CACHE_TTL) return _matchCache;
 
-  const sources = await db.select().from(resinEntriesTable).where(and(eq(resinEntriesTable.entryType, "source"), isNull(resinEntriesTable.deletedAt)));
-  const demands = await db.select().from(resinEntriesTable).where(and(eq(resinEntriesTable.entryType, "demand"), isNull(resinEntriesTable.deletedAt)));
+  const sources = await db.select().from(resinEntriesTable).where(and(eq(resinEntriesTable.entryType, "source"), isNull(resinEntriesTable.deletedAt), ne(resinEntriesTable.isClosed, "クローズ")));
+  const demands = await db.select().from(resinEntriesTable).where(and(eq(resinEntriesTable.entryType, "demand"), isNull(resinEntriesTable.deletedAt), ne(resinEntriesTable.isClosed, "クローズ")));
 
   const matches: MatchResult[] = [];
 
