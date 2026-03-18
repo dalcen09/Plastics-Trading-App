@@ -181,6 +181,18 @@ router.post("/sources/batch-delete", async (req, res) => {
   res.status(204).end();
 });
 
+// Batch update isClosed for sources
+router.post("/sources/batch-status", async (req, res) => {
+  const ids: number[] = Array.isArray(req.body?.ids) ? req.body.ids.map(Number).filter(Number.isFinite) : [];
+  const isClosed: string = req.body?.isClosed === "クローズ" ? "クローズ" : "オープン";
+  if (ids.length === 0) return res.status(204).end();
+  await db.update(resinEntriesTable)
+    .set({ isClosed, updatedAt: new Date() })
+    .where(and(inArray(resinEntriesTable.id, ids), eq(resinEntriesTable.entryType, "source"), isNull(resinEntriesTable.deletedAt)));
+  invalidateMatchCache();
+  res.status(204).end();
+});
+
 // ---- DEMANDS ----
 
 router.get("/demands", async (req, res) => {
@@ -267,6 +279,18 @@ router.post("/demands/batch-delete", async (req, res) => {
   if (ids.length === 0) return res.status(204).end();
   await db.update(resinEntriesTable)
     .set({ deletedAt: new Date() })
+    .where(and(inArray(resinEntriesTable.id, ids), eq(resinEntriesTable.entryType, "demand"), isNull(resinEntriesTable.deletedAt)));
+  invalidateMatchCache();
+  res.status(204).end();
+});
+
+// Batch update isClosed for demands
+router.post("/demands/batch-status", async (req, res) => {
+  const ids: number[] = Array.isArray(req.body?.ids) ? req.body.ids.map(Number).filter(Number.isFinite) : [];
+  const isClosed: string = req.body?.isClosed === "クローズ" ? "クローズ" : "オープン";
+  if (ids.length === 0) return res.status(204).end();
+  await db.update(resinEntriesTable)
+    .set({ isClosed, updatedAt: new Date() })
     .where(and(inArray(resinEntriesTable.id, ids), eq(resinEntriesTable.entryType, "demand"), isNull(resinEntriesTable.deletedAt)));
   invalidateMatchCache();
   res.status(204).end();
