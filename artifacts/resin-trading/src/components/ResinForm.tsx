@@ -60,6 +60,7 @@ const formSchema = z.object({
   colorTone: z.string().nullable().optional(),
   rohs: z.string().nullable().optional(),
   mesh: z.string().nullable().optional(),
+  physicalOther: z.string().nullable().optional(),
   remarks: z.string().nullable().optional(),
   imageUrl: z.string().nullable().optional(),
   imageUrls: z.array(z.string()).optional(),
@@ -134,6 +135,7 @@ export function ResinForm({
       colorTone: initialData?.colorTone || "",
       rohs: initialData?.rohs ?? null,
       mesh: initialData?.mesh ?? null,
+      physicalOther: (initialData as any)?.physicalOther ?? null,
       remarks: initialData?.remarks || "",
       imageUrl: initialData?.imageUrl ?? null,
       imageUrls: initialData?.imageUrls?.length
@@ -400,6 +402,11 @@ export function ResinForm({
                   <input type="number" step="0.001" placeholder="下限" {...register("densityLower")} className="input-field" />
                   <input type="number" step="0.001" placeholder="上限" {...register("densityUpper")} className="input-field" />
                 </RangeGroup>
+                {resinCategory === ResinCategory.recycled && (
+                  <FormGroup label="その他" error={(errors as any).physicalOther?.message}>
+                    <input type="text" placeholder="その他の物性を入力..." {...register("physicalOther" as any)} className="input-field" />
+                  </FormGroup>
+                )}
               </div>
             </div>
 

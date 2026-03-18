@@ -492,6 +492,9 @@ components:
         mesh:
           type: string
           nullable: true
+        physicalOther:
+          type: string
+          nullable: true
         imageUrl:
           type: string
           nullable: true
@@ -654,6 +657,9 @@ components:
           type: string
           nullable: true
         mesh:
+          type: string
+          nullable: true
+        physicalOther:
           type: string
           nullable: true
         imageUrl:

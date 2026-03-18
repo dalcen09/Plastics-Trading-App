@@ -65,6 +65,7 @@ export const resinEntriesTable = pgTable("resin_entries", {
   colorTone: text("color_tone"),
   rohs: text("rohs"),
   mesh: text("mesh"),
+  physicalOther: text("physical_other"),
   imageUrl: text("image_url"),
   imageUrls: text("image_urls").array(),
   tdsUrl: text("tds_url"),

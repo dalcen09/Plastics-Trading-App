@@ -78,6 +78,7 @@ export function openCatalogPrint(row: ResinEntry) {
     ["シャルピー衝撃強度 (kJ/m²)", fmtRange(row.charpyLower, row.charpyUpper) || null],
     ["アイゾット衝撃強度 (kJ/m²)", fmtRange(row.izodLower, row.izodUpper) || null],
     ["密度 (g/cm³)", fmtRange(row.densityLower, row.densityUpper, "", 3) || null],
+    ["その他", (row as any).physicalOther || null],
   ]);
 
   const detailFields = buildFields([

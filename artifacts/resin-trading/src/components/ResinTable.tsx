@@ -61,10 +61,10 @@ export type ColumnKey =
   | "date" | "personInCharge" | "resinType" | "resinSubType" | "manufacturer"
   | "grade" | "charpy" | "izod" | "mi" | "density" | "price" | "locationType" | "storageLocation" | "quantity" | "quantityType" | "packaging" | "photo" | "tdsUrl" | "isClosed" | "sampleAvailable"
   | "prospectiveBuyer" | "desiredQuantity" | "proposedTo" | "sellingPrice" | "remarks"
-  | "origin" | "colorTone" | "rohs" | "mesh"
+  | "origin" | "colorTone" | "rohs" | "mesh" | "physicalOther"
   | "packagingWeight" | "plainMaker" | "usageType" | "finalNegotiatedPrice";
 
-export const RECYCLED_ONLY_COLUMNS: ColumnKey[] = ["origin", "colorTone", "rohs", "mesh"];
+export const RECYCLED_ONLY_COLUMNS: ColumnKey[] = ["origin", "colorTone", "rohs", "mesh", "physicalOther"];
 
 export type SortKey =
   | "counterparty" | "date" | "personInCharge" | "resinType"
@@ -109,6 +109,7 @@ export const ALL_COLUMNS: { key: ColumnKey; label: string }[] = [
   { key: "colorTone",        label: "色目" },
   { key: "rohs",             label: "RoHS" },
   { key: "mesh",             label: "メッシュ" },
+  { key: "physicalOther",    label: "その他（物性）" },
   { key: "remarks",          label: "備考" },
   { key: "isClosed",         label: "クローズ" },
 ];
@@ -117,7 +118,7 @@ export const DEFAULT_VISIBLE: Set<ColumnKey> = new Set(
   ALL_COLUMNS.map(c => c.key).filter(k =>
     k !== "charpy" && k !== "izod" && k !== "photo" &&
     k !== "prospectiveBuyer" && k !== "desiredQuantity" && k !== "proposedTo" && k !== "sellingPrice" &&
-    k !== "origin" && k !== "colorTone" && k !== "rohs" && k !== "mesh" &&
+    k !== "origin" && k !== "colorTone" && k !== "rohs" && k !== "mesh" && k !== "physicalOther" &&
     k !== "packagingWeight" && k !== "plainMaker" && k !== "usageType" && k !== "finalNegotiatedPrice"
   )
 );
@@ -383,6 +384,7 @@ export function ResinTable({ data, onEdit, onDelete, onDuplicate, onToggleClosed
               {col("izod")     && <SortTh colKey="izod"     sort={sort} onSort={onSort} className="text-right">アイゾッド</SortTh>}
               {col("mi")       && <SortTh colKey="mi"       sort={sort} onSort={onSort} className="text-right">MI</SortTh>}
               {col("density")  && <SortTh colKey="density"  sort={sort} onSort={onSort} className="text-right">比重</SortTh>}
+              {col("physicalOther") && <th className="px-4 py-4">その他</th>}
               {col("price")          && <SortTh colKey="price"    sort={sort} onSort={onSort} className="text-right">価格 (円/kg)</SortTh>}
               {col("locationType")    && <th className="px-4 py-4">納入・置場</th>}
               {col("storageLocation") && <th className="px-4 py-4">場所</th>}
@@ -502,6 +504,9 @@ export function ResinTable({ data, onEdit, onDelete, onDuplicate, onToggleClosed
                   <td className="px-4 py-3 text-sm text-right text-muted-foreground">
                     {formatRange(row.densityLower, row.densityUpper, v => formatNumber(v as number))}
                   </td>
+                )}
+                {col("physicalOther") && (
+                  <td className="px-4 py-3 text-sm text-muted-foreground">{(row as any).physicalOther || dash}</td>
                 )}
                 {col("price") && (
                   <td className="px-4 py-3 text-right font-medium text-foreground whitespace-nowrap">

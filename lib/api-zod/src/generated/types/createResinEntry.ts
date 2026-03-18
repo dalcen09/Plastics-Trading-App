@@ -58,6 +58,7 @@ export interface CreateResinEntry {
   colorTone?: string | null;
   rohs?: string | null;
   mesh?: string | null;
+  physicalOther?: string | null;
   imageUrl?: string | null;
   imageUrls?: string[] | null;
   tdsUrl?: string | null;
