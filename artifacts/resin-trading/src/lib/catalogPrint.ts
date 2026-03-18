@@ -123,7 +123,7 @@ export function openCatalogPrint(row: ResinEntry) {
 
   const footerHtml = (pageNum: number) => `
     <div class="page-footer">
-      <span>MARUKI — 社外秘 — 無断転載禁止</span>
+      <span>MARUKI</span>
       <span>${pageNum} / ${totalPages}</span>
     </div>`;
 
