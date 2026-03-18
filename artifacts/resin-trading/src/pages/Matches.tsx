@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Layout } from "@/components/Layout";
 import { useGetMatches } from "@workspace/api-client-react";
-import { Handshake, ArrowRightLeft, AlertCircle, Building2, User, Gauge, DollarSign, ChevronLeft, ChevronRight, X, ExternalLink } from "lucide-react";
+import { Handshake, ArrowRightLeft, AlertCircle, Building2, User, Gauge, DollarSign, ChevronLeft, ChevronRight, X, ExternalLink, Calendar } from "lucide-react";
 import { formatCurrency, formatNumber, cn } from "@/lib/utils";
 import { Link, useLocation } from "wouter";
 
@@ -35,6 +35,11 @@ function formatQty(lower: number | string | null | undefined, upper: number | st
   if (hi !== null) return `${formatNumber(hi)} kg以下`;
   if (s !== null) return `${formatNumber(s)} kg`;
   return "—";
+}
+
+function formatDate(d: string | null | undefined): string {
+  if (!d) return "—";
+  return String(d).replace(/-/g, "/").slice(0, 10);
 }
 
 function formatPriceRange(lower: number | string | null | undefined, upper: number | string | null | undefined, single?: number | string | null | undefined): string {
@@ -309,6 +314,9 @@ function MatchCard({ match, highlightEntryId }: { match: any; highlightEntryId?:
               <div className="text-sm text-muted-foreground flex items-center gap-2 mt-1">
                 <User className="w-4 h-4" /> {match.source.personInCharge}
               </div>
+              <div className="text-sm text-muted-foreground flex items-center gap-2 mt-1">
+                <Calendar className="w-4 h-4" /> {formatDate(match.source.entryDate)}
+              </div>
             </div>
             <div className="grid grid-cols-2 gap-3 text-sm">
               <InfoBadge label="樹脂" value={match.source.resinType ?? '—'} />
@@ -349,6 +357,9 @@ function MatchCard({ match, highlightEntryId }: { match: any; highlightEntryId?:
               </div>
               <div className="text-sm text-muted-foreground flex items-center gap-2 mt-1">
                 <User className="w-4 h-4" /> {match.demand.personInCharge}
+              </div>
+              <div className="text-sm text-muted-foreground flex items-center gap-2 mt-1">
+                <Calendar className="w-4 h-4" /> {formatDate(match.demand.entryDate)}
               </div>
             </div>
             <div className="grid grid-cols-2 gap-3 text-sm">
