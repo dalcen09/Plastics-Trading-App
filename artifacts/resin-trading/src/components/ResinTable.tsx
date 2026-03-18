@@ -1,5 +1,5 @@
 import { ResinEntry } from "@workspace/api-client-react";
-import { Edit2, Trash2, Copy, Box, Package, ArrowUp, ArrowDown, ArrowUpDown, ImageIcon, Download, FileText, Square, CheckSquare, MinusSquare } from "lucide-react";
+import { Edit2, Trash2, Copy, Box, Package, ArrowUp, ArrowDown, ArrowUpDown, ImageIcon, Download, FileText, Square, CheckSquare } from "lucide-react";
 import { formatCurrency, formatDate, formatNumber, cn } from "@/lib/utils";
 import { useState, useRef, useCallback, useEffect } from "react";
 import { createPortal } from "react-dom";
@@ -282,9 +282,7 @@ export function ResinTable({ data, onEdit, onDelete, onDuplicate, onToggleClosed
                 <button onClick={() => onToggleSelectAll(allIds)} title="このページをすべて選択" className="text-muted-foreground hover:text-foreground transition-colors">
                   {allSelected
                     ? <CheckSquare className="w-4 h-4 text-primary" />
-                    : someSelected
-                      ? <MinusSquare className="w-4 h-4 text-primary" />
-                      : <Square className="w-4 h-4" />}
+                    : <Square className="w-4 h-4" />}
                 </button>
               </th>
               {/* 操作 sticky second column */}
