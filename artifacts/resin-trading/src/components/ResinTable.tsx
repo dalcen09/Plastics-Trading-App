@@ -1,5 +1,5 @@
 import { ResinEntry } from "@workspace/api-client-react";
-import { Edit2, Trash2, Copy, Box, Package, ArrowUp, ArrowDown, ArrowUpDown, ImageIcon, Download, FileText, Square, CheckSquare, BookOpen } from "lucide-react";
+import { Edit2, Trash2, Copy, Box, Package, ArrowUp, ArrowDown, ArrowUpDown, ImageIcon, Download, FileText, Square, CheckSquare, BookOpen, MoreHorizontal } from "lucide-react";
 import { openCatalogPrint } from "@/lib/catalogPrint";
 import { formatCurrency, formatDate, formatNumber, cn } from "@/lib/utils";
 import { useState, useRef, useCallback, useEffect } from "react";
@@ -224,6 +224,93 @@ function resinVariant(type: string): { main: string; badge: string | null } {
   if (type === "GPPS")  return { main: "PS", badge: "GP" };
   if (type === "HIPS")  return { main: "PS", badge: "HI" };
   return { main: type, badge: null };
+}
+
+function ActionMenu({ row, onEdit, onDuplicate, onDelete }: {
+  row: ResinEntry;
+  onEdit: (r: ResinEntry) => void;
+  onDuplicate?: (r: ResinEntry) => void;
+  onDelete: (id: number) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const [pos, setPos] = useState<{ top: number; left: number } | null>(null);
+  const btnRef = useRef<HTMLButtonElement>(null);
+
+  const toggle = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    if (open) { setOpen(false); return; }
+    if (!btnRef.current) return;
+    const r = btnRef.current.getBoundingClientRect();
+    const menuW = 168;
+    const left = Math.max(4, r.right - menuW);
+    setPos({ top: r.bottom + 4, left });
+    setOpen(true);
+  };
+
+  useEffect(() => {
+    if (!open) return;
+    const close = () => setOpen(false);
+    document.addEventListener("mousedown", close);
+    document.addEventListener("scroll", close, true);
+    return () => {
+      document.removeEventListener("mousedown", close);
+      document.removeEventListener("scroll", close, true);
+    };
+  }, [open]);
+
+  return (
+    <>
+      <button
+        ref={btnRef}
+        onClick={toggle}
+        className="p-1.5 text-muted-foreground hover:text-foreground hover:bg-secondary rounded-lg transition-colors"
+        title="操作メニュー"
+      >
+        <MoreHorizontal className="w-4 h-4" />
+      </button>
+      {open && pos && createPortal(
+        <div
+          style={{ position: "fixed", top: pos.top, left: pos.left, zIndex: 9999, minWidth: 168 }}
+          className="bg-card border border-border rounded-xl shadow-lg shadow-black/10 py-1 overflow-hidden"
+          onMouseDown={e => e.stopPropagation()}
+        >
+          <button
+            onClick={() => { setOpen(false); onEdit(row); }}
+            className="w-full flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-secondary transition-colors text-left"
+          >
+            <Edit2 className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" /> 編集
+          </button>
+          <button
+            onClick={() => { setOpen(false); openCatalogPrint(row); }}
+            className="w-full flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-secondary transition-colors text-left"
+          >
+            <BookOpen className="w-3.5 h-3.5 text-violet-500 flex-shrink-0" /> カタログ出力
+          </button>
+          {onDuplicate && (
+            <button
+              onClick={() => { setOpen(false); onDuplicate(row); }}
+              className="w-full flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-secondary transition-colors text-left"
+            >
+              <Copy className="w-3.5 h-3.5 text-sky-500 flex-shrink-0" /> 複製
+            </button>
+          )}
+          <div className="border-t border-border/50 my-1" />
+          <button
+            onClick={() => {
+              setOpen(false);
+              if (window.confirm("このエントリを削除してもよろしいですか？")) {
+                onDelete(row.id);
+              }
+            }}
+            className="w-full flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-destructive/10 text-destructive transition-colors text-left"
+          >
+            <Trash2 className="w-3.5 h-3.5 flex-shrink-0" /> 削除
+          </button>
+        </div>,
+        document.body
+      )}
+    </>
+  );
 }
 
 export function ResinTable({ data, onEdit, onDelete, onDuplicate, onToggleClosed, isLoading, visibleColumns, sort, onSort, selectedIds = new Set(), onToggleSelect, onToggleSelectAll, matchCounts, lastEditedId, highlightId }: ResinTableProps) {
@@ -561,43 +648,8 @@ export function ResinTable({ data, onEdit, onDelete, onDuplicate, onToggleClosed
                   </td>
                 )}
                 {/* 操作 sticky right */}
-                <td className={cn("px-3 py-3 table-sticky-col-right-2 text-center z-10 transition-colors", isSelected ? "bg-primary/10" : "bg-card group-hover:bg-secondary")}>
-                  <div className="flex items-center justify-center gap-1.5">
-                    <button
-                      onClick={() => onEdit(row)}
-                      className="p-1.5 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-lg transition-colors"
-                      title="編集"
-                    >
-                      <Edit2 className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => openCatalogPrint(row)}
-                      className="p-1.5 text-muted-foreground hover:text-violet-600 hover:bg-violet-500/10 rounded-lg transition-colors"
-                      title="カタログPDF出力"
-                    >
-                      <BookOpen className="w-4 h-4" />
-                    </button>
-                    {onDuplicate && (
-                      <button
-                        onClick={() => onDuplicate(row)}
-                        className="p-1.5 text-muted-foreground hover:text-sky-600 hover:bg-sky-500/10 rounded-lg transition-colors"
-                        title="複製"
-                      >
-                        <Copy className="w-4 h-4" />
-                      </button>
-                    )}
-                    <button
-                      onClick={() => {
-                        if (window.confirm("このエントリを削除してもよろしいですか？")) {
-                          onDelete(row.id);
-                        }
-                      }}
-                      className="p-1.5 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
-                      title="削除"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
+                <td className={cn("px-2 py-3 table-sticky-col-right-2 text-center z-10 transition-colors", isSelected ? "bg-primary/10" : "bg-card group-hover:bg-secondary")}>
+                  <ActionMenu row={row} onEdit={onEdit} onDuplicate={onDuplicate} onDelete={onDelete} />
                 </td>
                 {/* Checkbox sticky rightmost */}
                 <td className={cn("pl-2 pr-4 py-3 table-sticky-col-right z-10 transition-colors", isSelected ? "bg-primary/10" : "bg-card group-hover:bg-secondary")}>
