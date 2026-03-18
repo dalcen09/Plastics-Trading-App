@@ -281,7 +281,7 @@ function ActionMenu({ row, onEdit, onDuplicate, onDelete }: {
             <Edit2 className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" /> 編集
           </button>
           <button
-            onClick={() => { setOpen(false); openCatalogPrint(row); }}
+            onClick={() => { setOpen(false); openCatalogPrint(row).catch(() => alert("PDFの生成に失敗しました。")); }}
             className="w-full flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-secondary transition-colors text-left"
           >
             <BookOpen className="w-3.5 h-3.5 text-violet-500 flex-shrink-0" /> カタログ出力

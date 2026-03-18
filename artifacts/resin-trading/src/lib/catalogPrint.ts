@@ -49,20 +49,186 @@ function sectionHtml(title: string, fieldList: Field[], cols = 2): string {
     <div class="section">
       <h3 class="section-title">${title}</h3>
       <div class="${grid}">
-        ${fieldList
-          .map(
-            (f) => `
+        ${fieldList.map((f) => `
           <div class="field">
             <div class="field-label">${f.label}</div>
             <div class="field-value">${f.value}</div>
-          </div>`
-          )
-          .join("")}
+          </div>`).join("")}
       </div>
     </div>`;
 }
 
-export function openCatalogPrint(row: ResinEntry) {
+const CSS = `
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Noto Sans JP', 'Hiragino Kaku Gothic ProN', 'Hiragino Sans',
+                 'Yu Gothic UI', 'Meiryo', sans-serif;
+    color: #1e293b;
+    background: #fff;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .page {
+    width: 794px;
+    height: 1123px;
+    background: #fff;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: relative;
+  }
+
+  /* ── Header ── */
+  .header {
+    background: hsl(152, 73%, 41%);
+    color: #fff;
+    padding: 22px 32px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    flex-shrink: 0;
+  }
+  .company-name {
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+  }
+  .doc-type {
+    font-size: 12px;
+    opacity: 0.75;
+    margin-top: 4px;
+    letter-spacing: 0.06em;
+  }
+  .header-right { text-align: right; }
+  .badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.22);
+    border: 1px solid rgba(255,255,255,0.4);
+    border-radius: 5px;
+    padding: 3px 10px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+  }
+
+  /* ── Meta bar ── */
+  .meta-bar {
+    background: #f8fafc;
+    border-bottom: 1px solid #e2e8f0;
+    padding: 12px 32px;
+    display: flex;
+    gap: 36px;
+    flex-shrink: 0;
+  }
+  .meta-item { display: flex; flex-direction: column; gap: 2px; }
+  .meta-label {
+    font-size: 9px;
+    color: #94a3b8;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+  }
+  .meta-value {
+    font-size: 14px;
+    font-weight: 600;
+    color: #0f172a;
+  }
+
+  /* ── Content ── */
+  .content { flex: 1; padding: 20px 32px; overflow: hidden; }
+
+  .section { margin-bottom: 18px; }
+
+  .section-title {
+    font-size: 9.5px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: hsl(152, 60%, 36%);
+    border-bottom: 2px solid hsl(152, 73%, 41%);
+    padding-bottom: 4px;
+    margin-bottom: 10px;
+  }
+
+  .field-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 36px; }
+  .field-grid-1 { display: grid; grid-template-columns: 1fr; gap: 8px; }
+  .field { display: flex; flex-direction: column; gap: 1px; }
+
+  .field-label {
+    font-size: 9.5px;
+    color: #94a3b8;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+  }
+  .field-value {
+    font-size: 13px;
+    color: #0f172a;
+    font-weight: 500;
+    border-bottom: 1px solid #f1f5f9;
+    padding-bottom: 4px;
+  }
+
+  /* ── Photos inline ── */
+  .photos-inline-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+    margin-top: 6px;
+  }
+  .photo-cell {
+    aspect-ratio: 4/3;
+    overflow: hidden;
+    border-radius: 6px;
+    border: 1px solid #e2e8f0;
+    background: #f8fafc;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .photo-cell img { width: 100%; height: 100%; object-fit: contain; }
+
+  /* ── TDS page ── */
+  .tds-box {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 28px 32px;
+    margin-top: 8px;
+  }
+  .tds-image { max-width: 100%; max-height: 900px; border: 1px solid #e2e8f0; border-radius: 6px; }
+  .tds-note {
+    font-size: 13px;
+    color: #475569;
+    margin-bottom: 14px;
+    line-height: 1.6;
+  }
+  .tds-url-box {
+    background: #fff;
+    border: 1px solid #e2e8f0;
+    border-radius: 6px;
+    padding: 12px 16px;
+    font-size: 11px;
+    color: hsl(152, 73%, 38%);
+    word-break: break-all;
+    margin-top: 10px;
+  }
+
+  /* ── Footer ── */
+  .page-footer {
+    border-top: 1px solid #e2e8f0;
+    padding: 8px 32px;
+    display: flex;
+    justify-content: space-between;
+    font-size: 9px;
+    color: #94a3b8;
+    letter-spacing: 0.04em;
+    flex-shrink: 0;
+  }
+`;
+
+export async function openCatalogPrint(row: ResinEntry) {
   const productFields = buildFields([
     ["樹脂種別", resinLabel(row) || null],
     ["メーカー", row.manufacturer],
@@ -81,10 +247,7 @@ export function openCatalogPrint(row: ResinEntry) {
   ]);
 
   const detailFields = buildFields([
-    [
-      "数量 (kg)",
-      fmtRange(row.quantityLower ?? row.quantity, row.quantityUpper ?? row.quantity) || null,
-    ],
+    ["数量 (kg)", fmtRange(row.quantityLower ?? row.quantity, row.quantityUpper ?? row.quantity) || null],
     ["数量区分", row.quantityType],
     ["納入・置場", row.locationType],
     ["場所", row.storageLocation],
@@ -97,19 +260,15 @@ export function openCatalogPrint(row: ResinEntry) {
 
   const photos: string[] = row.imageUrls?.length
     ? (row.imageUrls as string[])
-    : row.imageUrl
-    ? [row.imageUrl as string]
-    : [];
+    : row.imageUrl ? [row.imageUrl as string] : [];
   const hasPhotos = photos.length > 0;
   const hasTds = !!row.tdsUrl;
+  const tdsIsImage = !!row.tdsUrl?.match(/\.(jpg|jpeg|png|gif|webp)$/i);
 
   const categoryLabel =
-    row.resinCategory === "offgrade"
-      ? "オフグレード"
-      : row.resinCategory === "recycled"
-      ? "再生"
-      : "";
-  const typeLabel = (row as { entryType?: string }).entryType === "source" ? "仕入れ先" : "販売先";
+    row.resinCategory === "offgrade" ? "オフグレード"
+    : row.resinCategory === "recycled" ? "再生"
+    : "";
 
   const totalPages = 1 + (hasTds ? 1 : 0);
 
@@ -119,42 +278,33 @@ export function openCatalogPrint(row: ResinEntry) {
       <span>${pageNum} / ${totalPages}</span>
     </div>`;
 
-  const photosSection = hasPhotos
-    ? `
+  const photosSection = hasPhotos ? `
     <div class="section">
       <h3 class="section-title">写真</h3>
       <div class="photos-inline-grid">
-        ${photos
-          .map(
-            (url) =>
-              `<div class="photo-cell"><img src="${url}" alt="製品写真" loading="eager" /></div>`
-          )
-          .join("")}
+        ${photos.map((url) => `
+          <div class="photo-cell">
+            <img src="${url}" alt="製品写真" crossorigin="anonymous" />
+          </div>`).join("")}
       </div>
-    </div>`
-    : "";
+    </div>` : "";
 
-  const page1 = `
+  const page1Html = `
     <div class="page">
       <div class="header">
-        <div class="header-left">
+        <div>
           <div class="company-name">MARUKI</div>
           <div class="doc-type">樹脂製品カタログ</div>
         </div>
-        <div class="header-right">
-          ${categoryLabel ? `<div class="badge">${categoryLabel}</div>` : ""}
-        </div>
+        ${categoryLabel ? `<div class="header-right"><div class="badge">${categoryLabel}</div></div>` : ""}
       </div>
-      ${
-        fmtDate(row.date)
-          ? `<div class="meta-bar">
+      ${fmtDate(row.date) ? `
+      <div class="meta-bar">
         <div class="meta-item">
           <span class="meta-label">日付</span>
           <span class="meta-value">${fmtDate(row.date)}</span>
         </div>
-      </div>`
-          : ""
-      }
+      </div>` : ""}
       <div class="content">
         ${sectionHtml("製品", productFields)}
         ${sectionHtml("物性データ", physicalFields)}
@@ -164,272 +314,87 @@ export function openCatalogPrint(row: ResinEntry) {
       ${footerHtml(1)}
     </div>`;
 
-  const tdsIsImage = !!row.tdsUrl?.match(/\.(jpg|jpeg|png|gif|webp)$/i);
-  const tdsPage = hasTds
-    ? `
+  const page2Html = hasTds ? `
     <div class="page">
-      <div class="header header-secondary">
-        <div class="header-left">
+      <div class="header">
+        <div>
           <div class="company-name">MARUKI</div>
           <div class="doc-type">物性表 (TDS)</div>
         </div>
+        ${categoryLabel ? `<div class="header-right"><div class="badge">${categoryLabel}</div></div>` : ""}
       </div>
-      <div class="content tds-content">
-        ${
-          tdsIsImage
-            ? `<img src="${row.tdsUrl}" alt="物性表" class="tds-image" loading="eager" />`
-            : `
-          <div class="tds-embed-wrap">
-            <iframe src="${row.tdsUrl}" class="tds-iframe" title="物性表"></iframe>
-          </div>
-          <p class="tds-link-note">物性表URL: <a href="${row.tdsUrl}" target="_blank" class="tds-link">${row.tdsUrl}</a></p>`
-        }
+      <div class="content">
+        ${tdsIsImage ? `
+          <div class="section">
+            <h3 class="section-title">物性表</h3>
+            <img src="${row.tdsUrl}" alt="物性表" class="tds-image" crossorigin="anonymous" />
+          </div>` : `
+          <div class="section">
+            <h3 class="section-title">物性表</h3>
+            <div class="tds-box">
+              <p class="tds-note">物性表（TDS）は下記のURLよりご確認いただけます。</p>
+              <div class="tds-url-box">${row.tdsUrl}</div>
+            </div>
+          </div>`}
       </div>
       ${footerHtml(2)}
-    </div>`
-    : "";
+    </div>` : "";
 
-  const css = `
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  const fullHtml = `${page1Html}${page2Html}`;
 
-    body {
-      font-family: 'Noto Sans JP', 'Hiragino Kaku Gothic ProN', 'Hiragino Sans',
-                   'Yu Gothic UI', 'Meiryo', sans-serif;
-      color: #1e293b;
-      background: #eef2f7;
-      -webkit-print-color-adjust: exact;
-      print-color-adjust: exact;
-    }
+  const styleEl = document.createElement("style");
+  styleEl.id = "catalog-pdf-style";
+  styleEl.textContent = CSS;
+  document.head.appendChild(styleEl);
 
-    .page {
-      width: 210mm;
-      min-height: 297mm;
-      background: #fff;
-      margin: 20px auto;
-      display: flex;
-      flex-direction: column;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.12);
-      border-radius: 2px;
-      overflow: hidden;
-    }
+  const container = document.createElement("div");
+  container.style.cssText =
+    "position:fixed;left:-9999px;top:0;width:794px;background:#fff;z-index:-1;";
+  container.innerHTML = fullHtml;
+  document.body.appendChild(container);
 
-    /* ── Header ── */
-    .header {
-      background: hsl(152, 73%, 41%);
-      color: #fff;
-      padding: 22px 32px;
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      flex-shrink: 0;
-    }
-    .header-secondary { background: #1e293b; }
+  try {
+    await document.fonts.ready;
+    await Promise.all(
+      Array.from(container.querySelectorAll("img")).map(
+        (img) =>
+          img.complete
+            ? Promise.resolve()
+            : new Promise<void>((resolve) => {
+                img.onload = () => resolve();
+                img.onerror = () => resolve();
+              })
+      )
+    );
 
-    .company-name {
-      font-size: 26px;
-      font-weight: 700;
-      letter-spacing: 0.18em;
-    }
-    .doc-type {
-      font-size: 12px;
-      opacity: 0.75;
-      margin-top: 4px;
-      letter-spacing: 0.06em;
-    }
-    .header-right { text-align: right; }
-    .badge {
-      display: inline-block;
-      background: rgba(255,255,255,0.22);
-      border: 1px solid rgba(255,255,255,0.4);
-      border-radius: 5px;
-      padding: 3px 10px;
-      font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.06em;
-    }
-    .badge-sub {
-      font-size: 10px;
-      opacity: 0.65;
-      margin-top: 5px;
-    }
+    const [{ default: jsPDF }, { default: html2canvas }] = await Promise.all([
+      import("jspdf"),
+      import("html2canvas"),
+    ]);
 
-    /* ── Meta bar ── */
-    .meta-bar {
-      background: #f8fafc;
-      border-bottom: 1px solid #e2e8f0;
-      padding: 12px 32px;
-      display: flex;
-      gap: 36px;
-      flex-shrink: 0;
-    }
-    .meta-item { display: flex; flex-direction: column; gap: 2px; }
-    .meta-label {
-      font-size: 9px;
-      color: #94a3b8;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-    }
-    .meta-value {
-      font-size: 14px;
-      font-weight: 600;
-      color: #0f172a;
-    }
+    const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+    const pages = container.querySelectorAll(".page");
 
-    /* ── Content ── */
-    .content { flex: 1; padding: 20px 32px; }
-
-    .section { margin-bottom: 18px; }
-
-    .section-title {
-      font-size: 9.5px;
-      font-weight: 700;
-      text-transform: uppercase;
-      letter-spacing: 0.14em;
-      color: hsl(152, 60%, 36%);
-      border-bottom: 2px solid hsl(152, 73%, 41%);
-      padding-bottom: 4px;
-      margin-bottom: 10px;
-    }
-
-    .field-grid-2 {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 8px 36px;
-    }
-    .field-grid-1 { display: grid; grid-template-columns: 1fr; gap: 8px; }
-
-    .field { display: flex; flex-direction: column; gap: 1px; }
-
-    .field-label {
-      font-size: 9.5px;
-      color: #94a3b8;
-      font-weight: 500;
-      letter-spacing: 0.04em;
-    }
-    .field-value {
-      font-size: 13px;
-      color: #0f172a;
-      font-weight: 500;
-      border-bottom: 1px solid #f1f5f9;
-      padding-bottom: 4px;
-    }
-
-    .remarks {
-      font-size: 12.5px;
-      color: #475569;
-      line-height: 1.75;
-      background: #f8fafc;
-      border-left: 3px solid hsl(152, 73%, 41%);
-      padding: 10px 14px;
-      border-radius: 0 6px 6px 0;
-    }
-
-    /* ── Photos inline ── */
-    .photos-inline-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
-      margin-top: 6px;
-    }
-    .photo-cell {
-      aspect-ratio: 4/3;
-      overflow: hidden;
-      border-radius: 6px;
-      border: 1px solid #e2e8f0;
-      background: #f8fafc;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .photo-cell img {
-      width: 100%;
-      height: 100%;
-      object-fit: contain;
-    }
-
-    /* ── TDS page ── */
-    .tds-content { padding: 24px 32px !important; }
-    .tds-embed-wrap {
-      width: 100%;
-      height: 200mm;
-      border: 1px solid #e2e8f0;
-      border-radius: 6px;
-      overflow: hidden;
-      margin-bottom: 10px;
-    }
-    .tds-iframe { width: 100%; height: 100%; border: none; }
-    .tds-image { max-width: 100%; border: 1px solid #e2e8f0; border-radius: 6px; }
-    .tds-link-note { font-size: 10px; color: #94a3b8; margin-top: 6px; }
-    .tds-link { color: hsl(152, 73%, 38%); word-break: break-all; }
-
-    /* ── Footer ── */
-    .page-footer {
-      border-top: 1px solid #e2e8f0;
-      padding: 8px 32px;
-      display: flex;
-      justify-content: space-between;
-      font-size: 9px;
-      color: #94a3b8;
-      letter-spacing: 0.04em;
-      flex-shrink: 0;
-    }
-
-    /* ── Print ── */
-    @media print {
-      body { background: #fff; }
-      .page {
-        width: 100%;
-        min-height: 100vh;
-        margin: 0;
-        box-shadow: none;
-        border-radius: 0;
-        page-break-after: always;
-        break-after: page;
-      }
-    }
-  `;
-
-  const html = `<!DOCTYPE html>
-<html lang="ja">
-<head>
-  <meta charset="UTF-8" />
-  <title>${row.counterparty ?? "カタログ"} — MARUKI</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <style>${css}</style>
-</head>
-<body>
-  ${page1}
-  ${tdsPage}
-  <script>
-    var images = Array.from(document.images);
-    var total = images.length;
-    var loaded = 0;
-    function tryPrint() {
-      if (loaded >= total) setTimeout(function(){ window.print(); }, 300);
-    }
-    if (total === 0) {
-      setTimeout(function(){ window.print(); }, 500);
-    } else {
-      images.forEach(function(img) {
-        if (img.complete) { loaded++; tryPrint(); }
-        else {
-          img.onload = function() { loaded++; tryPrint(); };
-          img.onerror = function() { loaded++; tryPrint(); };
-        }
+    for (let i = 0; i < pages.length; i++) {
+      if (i > 0) pdf.addPage();
+      const canvas = await html2canvas(pages[i] as HTMLElement, {
+        scale: 2,
+        useCORS: true,
+        allowTaint: true,
+        backgroundColor: "#ffffff",
+        width: 794,
+        height: 1123,
+        logging: false,
       });
+      pdf.addImage(canvas.toDataURL("image/jpeg", 0.93), "JPEG", 0, 0, 210, 297);
     }
-  </script>
-</body>
-</html>`;
 
-  const win = window.open("", "_blank");
-  if (!win) {
-    alert("ポップアップがブロックされました。ポップアップを許可してから再試行してください。");
-    return;
+    const blob = pdf.output("blob");
+    const url = URL.createObjectURL(blob);
+    window.open(url, "_blank");
+    setTimeout(() => URL.revokeObjectURL(url), 60000);
+  } finally {
+    document.body.removeChild(container);
+    document.head.removeChild(styleEl);
   }
-  win.document.write(html);
-  win.document.close();
 }
