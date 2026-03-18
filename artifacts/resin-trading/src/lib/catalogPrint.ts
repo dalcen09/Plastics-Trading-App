@@ -111,13 +111,28 @@ export function openCatalogPrint(row: ResinEntry) {
       : "";
   const typeLabel = (row as { entryType?: string }).entryType === "source" ? "仕入れ先" : "販売先";
 
-  const totalPages = 1 + (hasPhotos ? 1 : 0) + (hasTds ? 1 : 0);
+  const totalPages = 1 + (hasTds ? 1 : 0);
 
   const footerHtml = (pageNum: number) => `
     <div class="page-footer">
       <span>MARUKI — 社外秘 — 無断転載禁止</span>
       <span>${pageNum} / ${totalPages}</span>
     </div>`;
+
+  const photosSection = hasPhotos
+    ? `
+    <div class="section">
+      <h3 class="section-title">写真</h3>
+      <div class="photos-inline-grid">
+        ${photos
+          .map(
+            (url) =>
+              `<div class="photo-cell"><img src="${url}" alt="製品写真" loading="eager" /></div>`
+          )
+          .join("")}
+      </div>
+    </div>`
+    : "";
 
   const page1 = `
     <div class="page">
@@ -144,35 +159,11 @@ export function openCatalogPrint(row: ResinEntry) {
         ${sectionHtml("製品", productFields)}
         ${sectionHtml("物性データ", physicalFields)}
         ${sectionHtml("詳細", detailFields)}
+        ${photosSection}
       </div>
       ${footerHtml(1)}
     </div>`;
 
-  const photosPage = hasPhotos
-    ? `
-    <div class="page">
-      <div class="header header-secondary">
-        <div class="header-left">
-          <div class="company-name">MARUKI</div>
-          <div class="doc-type">写真</div>
-        </div>
-        <div class="header-right">
-          <div class="badge-sub">${row.counterparty ?? ""}</div>
-        </div>
-      </div>
-      <div class="content photos-grid">
-        ${photos
-          .map(
-            (url) =>
-              `<div class="photo-cell"><img src="${url}" alt="製品写真" loading="eager" /></div>`
-          )
-          .join("")}
-      </div>
-      ${footerHtml(2)}
-    </div>`
-    : "";
-
-  const tdsPageNum = hasPhotos ? 3 : 2;
   const tdsIsImage = !!row.tdsUrl?.match(/\.(jpg|jpeg|png|gif|webp)$/i);
   const tdsPage = hasTds
     ? `
@@ -181,9 +172,6 @@ export function openCatalogPrint(row: ResinEntry) {
         <div class="header-left">
           <div class="company-name">MARUKI</div>
           <div class="doc-type">物性表 (TDS)</div>
-        </div>
-        <div class="header-right">
-          <div class="badge-sub">${row.counterparty ?? ""}</div>
         </div>
       </div>
       <div class="content tds-content">
@@ -197,7 +185,7 @@ export function openCatalogPrint(row: ResinEntry) {
           <p class="tds-link-note">物性表URL: <a href="${row.tdsUrl}" target="_blank" class="tds-link">${row.tdsUrl}</a></p>`
         }
       </div>
-      ${footerHtml(tdsPageNum)}
+      ${footerHtml(2)}
     </div>`
     : "";
 
@@ -337,12 +325,12 @@ export function openCatalogPrint(row: ResinEntry) {
       border-radius: 0 6px 6px 0;
     }
 
-    /* ── Photos page ── */
-    .photos-grid {
+    /* ── Photos inline ── */
+    .photos-inline-grid {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 14px;
-      padding: 20px 32px !important;
+      gap: 12px;
+      margin-top: 6px;
     }
     .photo-cell {
       aspect-ratio: 4/3;
@@ -414,7 +402,6 @@ export function openCatalogPrint(row: ResinEntry) {
 </head>
 <body>
   ${page1}
-  ${photosPage}
   ${tdsPage}
   <script>
     var images = Array.from(document.images);
