@@ -315,7 +315,7 @@ function MatchCard({ match, highlightEntryId }: { match: any; highlightEntryId?:
                 <User className="w-4 h-4" /> {match.source.personInCharge}
               </div>
               <div className="text-sm text-muted-foreground flex items-center gap-2 mt-1">
-                <Calendar className="w-4 h-4" /> {formatDate(match.source.entryDate)}
+                <Calendar className="w-4 h-4" /> {formatDate((match.source as any).date)}
               </div>
             </div>
             <div className="grid grid-cols-2 gap-3 text-sm">
@@ -359,7 +359,7 @@ function MatchCard({ match, highlightEntryId }: { match: any; highlightEntryId?:
                 <User className="w-4 h-4" /> {match.demand.personInCharge}
               </div>
               <div className="text-sm text-muted-foreground flex items-center gap-2 mt-1">
-                <Calendar className="w-4 h-4" /> {formatDate(match.demand.entryDate)}
+                <Calendar className="w-4 h-4" /> {formatDate((match.demand as any).date)}
               </div>
             </div>
             <div className="grid grid-cols-2 gap-3 text-sm">
