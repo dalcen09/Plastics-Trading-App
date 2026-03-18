@@ -1,9 +1,8 @@
 import { ResinEntry } from "@workspace/api-client-react";
-import { Edit2, Trash2, Copy, Box, Package, ArrowUp, ArrowDown, ArrowUpDown, ImageIcon, Download, FileText } from "lucide-react";
+import { Edit2, Trash2, Copy, Box, Package, ArrowUp, ArrowDown, ArrowUpDown, ImageIcon, Download, FileText, Square, CheckSquare, MinusSquare } from "lucide-react";
 import { formatCurrency, formatDate, formatNumber, cn } from "@/lib/utils";
 import { useState, useRef, useCallback, useEffect } from "react";
 import { createPortal } from "react-dom";
-import { Checkbox } from "@/components/ui/checkbox";
 
 function PhotoThumbnail({ url, index }: { url: string; index: number }) {
   const [popup, setPopup] = useState<{ top: number; left: number } | null>(null);
@@ -280,12 +279,13 @@ export function ResinTable({ data, onEdit, onDelete, onDuplicate, onToggleClosed
             <tr>
               {/* Checkbox select-all */}
               <th className="pl-4 pr-2 py-4 table-sticky-col-left bg-secondary z-20 w-10">
-                <Checkbox
-                  checked={allSelected ? true : someSelected ? "indeterminate" : false}
-                  onCheckedChange={() => onToggleSelectAll(allIds)}
-                  title="このページをすべて選択"
-                  className="cursor-pointer"
-                />
+                <button onClick={() => onToggleSelectAll(allIds)} title="このページをすべて選択" className="text-muted-foreground hover:text-foreground transition-colors">
+                  {allSelected
+                    ? <CheckSquare className="w-4 h-4 text-primary" />
+                    : someSelected
+                      ? <MinusSquare className="w-4 h-4 text-primary" />
+                      : <Square className="w-4 h-4" />}
+                </button>
               </th>
               {/* 操作 sticky second column */}
               <th className="px-3 py-4 table-sticky-col-left-2 bg-secondary text-center z-20">操作</th>
@@ -334,11 +334,11 @@ export function ResinTable({ data, onEdit, onDelete, onDuplicate, onToggleClosed
               return (
               <tr key={row.id} ref={el => { if (el) rowRefs.current.set(row.id, el); else rowRefs.current.delete(row.id); }} className={cn("hover:bg-secondary/40 transition-colors group", isSelected && "bg-primary/5", row.isClosed === "クローズ" && "opacity-40", flashId === row.id && "animate-row-highlight")}>
                 <td className={cn("pl-4 pr-2 py-3 table-sticky-col-left z-10 transition-colors", isSelected ? "bg-primary/10" : "bg-card group-hover:bg-secondary")}>
-                  <Checkbox
-                    checked={isSelected}
-                    onCheckedChange={() => onToggleSelect(row.id)}
-                    className="cursor-pointer"
-                  />
+                  <button onClick={() => onToggleSelect(row.id)} className="text-muted-foreground hover:text-foreground transition-colors">
+                    {isSelected
+                      ? <CheckSquare className="w-4 h-4 text-primary" />
+                      : <Square className="w-4 h-4" />}
+                  </button>
                 </td>
                 <td className={cn("px-3 py-3 table-sticky-col-left-2 text-center z-10 transition-colors", isSelected ? "bg-primary/10" : "bg-card group-hover:bg-secondary")}>
                   <div className="flex items-center justify-center gap-1.5">

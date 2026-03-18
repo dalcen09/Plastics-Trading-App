@@ -22,8 +22,7 @@ import {
   CreateResinEntryEntryType,
   ResinEntry
 } from "@workspace/api-client-react";
-import { Plus, ArrowDownToLine, ArrowUpFromLine, Upload, Search, X, SlidersHorizontal, ChevronLeft, ChevronRight, Columns3, Download, Trash2, Copy, Lock, LockOpen } from "lucide-react";
-import { Checkbox } from "@/components/ui/checkbox";
+import { Plus, ArrowDownToLine, ArrowUpFromLine, Upload, Search, X, SlidersHorizontal, ChevronLeft, ChevronRight, Columns3, Download, Trash2, Copy, Lock, LockOpen, Square, CheckSquare } from "lucide-react";
 import { exportToExcel } from "@/lib/exportExcel";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
@@ -605,17 +604,16 @@ export function CategoryView({ category }: CategoryViewProps) {
                           {groups.map((colGroup, gi) => (
                             <div key={gi} className="flex flex-col gap-0.5">
                               {colGroup.map(({ key, label }) => (
-                                <label
+                                <button
                                   key={key}
-                                  className="flex items-center gap-2.5 px-2 py-1.5 rounded-lg hover:bg-secondary cursor-pointer text-sm"
+                                  onClick={() => toggleColumn(key)}
+                                  className="flex items-center gap-2.5 px-2 py-1.5 rounded-lg hover:bg-secondary cursor-pointer text-sm w-full text-left"
                                 >
-                                  <Checkbox
-                                    checked={visibleColumns.has(key)}
-                                    onCheckedChange={() => toggleColumn(key)}
-                                    className="cursor-pointer"
-                                  />
+                                  {visibleColumns.has(key)
+                                    ? <CheckSquare className="w-4 h-4 text-primary shrink-0" />
+                                    : <Square className="w-4 h-4 text-muted-foreground shrink-0" />}
                                   {label}
-                                </label>
+                                </button>
                               ))}
                             </div>
                           ))}
