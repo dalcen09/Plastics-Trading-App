@@ -11,10 +11,6 @@ export const resinTypeEnum = pgEnum("resin_type", [
   "POM", "EPDM", "PEI", "PETG", "AS", "MS", "PVDC",
   "Other",
 ]);
-export const ppTypeEnum = pgEnum("pp_type", ["ホモ", "ブロック", "ランダム"]);
-export const peTypeEnum = pgEnum("pe_type", ["LD", "HD", "LLD"]);
-export const psTypeEnum = pgEnum("ps_type", ["HI", "GP"]);
-export const absTypeEnum = pgEnum("abs_type", ["難燃"]);
 export const packagingTypeEnum = pgEnum("packaging_type", ["紙袋", "フレコン", "カートン", "鉄箱", "ポリ袋"]);
 export const quantityTypeEnum = pgEnum("quantity_type", ["月間", "スポット"]);
 
@@ -29,10 +25,10 @@ export const resinEntriesTable = pgTable("resin_entries", {
   manufacturer: text("manufacturer"),
   grade: text("grade"),
   otherResinType: text("other_resin_type"),
-  ppType: ppTypeEnum("pp_type"),
-  peType: peTypeEnum("pe_type"),
-  psType: psTypeEnum("ps_type"),
-  absType: absTypeEnum("abs_type"),
+  ppType: text("pp_type"),
+  peType: text("pe_type"),
+  psType: text("ps_type"),
+  absType: text("abs_type"),
   isClosed: text("is_closed").default("オープン").notNull(),
   sampleAvailable: text("sample_available"),
   packaging: packagingTypeEnum("packaging"),
@@ -67,6 +63,8 @@ export const resinEntriesTable = pgTable("resin_entries", {
   finalNegotiatedPrice: numeric("final_negotiated_price", { precision: 12, scale: 2 }),
   origin: text("origin"),
   colorTone: text("color_tone"),
+  rohs: text("rohs"),
+  mesh: text("mesh"),
   imageUrl: text("image_url"),
   imageUrls: text("image_urls").array(),
   tdsUrl: text("tds_url"),

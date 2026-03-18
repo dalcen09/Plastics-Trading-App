@@ -111,10 +111,10 @@ export interface ResinEntry {
   manufacturer?: string | null;
   grade?: string | null;
   otherResinType?: string | null;
-  ppType?: PPType | null;
-  peType?: PEType | null;
-  psType?: PSType | null;
-  absType?: ABSType | null;
+  ppType?: string | null;
+  peType?: string | null;
+  psType?: string | null;
+  absType?: string | null;
   isClosed?: string;
   sampleAvailable?: string | null;
   packaging?: PackagingType | null;
@@ -146,6 +146,8 @@ export interface ResinEntry {
   finalNegotiatedPrice?: number | null;
   origin?: string | null;
   colorTone?: string | null;
+  rohs?: string | null;
+  mesh?: string | null;
   imageUrl?: string | null;
   imageUrls?: string[] | null;
   tdsUrl?: string | null;
@@ -171,10 +173,10 @@ export interface CreateResinEntry {
   manufacturer?: string | null;
   grade?: string | null;
   otherResinType?: string | null;
-  ppType?: PPType | null;
-  peType?: PEType | null;
-  psType?: PSType | null;
-  absType?: ABSType | null;
+  ppType?: string | null;
+  peType?: string | null;
+  psType?: string | null;
+  absType?: string | null;
   isClosed?: string;
   sampleAvailable?: string | null;
   packaging?: PackagingType | null;
@@ -206,6 +208,8 @@ export interface CreateResinEntry {
   finalNegotiatedPrice?: number | null;
   origin?: string | null;
   colorTone?: string | null;
+  rohs?: string | null;
+  mesh?: string | null;
   imageUrl?: string | null;
   imageUrls?: string[] | null;
   tdsUrl?: string | null;

@@ -7,10 +7,6 @@ import {
   ResinEntry, 
   ResinCategory, 
   ResinType, 
-  PPType, 
-  PEType,
-  PSType,
-  ABSType,
   PackagingType,
   CreateResinEntryEntryType
 } from "@workspace/api-client-react";
@@ -28,12 +24,12 @@ const formSchema = z.object({
   manufacturer: z.string().nullable().optional(),
   grade: z.string().nullable().optional(),
   otherResinType: z.string().nullable().optional(),
-  ppType: z.preprocess(v => v === "" ? null : v, z.nativeEnum(PPType).nullable().optional()),
-  peType: z.preprocess(v => v === "" ? null : v, z.nativeEnum(PEType).nullable().optional()),
-  psType: z.preprocess(v => v === "" ? null : v, z.nativeEnum(PSType).nullable().optional()),
-  absType: z.preprocess(v => v === "" ? null : v, z.nativeEnum(ABSType).nullable().optional()),
+  ppType: z.preprocess(v => v === "" ? null : v, z.string().nullable().optional()),
+  peType: z.preprocess(v => v === "" ? null : v, z.string().nullable().optional()),
+  psType: z.preprocess(v => v === "" ? null : v, z.string().nullable().optional()),
+  absType: z.preprocess(v => v === "" ? null : v, z.string().nullable().optional()),
   isClosed: z.enum(["クローズ", "オープン"]),
-  sampleAvailable: z.preprocess(v => v === "" ? null : v, z.enum(["あり", "なし", "要相談", "有償"]).nullable().optional()),
+  sampleAvailable: z.preprocess(v => v === "" ? null : v, z.string().nullable().optional()),
   packaging: z.nativeEnum(PackagingType).nullable().optional(),
   meltFlowIndexLower: z.coerce.number().nullable().optional(),
   meltFlowIndexUpper: z.coerce.number().nullable().optional(),
@@ -62,6 +58,8 @@ const formSchema = z.object({
   finalNegotiatedPrice: z.coerce.number().nullable().optional(),
   origin: z.string().nullable().optional(),
   colorTone: z.string().nullable().optional(),
+  rohs: z.string().nullable().optional(),
+  mesh: z.string().nullable().optional(),
   remarks: z.string().nullable().optional(),
   imageUrl: z.string().nullable().optional(),
   imageUrls: z.array(z.string()).optional(),
@@ -105,7 +103,7 @@ export function ResinForm({
       psType: initialData?.psType || null,
       absType: initialData?.absType || null,
       isClosed: (initialData?.isClosed as "クローズ" | "オープン") ?? "オープン",
-      sampleAvailable: (initialData?.sampleAvailable as "あり" | "なし" | "要相談" | "有償" | null) ?? null,
+      sampleAvailable: initialData?.sampleAvailable ?? null,
       packaging: initialData?.packaging || PackagingType["紙袋"],
       meltFlowIndexLower: initialData?.meltFlowIndexLower ?? undefined,
       meltFlowIndexUpper: initialData?.meltFlowIndexUpper ?? undefined,
@@ -134,6 +132,8 @@ export function ResinForm({
       finalNegotiatedPrice: initialData?.finalNegotiatedPrice ?? undefined,
       origin: initialData?.origin || "",
       colorTone: initialData?.colorTone || "",
+      rohs: initialData?.rohs ?? null,
+      mesh: initialData?.mesh ?? null,
       remarks: initialData?.remarks || "",
       imageUrl: initialData?.imageUrl ?? null,
       imageUrls: initialData?.imageUrls?.length
@@ -256,37 +256,58 @@ export function ResinForm({
                 
                 {selectedResinType === ResinType.PP && (
                   <FormGroup label="タイプ" error={errors.ppType?.message}>
-                    <select {...register("ppType")} className="input-field">
-                      <option value="">―</option>
-                      {Object.values(PPType).map(t => <option key={t} value={t}>{t}</option>)}
-                    </select>
+                    {resinCategory === ResinCategory.recycled ? (
+                      <input type="text" placeholder="例: ホモ、ブロック、コンパウンド…" {...register("ppType")} className="input-field" />
+                    ) : (
+                      <select {...register("ppType")} className="input-field">
+                        <option value="">―</option>
+                        <option value="ホモ">ホモ</option>
+                        <option value="ブロック">ブロック</option>
+                        <option value="ランダム">ランダム</option>
+                      </select>
+                    )}
                   </FormGroup>
                 )}
 
                 {selectedResinType === ResinType.PE && (
                   <FormGroup label="タイプ" error={errors.peType?.message}>
-                    <select {...register("peType")} className="input-field">
-                      <option value="">―</option>
-                      {Object.values(PEType).map(t => <option key={t} value={t}>{t}</option>)}
-                    </select>
+                    {resinCategory === ResinCategory.recycled ? (
+                      <input type="text" placeholder="例: LD、HD、LLD、C4、C6…" {...register("peType")} className="input-field" />
+                    ) : (
+                      <select {...register("peType")} className="input-field">
+                        <option value="">―</option>
+                        <option value="LD">LD</option>
+                        <option value="HD">HD</option>
+                        <option value="LLD">LLD</option>
+                      </select>
+                    )}
                   </FormGroup>
                 )}
 
                 {selectedResinType === ResinType.PS && (
                   <FormGroup label="タイプ" error={errors.psType?.message}>
-                    <select {...register("psType")} className="input-field">
-                      <option value="">―</option>
-                      {Object.values(PSType).map(t => <option key={t} value={t}>{t}</option>)}
-                    </select>
+                    {resinCategory === ResinCategory.recycled ? (
+                      <input type="text" placeholder="例: HI、GP、発泡…" {...register("psType")} className="input-field" />
+                    ) : (
+                      <select {...register("psType")} className="input-field">
+                        <option value="">―</option>
+                        <option value="HI">HI</option>
+                        <option value="GP">GP</option>
+                      </select>
+                    )}
                   </FormGroup>
                 )}
 
                 {selectedResinType === ResinType.ABS && (
                   <FormGroup label="タイプ" error={errors.absType?.message}>
-                    <select {...register("absType")} className="input-field">
-                      <option value="">―</option>
-                      {Object.values(ABSType).map(t => <option key={t} value={t}>{t}</option>)}
-                    </select>
+                    {resinCategory === ResinCategory.recycled ? (
+                      <input type="text" placeholder="例: 難燃、PC/ABS…" {...register("absType")} className="input-field" />
+                    ) : (
+                      <select {...register("absType")} className="input-field">
+                        <option value="">―</option>
+                        <option value="難燃">難燃</option>
+                      </select>
+                    )}
                   </FormGroup>
                 )}
                 
@@ -304,6 +325,17 @@ export function ResinForm({
                   </FormGroup>
                   <FormGroup label="色目" error={errors.colorTone?.message}>
                     <input type="text" placeholder="色目を入力..." {...register("colorTone")} className="input-field" />
+                  </FormGroup>
+                  <FormGroup label="RoHS" error={errors.rohs?.message}>
+                    <select {...register("rohs")} className="input-field">
+                      <option value="">― 未選択 ―</option>
+                      <option value="対応">対応</option>
+                      <option value="非対応">非対応</option>
+                      <option value="要確認">要確認</option>
+                    </select>
+                  </FormGroup>
+                  <FormGroup label="メッシュ" error={errors.mesh?.message}>
+                    <input type="text" placeholder="例: 60mesh、100mesh…" {...register("mesh")} className="input-field" />
                   </FormGroup>
                 </div>
               )}
@@ -404,13 +436,17 @@ export function ResinForm({
                   </select>
                 </FormGroup>
                 <FormGroup label="サンプル" error={errors.sampleAvailable?.message}>
-                  <select {...register("sampleAvailable")} className="input-field">
-                    <option value="">— 未選択 —</option>
-                    <option value="あり">あり</option>
-                    <option value="なし">なし</option>
-                    <option value="要相談">要相談</option>
-                    <option value="有償">有償</option>
-                  </select>
+                  {resinCategory === ResinCategory.recycled ? (
+                    <input type="text" placeholder="例: あり、なし、有償…" {...register("sampleAvailable")} className="input-field" />
+                  ) : (
+                    <select {...register("sampleAvailable")} className="input-field">
+                      <option value="">— 未選択 —</option>
+                      <option value="あり">あり</option>
+                      <option value="なし">なし</option>
+                      <option value="要相談">要相談</option>
+                      <option value="有償">有償</option>
+                    </select>
+                  )}
                 </FormGroup>
               </div>
             </div>

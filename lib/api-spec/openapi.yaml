@@ -383,16 +383,16 @@ components:
           type: string
           nullable: true
         ppType:
-          $ref: "#/components/schemas/PPType"
+          type: string
           nullable: true
         peType:
-          $ref: "#/components/schemas/PEType"
+          type: string
           nullable: true
         psType:
-          $ref: "#/components/schemas/PSType"
+          type: string
           nullable: true
         absType:
-          $ref: "#/components/schemas/ABSType"
+          type: string
           nullable: true
         isClosed:
           type: string
@@ -484,6 +484,12 @@ components:
           type: string
           nullable: true
         colorTone:
+          type: string
+          nullable: true
+        rohs:
+          type: string
+          nullable: true
+        mesh:
           type: string
           nullable: true
         imageUrl:
@@ -541,16 +547,16 @@ components:
           type: string
           nullable: true
         ppType:
-          $ref: "#/components/schemas/PPType"
+          type: string
           nullable: true
         peType:
-          $ref: "#/components/schemas/PEType"
+          type: string
           nullable: true
         psType:
-          $ref: "#/components/schemas/PSType"
+          type: string
           nullable: true
         absType:
-          $ref: "#/components/schemas/ABSType"
+          type: string
           nullable: true
         isClosed:
           type: string
@@ -642,6 +648,12 @@ components:
           type: string
           nullable: true
         colorTone:
+          type: string
+          nullable: true
+        rohs:
+          type: string
+          nullable: true
+        mesh:
           type: string
           nullable: true
         imageUrl:

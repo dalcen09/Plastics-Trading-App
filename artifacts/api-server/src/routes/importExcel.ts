@@ -105,6 +105,16 @@ const FIELD_ALIASES: Record<string, string> = {
   "ppのタイプ": "ppType",
   "ppタイプ": "ppType",
 
+  // ── rohs ─────────────────────────────────────────────────────────────────
+  "rohs": "rohs",
+
+  // ── mesh ─────────────────────────────────────────────────────────────────
+  "mesh": "mesh",
+  "メッシュ": "mesh",
+  "ﾒｯｼｭ": "mesh",
+  "mesh size": "mesh",
+  "メッシュサイズ": "mesh",
+
   // ── sampleAvailable ──────────────────────────────────────────────────────
   "sample available": "sampleAvailable",
   "sample": "sampleAvailable",
@@ -458,7 +468,7 @@ function normalizeResinType(raw: string): string | null {
 function normalizePPType(val: string): string | null {
   if (!val || !val.trim() || val.trim() === "-") return null;
   const v = val.trim();
-  return VALID_PP_TYPES.find(t => t.toLowerCase() === v.toLowerCase()) ?? null;
+  return VALID_PP_TYPES.find(t => t.toLowerCase() === v.toLowerCase()) ?? v;
 }
 
 function normalizePackaging(val: string): string | null {
@@ -476,7 +486,7 @@ function normalizeSampleAvailable(val: any): string | null {
   const low = s.toLowerCase();
   if (["yes", "true", "1", "y", "あり", "はい", "○", "◯"].includes(low)) return "あり";
   if (["no", "false", "0", "n", "なし", "いいえ", "×", "x"].includes(low)) return "なし";
-  return null;
+  return s;
 }
 
 function normalizeQuantityType(val: string): "スポット" | "月間" | null {
@@ -493,28 +503,30 @@ function normalizeIsClosed(val: string): "クローズ" | "オープン" {
   return "オープン";
 }
 
-function normalizePEType(val: string): "LD" | "HD" | "LLD" | null {
+function normalizePEType(val: string): string | null {
   if (!val || !val.trim() || val.trim() === "-") return null;
-  const v = val.trim().toUpperCase();
-  if (v === "LD" || v.includes("LDPE") || v.includes("低密度")) return "LD";
-  if (v === "HD" || v.includes("HDPE") || v.includes("高密度")) return "HD";
-  if (v === "LLD" || v.includes("LLDPE") || v.includes("直鎖")) return "LLD";
-  return null;
+  const v = val.trim();
+  const vUp = v.toUpperCase();
+  if (vUp === "LD" || vUp.includes("LDPE") || v.includes("低密度")) return "LD";
+  if (vUp === "HD" || vUp.includes("HDPE") || v.includes("高密度")) return "HD";
+  if (vUp === "LLD" || vUp.includes("LLDPE") || v.includes("直鎖")) return "LLD";
+  return v;
 }
 
-function normalizePSType(val: string): "HI" | "GP" | null {
+function normalizePSType(val: string): string | null {
   if (!val || !val.trim() || val.trim() === "-") return null;
-  const v = val.trim().toUpperCase();
-  if (v === "HI" || v.includes("HIPS") || v.includes("耐衝")) return "HI";
-  if (v === "GP" || v.includes("GPPS") || v.includes("汎用")) return "GP";
-  return null;
+  const v = val.trim();
+  const vUp = v.toUpperCase();
+  if (vUp === "HI" || vUp.includes("HIPS") || v.includes("耐衝")) return "HI";
+  if (vUp === "GP" || vUp.includes("GPPS") || v.includes("汎用")) return "GP";
+  return v;
 }
 
-function normalizeABSType(val: string): "難燃" | null {
+function normalizeABSType(val: string): string | null {
   if (!val || !val.trim() || val.trim() === "-") return null;
   const v = val.trim();
   if (v === "難燃" || v.toLowerCase().includes("flame") || v.toLowerCase().includes("fr")) return "難燃";
-  return null;
+  return v;
 }
 
 function normalizeLocationType(val: string): "納入" | "置場" | null {
@@ -727,6 +739,8 @@ router.post("/import", upload.single("file"), async (req, res) => {
           // Extended fields
           origin: data.origin ? String(data.origin).trim() || null : null,
           colorTone: data.colorTone ? String(data.colorTone).trim() || null : null,
+          rohs: data.rohs ? String(data.rohs).trim() || null : null,
+          mesh: data.mesh ? String(data.mesh).trim() || null : null,
           storageLocation: data.storageLocation ? String(data.storageLocation).trim() || null : null,
           arrivalPrice: numStr(data.arrivalPrice),
           spotPrice: numStr(data.spotPrice),

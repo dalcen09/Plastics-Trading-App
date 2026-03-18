@@ -5,11 +5,7 @@
  * Resin Trading Manager API
  * OpenAPI spec version: 0.1.0
  */
-import type { ABSType } from "./aBSType";
 import type { PackagingType } from "./packagingType";
-import type { PEType } from "./pEType";
-import type { PPType } from "./pPType";
-import type { PSType } from "./pSType";
 import type { QuantityType } from "./quantityType";
 import type { ResinCategory } from "./resinCategory";
 import type { ResinEntryEntryType } from "./resinEntryEntryType";
@@ -26,10 +22,10 @@ export interface ResinEntry {
   manufacturer?: string | null;
   grade?: string | null;
   otherResinType?: string | null;
-  ppType?: PPType | null;
-  peType?: PEType | null;
-  psType?: PSType | null;
-  absType?: ABSType | null;
+  ppType?: string | null;
+  peType?: string | null;
+  psType?: string | null;
+  absType?: string | null;
   isClosed?: string;
   sampleAvailable?: string | null;
   packaging?: PackagingType | null;
@@ -61,6 +57,8 @@ export interface ResinEntry {
   finalNegotiatedPrice?: number | null;
   origin?: string | null;
   colorTone?: string | null;
+  rohs?: string | null;
+  mesh?: string | null;
   imageUrl?: string | null;
   imageUrls?: string[] | null;
   tdsUrl?: string | null;
