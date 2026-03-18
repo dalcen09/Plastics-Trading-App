@@ -1,5 +1,6 @@
 import { ResinEntry } from "@workspace/api-client-react";
-import { Edit2, Trash2, Copy, Box, Package, ArrowUp, ArrowDown, ArrowUpDown, ImageIcon, Download, FileText, Square, CheckSquare } from "lucide-react";
+import { Edit2, Trash2, Copy, Box, Package, ArrowUp, ArrowDown, ArrowUpDown, ImageIcon, Download, FileText, Square, CheckSquare, BookOpen } from "lucide-react";
+import { openCatalogPrint } from "@/lib/catalogPrint";
 import { formatCurrency, formatDate, formatNumber, cn } from "@/lib/utils";
 import { useState, useRef, useCallback, useEffect } from "react";
 import { createPortal } from "react-dom";
@@ -568,6 +569,13 @@ export function ResinTable({ data, onEdit, onDelete, onDuplicate, onToggleClosed
                       title="編集"
                     >
                       <Edit2 className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => openCatalogPrint(row)}
+                      className="p-1.5 text-muted-foreground hover:text-violet-600 hover:bg-violet-500/10 rounded-lg transition-colors"
+                      title="カタログPDF出力"
+                    >
+                      <BookOpen className="w-4 h-4" />
                     </button>
                     {onDuplicate && (
                       <button
