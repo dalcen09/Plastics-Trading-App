@@ -111,7 +111,7 @@ export function openCatalogPrint(row: ResinEntry) {
       : "";
   const typeLabel = (row as { entryType?: string }).entryType === "source" ? "仕入れ先" : "販売先";
 
-  const totalPages = 1 + (hasTds ? 1 : 0);
+  const totalPages = 1;
 
   const footerHtml = (pageNum: number) => `
     <div class="page-footer">
@@ -164,30 +164,6 @@ export function openCatalogPrint(row: ResinEntry) {
       ${footerHtml(1)}
     </div>`;
 
-  const tdsIsImage = !!row.tdsUrl?.match(/\.(jpg|jpeg|png|gif|webp)$/i);
-  const tdsPage = hasTds
-    ? `
-    <div class="page">
-      <div class="header header-secondary">
-        <div class="header-left">
-          <div class="company-name">MARUKI</div>
-          <div class="doc-type">物性表 (TDS)</div>
-        </div>
-      </div>
-      <div class="content tds-content">
-        ${
-          tdsIsImage
-            ? `<img src="${row.tdsUrl}" alt="物性表" class="tds-image" loading="eager" />`
-            : `
-          <div class="tds-embed-wrap">
-            <iframe src="${row.tdsUrl}" class="tds-iframe" title="物性表"></iframe>
-          </div>
-          <p class="tds-link-note">物性表URL: <a href="${row.tdsUrl}" target="_blank" class="tds-link">${row.tdsUrl}</a></p>`
-        }
-      </div>
-      ${footerHtml(2)}
-    </div>`
-    : "";
 
   const css = `
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -402,7 +378,6 @@ export function openCatalogPrint(row: ResinEntry) {
 </head>
 <body>
   ${page1}
-  ${tdsPage}
   <script>
     var images = Array.from(document.images);
     var total = images.length;
