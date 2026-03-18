@@ -21,11 +21,7 @@ const queryClient = new QueryClient({
 function Router() {
   return (
     <Switch>
-      <Route path="/"><Redirect to="/virgin" /></Route>
-      
-      <Route path="/virgin">
-        {() => <CategoryView category="virgin" />}
-      </Route>
+      <Route path="/"><Redirect to="/offgrade" /></Route>
       
       <Route path="/offgrade">
         {() => <CategoryView category="offgrade" />}
