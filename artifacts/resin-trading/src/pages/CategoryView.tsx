@@ -23,6 +23,7 @@ import {
   ResinEntry
 } from "@workspace/api-client-react";
 import { Plus, ArrowDownToLine, ArrowUpFromLine, Upload, Search, X, SlidersHorizontal, ChevronLeft, ChevronRight, Columns3, Download, Trash2, Copy, Lock, LockOpen } from "lucide-react";
+import { Checkbox } from "@/components/ui/checkbox";
 import { exportToExcel } from "@/lib/exportExcel";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
@@ -608,11 +609,10 @@ export function CategoryView({ category }: CategoryViewProps) {
                                   key={key}
                                   className="flex items-center gap-2.5 px-2 py-1.5 rounded-lg hover:bg-secondary cursor-pointer text-sm"
                                 >
-                                  <input
-                                    type="checkbox"
+                                  <Checkbox
                                     checked={visibleColumns.has(key)}
-                                    onChange={() => toggleColumn(key)}
-                                    className="w-4 h-4 accent-primary rounded"
+                                    onCheckedChange={() => toggleColumn(key)}
+                                    className="cursor-pointer"
                                   />
                                   {label}
                                 </label>

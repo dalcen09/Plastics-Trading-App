@@ -3,6 +3,7 @@ import { Edit2, Trash2, Copy, Box, Package, ArrowUp, ArrowDown, ArrowUpDown, Ima
 import { formatCurrency, formatDate, formatNumber, cn } from "@/lib/utils";
 import { useState, useRef, useCallback, useEffect } from "react";
 import { createPortal } from "react-dom";
+import { Checkbox } from "@/components/ui/checkbox";
 
 function PhotoThumbnail({ url, index }: { url: string; index: number }) {
   const [popup, setPopup] = useState<{ top: number; left: number } | null>(null);
@@ -279,13 +280,11 @@ export function ResinTable({ data, onEdit, onDelete, onDuplicate, onToggleClosed
             <tr>
               {/* Checkbox select-all */}
               <th className="pl-4 pr-2 py-4 table-sticky-col-left bg-secondary z-20 w-10">
-                <input
-                  type="checkbox"
-                  checked={allSelected}
-                  ref={el => { if (el) el.indeterminate = someSelected; }}
-                  onChange={() => onToggleSelectAll(allIds)}
-                  className="w-4 h-4 rounded border-border accent-primary cursor-pointer"
+                <Checkbox
+                  checked={allSelected ? true : someSelected ? "indeterminate" : false}
+                  onCheckedChange={() => onToggleSelectAll(allIds)}
                   title="このページをすべて選択"
+                  className="cursor-pointer"
                 />
               </th>
               {/* 操作 sticky second column */}
@@ -335,11 +334,10 @@ export function ResinTable({ data, onEdit, onDelete, onDuplicate, onToggleClosed
               return (
               <tr key={row.id} ref={el => { if (el) rowRefs.current.set(row.id, el); else rowRefs.current.delete(row.id); }} className={cn("hover:bg-secondary/40 transition-colors group", isSelected && "bg-primary/5", row.isClosed === "クローズ" && "opacity-40", flashId === row.id && "animate-row-highlight")}>
                 <td className={cn("pl-4 pr-2 py-3 table-sticky-col-left z-10 transition-colors", isSelected ? "bg-primary/10" : "bg-card group-hover:bg-secondary")}>
-                  <input
-                    type="checkbox"
+                  <Checkbox
                     checked={isSelected}
-                    onChange={() => onToggleSelect(row.id)}
-                    className="w-4 h-4 rounded border-border accent-primary cursor-pointer"
+                    onCheckedChange={() => onToggleSelect(row.id)}
+                    className="cursor-pointer"
                   />
                 </td>
                 <td className={cn("px-3 py-3 table-sticky-col-left-2 text-center z-10 transition-colors", isSelected ? "bg-primary/10" : "bg-card group-hover:bg-secondary")}>
