@@ -62,6 +62,9 @@ function sectionHtml(title: string, fieldList: Field[], cols = 2): string {
     </div>`;
 }
 
+const LOGO_B64 =
+  "data:image/png;base64,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";
+
 export function openCatalogPrint(row: ResinEntry) {
   const productFields = buildFields([
     ["樹脂種別", resinLabel(row) || null],
@@ -123,8 +126,11 @@ export function openCatalogPrint(row: ResinEntry) {
 
   const footerHtml = (pageNum: number) => `
     <div class="page-footer">
-      <span>MARUKI</span>
-      <span>${pageNum} / ${totalPages}</span>
+      <div class="footer-company">
+        <span class="footer-name">丸喜産業株式会社</span>
+        <span>〒939-1273　富山県高岡市葦付5858　／　TEL：0766-36-1464　／　FAX：0766-36-1429　／　URL：http://www.maruki-plastics.co.jp</span>
+      </div>
+      <span class="footer-page">${pageNum} / ${totalPages}</span>
     </div>`;
 
   const photoAspect = photoCols >= 5 ? "1 / 1" : "4 / 3";
@@ -147,7 +153,7 @@ export function openCatalogPrint(row: ResinEntry) {
     <div class="page">
       <div class="header">
         <div class="header-left">
-          <div class="company-name">MARUKI</div>
+          <img src="${LOGO_B64}" alt="MARUKI" class="header-logo" />
           <div class="doc-type">樹脂製品カタログ</div>
         </div>
         <div class="header-right">
@@ -210,15 +216,17 @@ export function openCatalogPrint(row: ResinEntry) {
     }
     .header-secondary { background: #1e293b; }
 
-    .company-name {
-      font-size: 26px;
-      font-weight: 700;
-      letter-spacing: 0.18em;
+    .header-logo {
+      height: 44px;
+      width: auto;
+      display: block;
+      filter: brightness(0) invert(1);
+      object-fit: contain;
     }
     .doc-type {
-      font-size: 12px;
+      font-size: 11px;
       opacity: 0.75;
-      margin-top: 4px;
+      margin-top: 5px;
       letter-spacing: 0.06em;
     }
     .header-right { text-align: right; }
@@ -348,14 +356,33 @@ export function openCatalogPrint(row: ResinEntry) {
 
     /* ── Footer ── */
     .page-footer {
-      border-top: 1px solid #e2e8f0;
+      border-top: 2px solid hsl(152, 73%, 41%);
       padding: 8px 32px;
       display: flex;
       justify-content: space-between;
+      align-items: center;
+      gap: 16px;
+      font-size: 8.5px;
+      color: #64748b;
+      letter-spacing: 0.03em;
+      flex-shrink: 0;
+      background: #f8fafc;
+    }
+    .footer-company {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    .footer-name {
+      font-weight: 700;
+      font-size: 10px;
+      color: hsl(152, 73%, 35%);
+      letter-spacing: 0.06em;
+    }
+    .footer-page {
+      white-space: nowrap;
       font-size: 9px;
       color: #94a3b8;
-      letter-spacing: 0.04em;
-      flex-shrink: 0;
     }
 
     /* ── Print ── */
