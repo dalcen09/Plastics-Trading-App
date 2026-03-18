@@ -153,7 +153,7 @@ export function openCatalogPrint(row: ResinEntry) {
     <div class="page">
       <div class="header">
         <div class="header-left">
-          <img src="${LOGO_B64}" alt="MARUKI" class="header-logo" />
+          <div class="header-logo" role="img" aria-label="MARUKI"></div>
           <div class="doc-type">樹脂製品カタログ</div>
         </div>
         <div class="header-right">
@@ -208,20 +208,23 @@ export function openCatalogPrint(row: ResinEntry) {
     .header {
       background: hsl(152, 73%, 41%);
       color: #fff;
-      padding: 22px 32px;
+      padding: 20px 32px;
       display: flex;
       justify-content: space-between;
-      align-items: flex-start;
+      align-items: center;
       flex-shrink: 0;
     }
     .header-secondary { background: #1e293b; }
 
     .header-logo {
-      height: 44px;
-      width: auto;
-      display: block;
+      width: 134px;
+      height: 45px;
+      background-image: url('${LOGO_B64}');
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center left;
       filter: brightness(0) invert(1);
-      object-fit: contain;
+      flex-shrink: 0;
     }
     .doc-type {
       font-size: 11px;
