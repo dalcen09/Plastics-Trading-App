@@ -177,7 +177,12 @@
     right: 0;
     z-index: 10;
   }
-  .table-sticky-col-right::after {
+  .table-sticky-col-right-2 {
+    position: sticky;
+    right: 2.5rem; /* 40px = checkbox column width */
+    z-index: 10;
+  }
+  .table-sticky-col-right-2::after {
     content: '';
     position: absolute;
     top: 0; bottom: 0;

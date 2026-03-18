@@ -277,16 +277,6 @@ export function ResinTable({ data, onEdit, onDelete, onDuplicate, onToggleClosed
         <table className="min-w-full text-sm text-left whitespace-nowrap">
           <thead className="text-xs text-muted-foreground uppercase bg-secondary font-semibold tracking-wider sticky top-0 z-20">
             <tr>
-              {/* Checkbox select-all */}
-              <th className="pl-4 pr-2 py-4 table-sticky-col-left bg-secondary z-20 w-10">
-                <button onClick={() => onToggleSelectAll(allIds)} title="このページをすべて選択" className="text-muted-foreground hover:text-foreground transition-colors">
-                  {allSelected
-                    ? <CheckSquare className="w-4 h-4 text-primary" />
-                    : <Square className="w-4 h-4" />}
-                </button>
-              </th>
-              {/* 操作 sticky second column */}
-              <th className="px-3 py-4 table-sticky-col-left-2 bg-secondary text-center z-20">操作</th>
               {/* 取引先 */}
               <SortTh colKey="counterparty" sort={sort} onSort={onSort}>
                 取引先
@@ -324,6 +314,16 @@ export function ResinTable({ data, onEdit, onDelete, onDuplicate, onToggleClosed
               {col("finalNegotiatedPrice") && <th className="px-4 py-4 text-right">最終交渉価格</th>}
               {col("remarks")          && <th className="px-4 py-4">備考</th>}
               {col("isClosed")         && <th className="px-4 py-4 text-center">クローズ</th>}
+              {/* 操作 sticky right */}
+              <th className="px-3 py-4 table-sticky-col-right-2 bg-secondary text-center z-20">操作</th>
+              {/* Checkbox select-all sticky right */}
+              <th className="pl-2 pr-4 py-4 table-sticky-col-right bg-secondary z-20 w-10">
+                <button onClick={() => onToggleSelectAll(allIds)} title="このページをすべて選択" className="text-muted-foreground hover:text-foreground transition-colors">
+                  {allSelected
+                    ? <CheckSquare className="w-4 h-4 text-primary" />
+                    : <Square className="w-4 h-4" />}
+                </button>
+              </th>
             </tr>
           </thead>
           <tbody className="divide-y divide-border/50">
@@ -331,44 +331,6 @@ export function ResinTable({ data, onEdit, onDelete, onDuplicate, onToggleClosed
               const isSelected = selectedIds.has(row.id);
               return (
               <tr key={row.id} ref={el => { if (el) rowRefs.current.set(row.id, el); else rowRefs.current.delete(row.id); }} className={cn("hover:bg-secondary/40 transition-colors group", isSelected && "bg-primary/5", row.isClosed === "クローズ" && "opacity-40", flashId === row.id && "animate-row-highlight")}>
-                <td className={cn("pl-4 pr-2 py-3 table-sticky-col-left z-10 transition-colors", isSelected ? "bg-primary/10" : "bg-card group-hover:bg-secondary")}>
-                  <button onClick={() => onToggleSelect(row.id)} className="text-muted-foreground hover:text-foreground transition-colors">
-                    {isSelected
-                      ? <CheckSquare className="w-4 h-4 text-primary" />
-                      : <Square className="w-4 h-4" />}
-                  </button>
-                </td>
-                <td className={cn("px-3 py-3 table-sticky-col-left-2 text-center z-10 transition-colors", isSelected ? "bg-primary/10" : "bg-card group-hover:bg-secondary")}>
-                  <div className="flex items-center justify-center gap-1.5">
-                    <button
-                      onClick={() => onEdit(row)}
-                      className="p-1.5 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-lg transition-colors"
-                      title="編集"
-                    >
-                      <Edit2 className="w-4 h-4" />
-                    </button>
-                    {onDuplicate && (
-                      <button
-                        onClick={() => onDuplicate(row)}
-                        className="p-1.5 text-muted-foreground hover:text-sky-600 hover:bg-sky-500/10 rounded-lg transition-colors"
-                        title="複製"
-                      >
-                        <Copy className="w-4 h-4" />
-                      </button>
-                    )}
-                    <button
-                      onClick={() => {
-                        if (window.confirm("このエントリを削除してもよろしいですか？")) {
-                          onDelete(row.id);
-                        }
-                      }}
-                      className="p-1.5 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
-                      title="削除"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </div>
-                </td>
                 <td className={cn("px-4 py-3 font-medium text-foreground transition-colors", isSelected ? "bg-primary/5" : "bg-card group-hover:bg-secondary/40")}>
                   <div className="flex flex-col gap-0.5">
                     {row.counterparty}
@@ -597,6 +559,46 @@ export function ResinTable({ data, onEdit, onDelete, onDuplicate, onToggleClosed
                     </button>
                   </td>
                 )}
+                {/* 操作 sticky right */}
+                <td className={cn("px-3 py-3 table-sticky-col-right-2 text-center z-10 transition-colors", isSelected ? "bg-primary/10" : "bg-card group-hover:bg-secondary")}>
+                  <div className="flex items-center justify-center gap-1.5">
+                    <button
+                      onClick={() => onEdit(row)}
+                      className="p-1.5 text-muted-foreground hover:text-primary hover:bg-primary/10 rounded-lg transition-colors"
+                      title="編集"
+                    >
+                      <Edit2 className="w-4 h-4" />
+                    </button>
+                    {onDuplicate && (
+                      <button
+                        onClick={() => onDuplicate(row)}
+                        className="p-1.5 text-muted-foreground hover:text-sky-600 hover:bg-sky-500/10 rounded-lg transition-colors"
+                        title="複製"
+                      >
+                        <Copy className="w-4 h-4" />
+                      </button>
+                    )}
+                    <button
+                      onClick={() => {
+                        if (window.confirm("このエントリを削除してもよろしいですか？")) {
+                          onDelete(row.id);
+                        }
+                      }}
+                      className="p-1.5 text-muted-foreground hover:text-destructive hover:bg-destructive/10 rounded-lg transition-colors"
+                      title="削除"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
+                </td>
+                {/* Checkbox sticky rightmost */}
+                <td className={cn("pl-2 pr-4 py-3 table-sticky-col-right z-10 transition-colors", isSelected ? "bg-primary/10" : "bg-card group-hover:bg-secondary")}>
+                  <button onClick={() => onToggleSelect(row.id)} className="text-muted-foreground hover:text-foreground transition-colors">
+                    {isSelected
+                      ? <CheckSquare className="w-4 h-4 text-primary" />
+                      : <Square className="w-4 h-4" />}
+                  </button>
+                </td>
               </tr>
             );
             })}
