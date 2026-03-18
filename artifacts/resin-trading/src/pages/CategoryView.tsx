@@ -22,7 +22,7 @@ import {
   CreateResinEntryEntryType,
   ResinEntry
 } from "@workspace/api-client-react";
-import { Plus, ArrowDownToLine, ArrowUpFromLine, Upload, Search, X, SlidersHorizontal, ChevronLeft, ChevronRight, Columns3, Download, Trash2 } from "lucide-react";
+import { Plus, ArrowDownToLine, ArrowUpFromLine, Upload, Search, X, SlidersHorizontal, ChevronLeft, ChevronRight, Columns3, Download, Trash2, Copy } from "lucide-react";
 import { exportToExcel } from "@/lib/exportExcel";
 import { cn } from "@/lib/utils";
 import { useToast } from "@/hooks/use-toast";
@@ -101,6 +101,7 @@ export function CategoryView({ category }: CategoryViewProps) {
   const [page, setPage] = useState(1);
   const [selectedIds, setSelectedIds] = useState<Set<number>>(new Set());
   const [isBulkDeleting, setIsBulkDeleting] = useState(false);
+  const [isBulkDuplicating, setIsBulkDuplicating] = useState(false);
   const [lastEditedId, setLastEditedId] = useState<number | null>(null);
 
   const highlightId = useMemo(() => {
@@ -171,6 +172,37 @@ export function CategoryView({ category }: CategoryViewProps) {
       toast({ title: "削除に失敗しました", variant: "destructive" });
     } finally {
       setIsBulkDeleting(false);
+    }
+  };
+
+  const handleBulkDuplicate = async () => {
+    const entries = (sortedData ?? []).filter((e: ResinEntry) => selectedIds.has(e.id));
+    if (entries.length === 0) return;
+    setIsBulkDuplicating(true);
+    const endpoint = activeTab === "sources" ? "sources" : "demands";
+    try {
+      await Promise.all(entries.map(entry => {
+        const { id: _id, createdAt: _c, updatedAt: _u, deletedAt: _d, ...rest } = entry as any;
+        return fetch(`/api/${endpoint}`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(rest),
+        });
+      }));
+      setSelectedIds(new Set());
+      if (activeTab === "sources") {
+        queryClient.invalidateQueries({ queryKey: getListSourcesQueryKey({ resinCategory: category as ResinCategory }) });
+      } else {
+        queryClient.invalidateQueries({ queryKey: getListDemandsQueryKey({ resinCategory: category as ResinCategory }) });
+      }
+      queryClient.invalidateQueries({ queryKey: getGetMatchesQueryKey() });
+      queryClient.invalidateQueries({ queryKey: getGetMatchCountByEntryQueryKey() });
+      queryClient.invalidateQueries({ queryKey: getGetMatchCountQueryKey() });
+      toast({ title: `${entries.length} 件を複製しました` });
+    } catch {
+      toast({ title: "複製に失敗しました", variant: "destructive" });
+    } finally {
+      setIsBulkDuplicating(false);
     }
   };
 
@@ -722,8 +754,16 @@ export function CategoryView({ category }: CategoryViewProps) {
                   選択解除
                 </button>
                 <button
+                  onClick={handleBulkDuplicate}
+                  disabled={isBulkDuplicating || isBulkDeleting}
+                  className="px-3 py-1.5 rounded-lg bg-sky-500 text-white hover:bg-sky-600 transition-colors text-xs font-semibold disabled:opacity-50 flex items-center gap-1.5"
+                >
+                  <Copy className="w-3.5 h-3.5" />
+                  {isBulkDuplicating ? "複製中..." : `${selectedIds.size} 件を複製`}
+                </button>
+                <button
                   onClick={handleBulkDelete}
-                  disabled={isBulkDeleting}
+                  disabled={isBulkDeleting || isBulkDuplicating}
                   className="px-3 py-1.5 rounded-lg bg-destructive text-destructive-foreground hover:bg-destructive/90 transition-colors text-xs font-semibold disabled:opacity-50 flex items-center gap-1.5"
                 >
                   <Trash2 className="w-3.5 h-3.5" />
