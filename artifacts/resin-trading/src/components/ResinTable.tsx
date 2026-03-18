@@ -383,6 +383,9 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
                   <td className="px-4 py-3">
                     <span className="font-semibold text-foreground flex items-center gap-1.5">
                       {(() => {
+                        if (row.resinType === "Other" && row.otherResinType) {
+                          return <>{row.otherResinType}</>;
+                        }
                         const { main, badge } = resinVariant(row.resinType);
                         return (
                           <>
@@ -393,9 +396,6 @@ export function ResinTable({ data, onEdit, onDelete, onToggleClosed, isLoading, 
                           </>
                         );
                       })()}
-                      {row.otherResinType && (
-                        <span className="text-xs px-1.5 py-0.5 rounded-md bg-secondary text-muted-foreground font-medium">{row.otherResinType}</span>
-                      )}
                     </span>
                   </td>
                 )}
