@@ -376,7 +376,7 @@ function detectCategoryFromSheet(name: string): "virgin" | "offgrade" | "recycle
   const n = name.toLowerCase();
   if (n.includes("virgin") || n.includes("バージン")) return "virgin";
   if (n.includes("offgrade") || n.includes("off-grade") || n.includes("オフグレード")) return "offgrade";
-  if (n.includes("recycled") || n.includes("recycle") || n.includes("リサイクル")) return "recycled";
+  if (n.includes("recycled") || n.includes("recycle") || n.includes("リサイクル") || n.includes("再生")) return "recycled";
   return null;
 }
 
@@ -436,7 +436,7 @@ function normalizeCategory(val: string): "virgin" | "offgrade" | "recycled" | nu
   const v = val.trim().toLowerCase();
   if (v.includes("virgin") || v.includes("バージン")) return "virgin";
   if (v.includes("offgrade") || v.includes("off-grade") || v.includes("オフグレード")) return "offgrade";
-  if (v.includes("recycled") || v.includes("recycle") || v.includes("リサイクル")) return "recycled";
+  if (v.includes("recycled") || v.includes("recycle") || v.includes("リサイクル") || v.includes("再生")) return "recycled";
   return null;
 }
 
@@ -605,8 +605,17 @@ router.post("/import", upload.single("file"), async (req, res) => {
     const sheetCategory = detectCategoryFromSheet(sheetName);
     const sheetEntryType = detectEntryTypeFromSheet(sheetName);
 
-    // Build column → field mapping from header row
-    const headers = rows[0].map((h: any) => String(h));
+    // Auto-detect header row: scan first 10 rows, pick the one with most mapped fields
+    let headerRowIdx = 0;
+    let bestMappedCount = 0;
+    const scanLimit = Math.min(10, rows.length);
+    for (let si = 0; si < scanLimit; si++) {
+      const count = rows[si].filter((h: any) => resolveField(String(h)) !== null).length;
+      if (count > bestMappedCount) { bestMappedCount = count; headerRowIdx = si; }
+    }
+
+    // Build column → field mapping from detected header row
+    const headers = rows[headerRowIdx].map((h: any) => String(h));
     const fieldMap: Record<number, string> = {};
     const unmapped: string[] = [];
     headers.forEach((h, i) => {
@@ -617,17 +626,18 @@ router.post("/import", upload.single("file"), async (req, res) => {
     if (unmapped.length > 0) {
       console.log(`[import] Sheet "${sheetName}" — unmapped headers:`, JSON.stringify(unmapped));
     }
-    console.log(`[import] Sheet "${sheetName}" — mapped:`, JSON.stringify(Object.values(fieldMap)));
-    console.log(`[import] Sheet "${sheetName}" — total rows (incl. header): ${rows.length}, data rows to process: ${rows.length - 1}`);
+    console.log(`[import] Sheet "${sheetName}" — header row index: ${headerRowIdx}, mapped:`, JSON.stringify(Object.values(fieldMap)));
+    console.log(`[import] Sheet "${sheetName}" — total rows (incl. header): ${rows.length}, data rows to process: ${rows.length - headerRowIdx - 1}`);
     // Log first and last few data rows for diagnostics
-    for (const debugRi of [1, 2, rows.length - 2, rows.length - 1].filter(i => i >= 1 && i < rows.length)) {
+    const dataStart = headerRowIdx + 1;
+    for (const debugRi of [dataStart, dataStart + 1, rows.length - 2, rows.length - 1].filter(i => i >= dataStart && i < rows.length)) {
       const r = rows[debugRi];
       const dateCol = Object.entries(fieldMap).find(([, f]) => f === "date")?.[0];
       const cpCol = Object.entries(fieldMap).find(([, f]) => f === "counterparty")?.[0];
       console.log(`[import]   row[${debugRi}] date="${dateCol ? r[+dateCol] : "?"}" counterparty="${cpCol ? r[+cpCol] : "?"}"`);
     }
 
-    for (let ri = 1; ri < rows.length; ri++) {
+    for (let ri = dataStart; ri < rows.length; ri++) {
       const row = rows[ri];
       // Skip fully empty rows
       if (row.every((c: any) => c === "" || c === null || c === undefined)) continue;
