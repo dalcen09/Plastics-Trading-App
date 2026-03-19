@@ -102,3 +102,43 @@ The API server exposes `POST /api/storage/uploads/request-url` (returns presigne
 ### `scripts` (`@workspace/scripts`)
 
 Utility scripts package. Each script is a `.ts` file in `src/` with a corresponding npm script in `package.json`. Run scripts via `pnpm --filter @workspace/scripts run <script>`. Scripts can import any workspace package (e.g., `@workspace/db`) by adding it as a dependency in `scripts/package.json`.
+
+### `artifacts/resin-trading` (`@workspace/resin-trading`)
+
+MARUKI plastics resin trading management app (React + Vite, port via `PORT` env var).
+
+**Features:**
+- Two active resin categories: オフグレード, 再生 (recycled)
+- Spreadsheet-style tables with CRUD, column show/hide, sort, filter, pagination
+- Automatic source-demand matching (excludes クローズ entries); match cache invalidated on all mutations
+- Excel import (Japanese column headers) and export (visible columns only)
+- Soft-delete recycle bin (ゴミ箱)
+- PDF catalog print (single A4 page, up to 10 photos in dynamic grid)
+- Photo gallery: up to 3 thumbnails shown, +N badge opens modal with all photos + ZIP download
+- Object storage for images (presigned URL upload via `@workspace/object-storage-web`)
+
+**Key files:**
+- `src/components/ResinTable.tsx` — table, column definitions, `RECYCLED_ONLY_COLUMNS`, `ALL_COLUMNS`, `DEFAULT_VISIBLE`
+- `src/components/ResinForm.tsx` — add/edit form (recycled category hides メーカー, shows 由来/色目/RoHS/メッシュ/形状/physicalOther)
+- `src/pages/CategoryView.tsx` — main category page (仕入/需要 tabs)
+- `src/lib/exportExcel.ts` — Excel export
+- `src/lib/catalogPrint.ts` — PDF catalog generation
+- `artifacts/api-server/src/routes/importExcel.ts` — Excel import with Japanese column alias mapping
+- `artifacts/api-server/src/routes/resinEntries.ts` — CRUD API routes
+
+**DB schema notable fields (`resin_entries` table):**
+- `resin_category`: offgrade | recycled (virgin exists but not shown in UI nav)
+- `entry_type`: source | demand
+- `is_closed`: オープン | クローズ (TEXT, default オープン)
+- Recycled-only fields: `origin`, `color_tone`, `rohs`, `mesh`, `physical_other`, `shape`
+- `image_urls`: TEXT[] array for multiple photos; `image_url`: TEXT for single (legacy)
+
+**Dev notes:**
+- Green theme: `--primary: 152 73% 41%`
+- `useDates: false` in orval config — do NOT change
+- Codegen: `pnpm --filter @workspace/api-spec run codegen`
+- DB push: `psql "$DATABASE_URL" -c "ALTER TABLE ..."` (interactive drizzle push gets stuck on staff table constraint)
+- Match cache: `invalidateMatchCache()` must be called on ALL mutations including import
+- Route ordering: specific routes before parameterized routes in Express
+- ppType/peType/psType/absType are TEXT columns (not enums)
+- Packaging enum (JP): 紙袋/フレコン/カートン/鉄箱/ポリ袋
