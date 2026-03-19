@@ -340,61 +340,89 @@ export async function downloadCatalogImage(row: ResinEntry): Promise<void> {
   const html2canvas = (await import("html2canvas")).default;
   const { pageHtml, css, filename } = buildCatalogContent(row);
 
-  // A4 at 96 dpi: 210mm ≈ 794px, 297mm ≈ 1123px
-  const W = 794;
-  const H = 1123;
+  // Show loading overlay while generating
+  const overlay = document.createElement("div");
+  overlay.style.cssText = `
+    position:fixed;inset:0;z-index:99999;
+    background:rgba(0,0,0,0.45);
+    display:flex;align-items:center;justify-content:center;
+  `;
+  overlay.innerHTML = `
+    <div style="
+      background:#fff;border-radius:14px;padding:28px 40px;
+      font-family:'Hiragino Kaku Gothic ProN','Yu Gothic UI','Meiryo',sans-serif;
+      font-size:15px;color:#1e293b;
+      box-shadow:0 8px 32px rgba(0,0,0,0.25);
+      display:flex;align-items:center;gap:14px;
+    ">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="hsl(152,73%,41%)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="animation:spin 1s linear infinite;flex-shrink:0;">
+        <path d="M21 12a9 9 0 1 1-6.219-8.56"/>
+      </svg>
+      <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
+      画像を生成中...
+    </div>
+  `;
+  document.body.appendChild(overlay);
 
-  const container = document.createElement("div");
-  container.style.cssText = `position:fixed;top:0;left:${-(W + 200)}px;width:${W}px;height:${H}px;overflow:hidden;z-index:-9999;`;
+  try {
+    // A4 at 96 dpi: 210mm ≈ 794px, 297mm ≈ 1123px
+    const W = 794;
+    const H = 1123;
 
-  const styleEl = document.createElement("style");
-  styleEl.textContent = css.replace(/@page\s*\{[^}]*\}/g, "");
-  container.appendChild(styleEl);
+    const container = document.createElement("div");
+    container.style.cssText = `position:fixed;top:0;left:${-(W + 200)}px;width:${W}px;height:${H}px;overflow:hidden;z-index:-9999;`;
 
-  const pageWrapper = document.createElement("div");
-  pageWrapper.innerHTML = pageHtml;
-  container.appendChild(pageWrapper);
+    const styleEl = document.createElement("style");
+    styleEl.textContent = css.replace(/@page\s*\{[^}]*\}/g, "");
+    container.appendChild(styleEl);
 
-  document.body.appendChild(container);
+    const pageWrapper = document.createElement("div");
+    pageWrapper.innerHTML = pageHtml;
+    container.appendChild(pageWrapper);
 
-  await document.fonts.ready;
+    document.body.appendChild(container);
 
-  const images = Array.from(container.querySelectorAll("img"));
-  if (images.length > 0) {
-    await Promise.all(
-      images.map(
-        (img) =>
-          new Promise<void>((resolve) => {
-            if (img.complete) resolve();
-            else {
-              img.onload = () => resolve();
-              img.onerror = () => resolve();
-            }
-          })
-      )
-    );
+    await document.fonts.ready;
+
+    const images = Array.from(container.querySelectorAll("img"));
+    if (images.length > 0) {
+      await Promise.all(
+        images.map(
+          (img) =>
+            new Promise<void>((resolve) => {
+              if (img.complete) resolve();
+              else {
+                img.onload = () => resolve();
+                img.onerror = () => resolve();
+              }
+            })
+        )
+      );
+    }
+
+    await new Promise<void>((r) => setTimeout(r, 400));
+
+    const pageEl = container.querySelector(".page") as HTMLElement;
+
+    const canvas = await html2canvas(pageEl, {
+      scale: 2,
+      useCORS: true,
+      allowTaint: true,
+      backgroundColor: "#ffffff",
+      width: W,
+      height: H,
+      windowWidth: W,
+      windowHeight: H,
+      logging: false,
+    });
+
+    document.body.removeChild(container);
+
+    const link = document.createElement("a");
+    link.download = filename;
+    link.href = canvas.toDataURL("image/png");
+    link.click();
+  } finally {
+    document.body.removeChild(overlay);
   }
-
-  await new Promise<void>((r) => setTimeout(r, 400));
-
-  const pageEl = container.querySelector(".page") as HTMLElement;
-
-  const canvas = await html2canvas(pageEl, {
-    scale: 2,
-    useCORS: true,
-    allowTaint: true,
-    backgroundColor: "#ffffff",
-    width: W,
-    height: H,
-    windowWidth: W,
-    windowHeight: H,
-    logging: false,
-  });
-
-  document.body.removeChild(container);
-
-  const link = document.createElement("a");
-  link.download = filename;
-  link.href = canvas.toDataURL("image/png");
-  link.click();
 }
