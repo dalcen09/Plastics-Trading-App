@@ -336,11 +336,6 @@ function SortTh({
 }
 
 function resinVariant(type: string): { main: string; badge: string | null } {
-  if (type === "LLDPE") return { main: "PE", badge: "LLD" };
-  if (type === "HDPE")  return { main: "PE", badge: "HD" };
-  if (type === "LDPE")  return { main: "PE", badge: "LD" };
-  if (type === "GPPS")  return { main: "PS", badge: "GP" };
-  if (type === "HIPS")  return { main: "PS", badge: "HI" };
   return { main: type, badge: null };
 }
 
