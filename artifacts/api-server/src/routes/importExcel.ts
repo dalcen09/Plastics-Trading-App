@@ -423,10 +423,12 @@ function detectEntryTypeFromSheet(name: string): "source" | "demand" | null {
 // Value normalizers
 // ---------------------------------------------------------------------------
 const VALID_RESIN_TYPES = [
-  "PP", "PE", "PS", "ABS", "PVC", "PET", "PC", "Nylon", "EVA", "PMMA",
+  "PP", "PE", "PS", "ABS", "PVC", "PET", "PC", "EVA", "PMMA",
   "HDPE", "LDPE", "LLDPE",
   "GPPS", "HIPS",
   "POM", "EPDM", "PEI", "PETG", "AS", "MS", "PVDC",
+  "PA", "PA6", "PA66", "PA9T", "PBT", "PC/ABS",
+  "AAS", "ASA", "COP", "IP", "K-レジン", "MB", "OPS", "PSP", "PSU", "PO", "SBC", "TPE", "TPO",
   "Other",
 ];
 const VALID_PP_TYPES = ["Homopolymer", "Copolymer", "Random", "Impact", "Terpolymer", "N/A"];

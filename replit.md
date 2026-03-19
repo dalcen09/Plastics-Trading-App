@@ -141,4 +141,5 @@ MARUKI plastics resin trading management app (React + Vite, port via `PORT` env 
 - Match cache: `invalidateMatchCache()` must be called on ALL mutations including import
 - Route ordering: specific routes before parameterized routes in Express
 - ppType/peType/psType/absType are TEXT columns (not enums)
+- **resinType is now TEXT** (previously pgEnum; migrated via `ALTER TABLE resin_entries ALTER COLUMN resin_type TYPE text;`); Drizzle schema uses `text("resin_type")` — accepts any string including PBT, PC/ABS, PA, OPS, SBC, TPE, etc.
 - Packaging enum (JP): 紙袋/フレコン/カートン/鉄箱/ポリ袋

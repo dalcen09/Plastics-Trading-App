@@ -20,11 +20,15 @@ const RESIN_OPTIONS = [
   "ABS", "PC", "POM",
   "PEI", "MS", "PMMA", "PET-G", "AS", "PVDC",
   "PVC", "PET", "EVA", "EPDM",
+  "PA", "PA6", "PA66", "PA9T", "PBT", "PC/ABS",
+  "AAS", "ASA", "COP", "IP", "K-レジン", "MB", "OPS", "PSP", "PSU", "PO", "SBC", "TPE", "TPO",
 ];
 
 const RESIN_SUBTYPE_OPTIONS: Record<string, string[]> = {
-  PP:    ["ホモ", "ブロック", "ランダム", "C4", "LD"],
-  LLDPE: ["C4", "C6"],
+  PP:    ["ホモ", "ブロック", "ランダム", "C4", "LD", "OPP", "CPP", "GF20%"],
+  LLDPE: ["C4", "C6", "C8"],
+  ABS:   ["難燃", "耐熱"],
+  PVC:   ["軟質", "硬質"],
 };
 
 const formSchema = z.object({
@@ -458,6 +462,9 @@ export function ResinForm({
                     <option value="なし">なし</option>
                     <option value="要相談">要相談</option>
                     <option value="有償">有償</option>
+                    <option value="手配中">手配中</option>
+                    <option value="取り寄せ可能">取り寄せ可能</option>
+                    <option value="確認中">確認中</option>
                   </select>
                 </FormGroup>
               </div>

@@ -21,7 +21,7 @@ export const resinEntriesTable = pgTable("resin_entries", {
   date: date("date").notNull(),
   counterparty: text("counterparty").notNull(),
   personInCharge: text("person_in_charge").notNull(),
-  resinType: resinTypeEnum("resin_type").notNull(),
+  resinType: text("resin_type").notNull(),
   manufacturer: text("manufacturer"),
   grade: text("grade"),
   otherResinType: text("other_resin_type"),
