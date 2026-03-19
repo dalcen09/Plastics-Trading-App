@@ -34,8 +34,9 @@ export function Layout({ children }: LayoutProps) {
   const { data: offgradeCount } = useGetMatchCount({ resinCategory: "offgrade" }, { query: { refetchInterval: 60000 } });
   const { data: recycledCount } = useGetMatchCount({ resinCategory: "recycled" }, { query: { refetchInterval: 60000 } });
 
-  const matchCategoryParam = location.startsWith("/matches")
-    ? new URLSearchParams(window.location.search).get("resinCategory")
+  // Category is now in the path: /matches/offgrade, /matches/recycled
+  const matchCategoryParam = location.startsWith("/matches/")
+    ? location.replace("/matches/", "")
     : null;
 
   const categoryMatchItems = [
@@ -142,7 +143,7 @@ export function Layout({ children }: LayoutProps) {
             return (
               <Link
                 key={cat}
-                href={`/matches?resinCategory=${cat}`}
+                href={`/matches/${cat}`}
                 className={cn(
                   "flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium transition-all duration-200 group",
                   isActive

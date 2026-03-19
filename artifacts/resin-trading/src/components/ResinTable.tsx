@@ -538,7 +538,7 @@ export function ResinTable({ data, onEdit, onDelete, onDuplicate, onToggleClosed
                   <div className="flex flex-col gap-0.5">
                     {row.counterparty}
                     {matchCounts && (matchCounts.get(row.id) ?? 0) > 0 && (
-                      <a href={`/matches?entryId=${row.id}&name=${encodeURIComponent(row.counterparty ?? '')}${row.resinCategory ? `&resinCategory=${row.resinCategory}` : ''}`} className="inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded-md bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300 w-fit hover:bg-emerald-200 transition-colors">
+                      <a href={`${row.resinCategory ? `/matches/${row.resinCategory}` : '/matches'}?entryId=${row.id}&name=${encodeURIComponent(row.counterparty ?? '')}`} className="inline-flex items-center gap-1 text-[10px] font-semibold px-1.5 py-0.5 rounded-md bg-emerald-100 text-emerald-700 dark:bg-emerald-900/40 dark:text-emerald-300 w-fit hover:bg-emerald-200 transition-colors">
                         ⚡ {matchCounts.get(row.id)}件マッチ
                       </a>
                     )}

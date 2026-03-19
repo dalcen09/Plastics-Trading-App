@@ -32,6 +32,7 @@ function Router() {
       </Route>
       
       <Route path="/trash" component={TrashView} />
+      <Route path="/matches/:category">{(params) => <Matches category={params.category} />}</Route>
       <Route path="/matches" component={Matches} />
       <Route component={NotFound} />
     </Switch>

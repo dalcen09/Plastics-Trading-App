@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Layout } from "@/components/Layout";
 import { useGetMatches } from "@workspace/api-client-react";
 import { Handshake, ArrowRightLeft, AlertCircle, Building2, User, Gauge, DollarSign, ChevronLeft, ChevronRight, X, ExternalLink, Calendar } from "lucide-react";
@@ -53,14 +53,6 @@ function formatPriceRange(lower: number | string | null | undefined, upper: numb
   return "—";
 }
 
-function useSearchParam(name: string): string | null {
-  const [location] = useLocation();
-  // useLocation() triggers re-render on navigation; window.location.search gives the actual query string
-  void location;
-  if (typeof window === "undefined") return null;
-  return new URLSearchParams(window.location.search).get(name);
-}
-
 const CATEGORY_LABEL: Record<string, string> = {
   virgin: "バージン",
   offgrade: "オフグレード",
@@ -73,14 +65,18 @@ const CATEGORY_THEME: Record<string, string> = {
   recycled: "text-teal-600  bg-teal-500/10  border-teal-500/20",
 };
 
-export function Matches() {
+export function Matches({ category }: { category?: string } = {}) {
   const [page, setPage] = useState(0);
   const [, navigate] = useLocation();
 
-  const entryIdStr = useSearchParam("entryId");
+  // entryId/name still come from query params (set programmatically from table rows)
+  const entryIdStr = typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("entryId") : null;
   const entryId = entryIdStr ? parseInt(entryIdStr, 10) : undefined;
-  const entryName = useSearchParam("name");
-  const resinCategory = useSearchParam("resinCategory") ?? undefined;
+  const entryName = typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("name") : null;
+  const resinCategory = category ?? undefined;
+
+  // Reset to page 0 whenever category changes
+  useEffect(() => { setPage(0); }, [category]);
 
   const { data, isLoading } = useGetMatches(
     {
@@ -122,6 +118,7 @@ export function Matches() {
                         className="hover:opacity-70 rounded-full transition-opacity"
                         title="カテゴリフィルター解除"
                       >
+
                         <X className="w-3 h-3" />
                       </button>
                     </span>
@@ -133,7 +130,7 @@ export function Matches() {
                     <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-primary/10 text-primary rounded-full text-sm font-semibold">
                       {entryName ?? `ID ${entryId}`}
                       <button
-                        onClick={() => navigate(resinCategory ? `/matches?resinCategory=${resinCategory}` : "/matches")}
+                        onClick={() => navigate(resinCategory ? `/matches/${resinCategory}` : "/matches")}
                         className="hover:bg-primary/20 rounded-full p-0.5 transition-colors"
                         title="フィルター解除"
                       >
