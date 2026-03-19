@@ -1,6 +1,6 @@
 import { ResinEntry } from "@workspace/api-client-react";
 import { Edit2, Trash2, Copy, Box, Package, ArrowUp, ArrowDown, ArrowUpDown, ImageIcon, Download, FileText, Square, CheckSquare, BookOpen, MoreHorizontal, X, LayoutGrid } from "lucide-react";
-import { openCatalogPrint } from "@/lib/catalogPrint";
+import { openCatalogPrint, downloadCatalogImage } from "@/lib/catalogPrint";
 import { formatCurrency, formatDate, formatNumber, cn } from "@/lib/utils";
 import { useState, useRef, useCallback, useEffect } from "react";
 import { createPortal } from "react-dom";
@@ -398,6 +398,12 @@ function ActionMenu({ row, onEdit, onDuplicate, onDelete }: {
             className="w-full flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-secondary transition-colors text-left"
           >
             <BookOpen className="w-3.5 h-3.5 text-violet-500 flex-shrink-0" /> カタログ出力
+          </button>
+          <button
+            onClick={() => { setOpen(false); downloadCatalogImage(row); }}
+            className="w-full flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-secondary transition-colors text-left"
+          >
+            <ImageIcon className="w-3.5 h-3.5 text-violet-500 flex-shrink-0" /> 画像ダウンロード
           </button>
           {onDuplicate && (
             <button

@@ -22,11 +22,6 @@ function fmtRange(
   return `${lo ?? hi}${suffix}`;
 }
 
-function fmtDate(val: string | null | undefined): string {
-  if (!val) return "";
-  return String(val).replace(/-/g, "/").slice(0, 10);
-}
-
 function resinLabel(row: ResinEntry): string {
   if (row.resinType === "Other" && row.otherResinType) return row.otherResinType;
   const subtype = row.ppType ?? row.peType ?? row.psType ?? row.absType;
@@ -62,7 +57,7 @@ function sectionHtml(title: string, fieldList: Field[], cols = 2): string {
     </div>`;
 }
 
-export function openCatalogPrint(row: ResinEntry) {
+function buildCatalogContent(row: ResinEntry): { pageHtml: string; css: string; filename: string } {
   const productFields = buildFields([
     ["樹脂種類", resinLabel(row) || null],
     ["メーカー", row.manufacturer],
@@ -103,14 +98,12 @@ export function openCatalogPrint(row: ResinEntry) {
     : [];
   const photos = allPhotos.slice(0, 10);
   const hasPhotos = photos.length > 0;
-  const hasTds = !!row.tdsUrl;
 
-  // Determine grid columns based on photo count
   const photoCols =
     photos.length <= 2 ? 2 :
     photos.length <= 4 ? 2 :
     photos.length <= 6 ? 3 :
-    5; // 7-10: 5 columns (2 rows)
+    5;
 
   const categoryLabel =
     row.resinCategory === "offgrade"
@@ -118,6 +111,7 @@ export function openCatalogPrint(row: ResinEntry) {
       : row.resinCategory === "recycled"
       ? "再生"
       : "";
+
   const photoAspect = photoCols >= 5 ? "1 / 1" : "4 / 3";
   const photosSection = hasPhotos
     ? `
@@ -134,7 +128,7 @@ export function openCatalogPrint(row: ResinEntry) {
     </div>`
     : "";
 
-  const page1 = `
+  const pageHtml = `
     <div class="page">
       <div class="header">
         <div class="header-left">
@@ -152,7 +146,6 @@ export function openCatalogPrint(row: ResinEntry) {
         ${photosSection}
       </div>
     </div>`;
-
 
   const css = `
     @page { size: A4; margin: 0; }
@@ -216,14 +209,9 @@ export function openCatalogPrint(row: ResinEntry) {
       font-weight: 600;
       letter-spacing: 0.06em;
     }
-    .badge-sub {
-      font-size: 10px;
-      opacity: 0.65;
-      margin-top: 5px;
-    }
 
     /* ── Content ── */
-    .content { flex: 1; padding: 14px 28px; }
+    .content { flex: 1; padding: 14px 28px; overflow: hidden; }
 
     .section { margin-bottom: 12px; }
 
@@ -261,16 +249,6 @@ export function openCatalogPrint(row: ResinEntry) {
       padding-bottom: 3px;
     }
 
-    .remarks {
-      font-size: 12.5px;
-      color: #475569;
-      line-height: 1.75;
-      background: #f8fafc;
-      border-left: 3px solid hsl(152, 73%, 41%);
-      padding: 10px 14px;
-      border-radius: 0 6px 6px 0;
-    }
-
     /* ── Photos inline ── */
     .photos-inline-grid {
       display: grid;
@@ -292,21 +270,6 @@ export function openCatalogPrint(row: ResinEntry) {
       object-fit: contain;
     }
 
-    /* ── TDS page ── */
-    .tds-content { padding: 24px 32px !important; }
-    .tds-embed-wrap {
-      width: 100%;
-      height: 200mm;
-      border: 1px solid #e2e8f0;
-      border-radius: 6px;
-      overflow: hidden;
-      margin-bottom: 10px;
-    }
-    .tds-iframe { width: 100%; height: 100%; border: none; }
-    .tds-image { max-width: 100%; border: 1px solid #e2e8f0; border-radius: 6px; }
-    .tds-link-note { font-size: 10px; color: #94a3b8; margin-top: 6px; }
-    .tds-link { color: hsl(152, 73%, 38%); word-break: break-all; }
-
     /* ── Print ── */
     @media print {
       body { background: #fff; }
@@ -322,6 +285,16 @@ export function openCatalogPrint(row: ResinEntry) {
     }
   `;
 
+  const resinType = resinLabel(row) || "catalog";
+  const safeName = resinType.replace(/[^\w\u3000-\u9fff]+/g, "_");
+  const filename = `カタログ_${safeName}.png`;
+
+  return { pageHtml, css, filename };
+}
+
+export function openCatalogPrint(row: ResinEntry) {
+  const { pageHtml, css } = buildCatalogContent(row);
+
   const html = `<!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -333,7 +306,7 @@ export function openCatalogPrint(row: ResinEntry) {
   <style>${css}</style>
 </head>
 <body>
-  ${page1}
+  ${pageHtml}
   <script>
     var images = Array.from(document.images);
     var total = images.length;
@@ -363,4 +336,67 @@ export function openCatalogPrint(row: ResinEntry) {
   }
   win.document.write(html);
   win.document.close();
+}
+
+export async function downloadCatalogImage(row: ResinEntry): Promise<void> {
+  const html2canvas = (await import("html2canvas")).default;
+  const { pageHtml, css, filename } = buildCatalogContent(row);
+
+  // A4 at 96 dpi: 210mm ≈ 794px, 297mm ≈ 1123px
+  const W = 794;
+  const H = 1123;
+
+  const container = document.createElement("div");
+  container.style.cssText = `position:fixed;top:0;left:${-(W + 200)}px;width:${W}px;height:${H}px;overflow:hidden;z-index:-9999;`;
+
+  const styleEl = document.createElement("style");
+  styleEl.textContent = css.replace(/@page\s*\{[^}]*\}/g, "");
+  container.appendChild(styleEl);
+
+  const pageWrapper = document.createElement("div");
+  pageWrapper.innerHTML = pageHtml;
+  container.appendChild(pageWrapper);
+
+  document.body.appendChild(container);
+
+  await document.fonts.ready;
+
+  const images = Array.from(container.querySelectorAll("img"));
+  if (images.length > 0) {
+    await Promise.all(
+      images.map(
+        (img) =>
+          new Promise<void>((resolve) => {
+            if (img.complete) resolve();
+            else {
+              img.onload = () => resolve();
+              img.onerror = () => resolve();
+            }
+          })
+      )
+    );
+  }
+
+  await new Promise<void>((r) => setTimeout(r, 400));
+
+  const pageEl = container.querySelector(".page") as HTMLElement;
+
+  const canvas = await html2canvas(pageEl, {
+    scale: 2,
+    useCORS: true,
+    allowTaint: true,
+    backgroundColor: "#ffffff",
+    width: W,
+    height: H,
+    windowWidth: W,
+    windowHeight: H,
+    logging: false,
+  });
+
+  document.body.removeChild(container);
+
+  const link = document.createElement("a");
+  link.download = filename;
+  link.href = canvas.toDataURL("image/png");
+  link.click();
 }
