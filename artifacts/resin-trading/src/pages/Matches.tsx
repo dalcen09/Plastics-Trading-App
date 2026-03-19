@@ -54,6 +54,9 @@ function formatPriceRange(lower: number | string | null | undefined, upper: numb
 }
 
 function useSearchParam(name: string): string | null {
+  const [location] = useLocation();
+  // useLocation() triggers re-render on navigation; window.location.search gives the actual query string
+  void location;
   if (typeof window === "undefined") return null;
   return new URLSearchParams(window.location.search).get(name);
 }
