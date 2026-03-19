@@ -105,8 +105,25 @@ const FIELD_ALIASES: Record<string, string> = {
   "ppのタイプ": "ppType",
   "ppタイプ": "ppType",
 
+  // ── colorTone ────────────────────────────────────────────────────────────
+  "colortone": "colorTone",
+  "color tone": "colorTone",
+  "color": "colorTone",
+  "色目": "colorTone",
+  "色調": "colorTone",
+  "カラー": "colorTone",
+
+  // ── origin ───────────────────────────────────────────────────────────────
+  "origin": "origin",
+  "由来": "origin",
+  "由来先": "origin",
+  "原料由来": "origin",
+
   // ── rohs ─────────────────────────────────────────────────────────────────
   "rohs": "rohs",
+  "ｒｏｈｓ": "rohs",
+  "rohs対応": "rohs",
+  "rohs適合": "rohs",
 
   // ── mesh ─────────────────────────────────────────────────────────────────
   "mesh": "mesh",
@@ -114,6 +131,14 @@ const FIELD_ALIASES: Record<string, string> = {
   "ﾒｯｼｭ": "mesh",
   "mesh size": "mesh",
   "メッシュサイズ": "mesh",
+
+  // ── physicalOther ─────────────────────────────────────────────────────────
+  "physicalother": "physicalOther",
+  "physical other": "physicalOther",
+  "その他": "physicalOther",
+  "その他（物性）": "physicalOther",
+  "その他(物性)": "physicalOther",
+  "物性その他": "physicalOther",
 
   // ── sampleAvailable ──────────────────────────────────────────────────────
   "sample available": "sampleAvailable",
@@ -755,6 +780,7 @@ router.post("/import", upload.single("file"), async (req, res) => {
           colorTone: data.colorTone ? String(data.colorTone).trim() || null : null,
           rohs: data.rohs ? String(data.rohs).trim() || null : null,
           mesh: data.mesh ? String(data.mesh).trim() || null : null,
+          physicalOther: data.physicalOther ? String(data.physicalOther).trim() || null : null,
           storageLocation: data.storageLocation ? String(data.storageLocation).trim() || null : null,
           arrivalPrice: numStr(data.arrivalPrice),
           spotPrice: numStr(data.spotPrice),
