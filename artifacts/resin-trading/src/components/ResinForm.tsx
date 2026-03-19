@@ -6,7 +6,6 @@ import {
   CreateResinEntry, 
   ResinEntry, 
   ResinCategory, 
-  ResinType, 
   PackagingType,
   CreateResinEntryEntryType
 } from "@workspace/api-client-react";
@@ -20,7 +19,7 @@ const formSchema = z.object({
   date: z.string().min(1, "日付は必須です"),
   counterparty: z.string().min(1, "取引先は必須です"),
   personInCharge: z.string().min(1, "担当者は必須です"),
-  resinType: z.nativeEnum(ResinType),
+  resinType: z.string(),
   manufacturer: z.string().nullable().optional(),
   grade: z.string().nullable().optional(),
   otherResinType: z.string().nullable().optional(),
@@ -96,11 +95,11 @@ export function ResinForm({
       date: initialData?.date ? format(new Date(initialData.date), 'yyyy-MM-dd') : format(new Date(), 'yyyy-MM-dd'),
       counterparty: initialData?.counterparty || "",
       personInCharge: initialData?.personInCharge || "",
-      resinType: initialData?.resinType || ResinType.PP,
+      resinType: initialData?.resinType || "",
       manufacturer: initialData?.manufacturer || "",
       grade: initialData?.grade || "",
       otherResinType: initialData?.otherResinType || "",
-      ppType: initialData?.ppType || null,
+      ppType: initialData?.ppType || initialData?.peType || initialData?.psType || initialData?.absType || null,
       peType: initialData?.peType || null,
       psType: initialData?.psType || null,
       absType: initialData?.absType || null,
@@ -147,45 +146,9 @@ export function ResinForm({
     }
   });
 
-  const selectedResinType = watch("resinType");
   const currentImageUrls = watch("imageUrls") ?? [];
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
-
-  // Custom resin types fetched from DB (otherResinType values already in use)
-  const [customResinTypes, setCustomResinTypes] = useState<string[]>([]);
-  // Visual key for the composite resin type select:
-  //   "PP" | "PE" | ... (standard)  |  "custom:PVDF" (custom from DB)  |  "Other" (manual input)
-  const initialResinKey = () => {
-    if (initialData?.resinType === ResinType.Other && initialData?.otherResinType) {
-      return `custom:${initialData.otherResinType}`;
-    }
-    return initialData?.resinType ?? ResinType.PP;
-  };
-  const [resinTypeKey, setResinTypeKey] = useState<string>(initialResinKey);
-
-  useEffect(() => {
-    fetch("/api/custom-resin-types")
-      .then(r => r.json())
-      .then((list: string[]) => setCustomResinTypes(list))
-      .catch(() => {});
-  }, []);
-
-  const handleResinTypeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const key = e.target.value;
-    setResinTypeKey(key);
-    if (key === "Other") {
-      formSetValue("resinType", ResinType.Other, { shouldValidate: true });
-      formSetValue("otherResinType", "");
-    } else if (key.startsWith("custom:")) {
-      const customVal = key.slice("custom:".length);
-      formSetValue("resinType", ResinType.Other, { shouldValidate: true });
-      formSetValue("otherResinType", customVal);
-    } else {
-      formSetValue("resinType", key as ResinType, { shouldValidate: true });
-      formSetValue("otherResinType", "");
-    }
-  };
 
   const { uploadFile, isUploading } = useUpload({
     onSuccess: (response: { objectPath: string }) => {
@@ -277,66 +240,22 @@ export function ResinForm({
               <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4 pt-4 border-t border-border/50">製品</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5">
                 <FormGroup label="樹脂種別" error={errors.resinType?.message}>
-                  <select value={resinTypeKey} onChange={handleResinTypeChange} className="input-field">
-                    {Object.values(ResinType).filter(t => !["LLDPE","HDPE","LDPE","GPPS","HIPS","Other"].includes(t)).map(t => <option key={t} value={t}>{t}</option>)}
-                    <option value="Other">その他（手動入力）</option>
-                  </select>
+                  <input
+                    type="text"
+                    placeholder="PP、PE、ABS など"
+                    {...register("resinType")}
+                    className="input-field"
+                  />
                 </FormGroup>
 
-                {selectedResinType === ResinType.Other && (
-                  <FormGroup label={resinTypeKey.startsWith("custom:") ? "樹脂種別（カスタム）" : "樹脂種別（新規登録）"} error={errors.otherResinType?.message}>
-                    <input
-                      type="text"
-                      placeholder="例: PVDF、CPE、TPE…"
-                      {...register("otherResinType")}
-                      className="input-field"
-                    />
-                    {!resinTypeKey.startsWith("custom:") && (
-                      <p className="text-xs text-muted-foreground mt-1">登録後、次回からドロップダウンに表示されます</p>
-                    )}
-                  </FormGroup>
-                )}
-                
-                {selectedResinType === ResinType.PP && (
-                  <FormGroup label="タイプ" error={errors.ppType?.message}>
-                    <select {...register("ppType")} className="input-field">
-                      <option value="">―</option>
-                      <option value="ホモ">ホモ</option>
-                      <option value="ブロック">ブロック</option>
-                      <option value="ランダム">ランダム</option>
-                    </select>
-                  </FormGroup>
-                )}
-
-                {selectedResinType === ResinType.PE && (
-                  <FormGroup label="タイプ" error={errors.peType?.message}>
-                    <select {...register("peType")} className="input-field">
-                      <option value="">―</option>
-                      <option value="LD">LD</option>
-                      <option value="HD">HD</option>
-                      <option value="LLD">LLD</option>
-                    </select>
-                  </FormGroup>
-                )}
-
-                {selectedResinType === ResinType.PS && (
-                  <FormGroup label="タイプ" error={errors.psType?.message}>
-                    <select {...register("psType")} className="input-field">
-                      <option value="">―</option>
-                      <option value="HI">HI</option>
-                      <option value="GP">GP</option>
-                    </select>
-                  </FormGroup>
-                )}
-
-                {selectedResinType === ResinType.ABS && (
-                  <FormGroup label="タイプ" error={errors.absType?.message}>
-                    <select {...register("absType")} className="input-field">
-                      <option value="">―</option>
-                      <option value="難燃">難燃</option>
-                    </select>
-                  </FormGroup>
-                )}
+                <FormGroup label="タイプ" error={errors.ppType?.message}>
+                  <input
+                    type="text"
+                    placeholder="ホモ、LD など"
+                    {...register("ppType")}
+                    className="input-field"
+                  />
+                </FormGroup>
                 
                 {resinCategory !== ResinCategory.recycled && (
                   <FormGroup label="メーカー" error={errors.manufacturer?.message}>
