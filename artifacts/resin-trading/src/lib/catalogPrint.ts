@@ -107,14 +107,18 @@ function buildCatalogContent(row: ResinEntry): { pageHtml: string; css: string; 
     row.resinCategory === "offgrade" ? "オフグレード" :
     row.resinCategory === "recycled" ? "再生" : "";
 
+  const physCols = physicalFields.length <= 2 ? 2 : physicalFields.length <= 4 ? 2 : 3;
+
   const physicalSection = hasPhysical ? `
     <div class="_c_full_section">
       <div class="_c_sh">物性</div>
-      <table class="_c_tbl _c_tbl_inline">
-        <tbody>
-          <tr>${physicalFields.map(f => `<td class="_c_lbl_inline">${f.label}</td><td class="_c_val_inline">${f.value}</td>`).join("")}</tr>
-        </tbody>
-      </table>
+      <div class="_c_phys_grid" style="grid-template-columns:repeat(${physCols},1fr);">
+        ${physicalFields.map(f => `
+          <div class="_c_phys_chip">
+            <span class="_c_phys_lbl">${f.label}</span>
+            <span class="_c_phys_val">${f.value}</span>
+          </div>`).join("")}
+      </div>
     </div>` : "";
 
   const photoAspect = photoCols >= 5 ? "1 / 1" : "4 / 3";
@@ -265,23 +269,33 @@ function buildCatalogContent(row: ResinEntry): { pageHtml: string; css: string; 
       vertical-align: top;
     }
 
-    /* ── Physical (inline row) ── */
-    ._c_full_section {
-      flex-shrink: 0;
+    /* ── Physical chips ── */
+    ._c_full_section { flex-shrink: 0; }
+    ._c_phys_grid {
+      display: grid;
+      gap: 5px;
+      margin-top: 5px;
     }
-    ._c_tbl_inline { border-collapse: collapse; }
-    ._c_lbl_inline {
-      font-size: 9px;
+    ._c_phys_chip {
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+      background: #f8fafc;
+      border-left: 3px solid hsl(152, 73%, 41%);
+      border-radius: 0 5px 5px 0;
+      padding: 5px 10px;
+    }
+    ._c_phys_lbl {
+      font-size: 8px;
       color: #64748b;
       font-weight: 600;
-      padding: 3px 6px 3px 4px;
+      letter-spacing: 0.03em;
       white-space: nowrap;
     }
-    ._c_val_inline {
-      font-size: 10.5px;
+    ._c_phys_val {
+      font-size: 12px;
       color: #0f172a;
-      font-weight: 500;
-      padding: 3px 16px 3px 0;
+      font-weight: 700;
     }
 
     /* ── Photos ── */
