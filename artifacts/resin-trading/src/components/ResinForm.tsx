@@ -25,8 +25,8 @@ const RESIN_OPTIONS = [
 ];
 
 const RESIN_SUBTYPE_OPTIONS: Record<string, string[]> = {
-  PP:    ["ホモ", "ブロック", "ランダム", "C4", "LD", "OPP", "CPP", "GF20%"],
-  LLDPE: ["C4", "C6", "C8"],
+  PP:    ["ホモ", "ブロック", "ランダム", "OPP", "CPP", "GF20%"],
+  LLDPE: ["C6", "C8"],
   ABS:   ["難燃", "耐熱"],
   PVC:   ["軟質", "硬質"],
 };
