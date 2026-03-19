@@ -299,58 +299,42 @@ export function ResinForm({
                 
                 {selectedResinType === ResinType.PP && (
                   <FormGroup label="タイプ" error={errors.ppType?.message}>
-                    {resinCategory === ResinCategory.recycled ? (
-                      <input type="text" placeholder="例: ホモ、ブロック、コンパウンド…" {...register("ppType")} className="input-field" />
-                    ) : (
-                      <select {...register("ppType")} className="input-field">
-                        <option value="">―</option>
-                        <option value="ホモ">ホモ</option>
-                        <option value="ブロック">ブロック</option>
-                        <option value="ランダム">ランダム</option>
-                      </select>
-                    )}
+                    <select {...register("ppType")} className="input-field">
+                      <option value="">―</option>
+                      <option value="ホモ">ホモ</option>
+                      <option value="ブロック">ブロック</option>
+                      <option value="ランダム">ランダム</option>
+                    </select>
                   </FormGroup>
                 )}
 
                 {selectedResinType === ResinType.PE && (
                   <FormGroup label="タイプ" error={errors.peType?.message}>
-                    {resinCategory === ResinCategory.recycled ? (
-                      <input type="text" placeholder="例: LD、HD、LLD、C4、C6…" {...register("peType")} className="input-field" />
-                    ) : (
-                      <select {...register("peType")} className="input-field">
-                        <option value="">―</option>
-                        <option value="LD">LD</option>
-                        <option value="HD">HD</option>
-                        <option value="LLD">LLD</option>
-                      </select>
-                    )}
+                    <select {...register("peType")} className="input-field">
+                      <option value="">―</option>
+                      <option value="LD">LD</option>
+                      <option value="HD">HD</option>
+                      <option value="LLD">LLD</option>
+                    </select>
                   </FormGroup>
                 )}
 
                 {selectedResinType === ResinType.PS && (
                   <FormGroup label="タイプ" error={errors.psType?.message}>
-                    {resinCategory === ResinCategory.recycled ? (
-                      <input type="text" placeholder="例: HI、GP、発泡…" {...register("psType")} className="input-field" />
-                    ) : (
-                      <select {...register("psType")} className="input-field">
-                        <option value="">―</option>
-                        <option value="HI">HI</option>
-                        <option value="GP">GP</option>
-                      </select>
-                    )}
+                    <select {...register("psType")} className="input-field">
+                      <option value="">―</option>
+                      <option value="HI">HI</option>
+                      <option value="GP">GP</option>
+                    </select>
                   </FormGroup>
                 )}
 
                 {selectedResinType === ResinType.ABS && (
                   <FormGroup label="タイプ" error={errors.absType?.message}>
-                    {resinCategory === ResinCategory.recycled ? (
-                      <input type="text" placeholder="例: 難燃、PC/ABS…" {...register("absType")} className="input-field" />
-                    ) : (
-                      <select {...register("absType")} className="input-field">
-                        <option value="">―</option>
-                        <option value="難燃">難燃</option>
-                      </select>
-                    )}
+                    <select {...register("absType")} className="input-field">
+                      <option value="">―</option>
+                      <option value="難燃">難燃</option>
+                    </select>
                   </FormGroup>
                 )}
                 
@@ -494,17 +478,13 @@ export function ResinForm({
                   </select>
                 </FormGroup>
                 <FormGroup label="サンプル" error={errors.sampleAvailable?.message}>
-                  {resinCategory === ResinCategory.recycled ? (
-                    <input type="text" placeholder="例: あり、なし、有償…" {...register("sampleAvailable")} className="input-field" />
-                  ) : (
-                    <select {...register("sampleAvailable")} className="input-field">
-                      <option value="">— 未選択 —</option>
-                      <option value="あり">あり</option>
-                      <option value="なし">なし</option>
-                      <option value="要相談">要相談</option>
-                      <option value="有償">有償</option>
-                    </select>
-                  )}
+                  <select {...register("sampleAvailable")} className="input-field">
+                    <option value="">— 未選択 —</option>
+                    <option value="あり">あり</option>
+                    <option value="なし">なし</option>
+                    <option value="要相談">要相談</option>
+                    <option value="有償">有償</option>
+                  </select>
                 </FormGroup>
               </div>
             </div>
