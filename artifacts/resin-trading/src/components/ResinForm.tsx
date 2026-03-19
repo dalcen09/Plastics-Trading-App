@@ -19,7 +19,7 @@ const RESIN_OPTIONS = [
   "PS", "GPPS", "HIPS",
   "ABS", "PC", "POM",
   "PEI", "MS", "PMMA", "PET-G", "AS", "PVDC",
-  "PVC", "PET", "Nylon", "EVA", "EPDM",
+  "PVC", "PET", "EVA", "EPDM",
 ];
 
 const RESIN_SUBTYPE_OPTIONS: Record<string, string[]> = {
