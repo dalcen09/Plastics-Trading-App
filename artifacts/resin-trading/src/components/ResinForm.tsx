@@ -2,6 +2,7 @@ import { useEffect, useState, useRef } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
+
 import { 
   CreateResinEntry, 
   ResinEntry, 
@@ -12,6 +13,20 @@ import {
 import { useUpload } from "@workspace/object-storage-web";
 import { X, Loader2, Upload, Trash2, FileText } from "lucide-react";
 import { format } from "date-fns";
+
+const RESIN_OPTIONS = [
+  "PP", "PE", "HDPE", "LLDPE", "LDPE",
+  "PS", "GPPS", "HIPS",
+  "ABS", "PC", "POM",
+  "PEI", "MS", "PMMA", "PET-G", "AS", "PVDC",
+  "PVC", "PET", "Nylon", "EVA", "EPDM",
+];
+
+const RESIN_SUBTYPE_OPTIONS: Record<string, string[]> = {
+  PP:    ["ホモ", "ブロック", "ランダム", "C4", "LD"],
+  HDPE:  ["C4"],
+  LLDPE: ["C4", "C6"],
+};
 
 const formSchema = z.object({
   entryType: z.nativeEnum(CreateResinEntryEntryType),
@@ -147,8 +162,13 @@ export function ResinForm({
   });
 
   const currentImageUrls = watch("imageUrls") ?? [];
+  const currentResinType = watch("resinType") ?? "";
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isDragging, setIsDragging] = useState(false);
+  const [resinTypeIsOther, setResinTypeIsOther] = useState(
+    () => !!initialData?.resinType && !RESIN_OPTIONS.includes(initialData.resinType)
+  );
+  const subtypeOptions = RESIN_SUBTYPE_OPTIONS[currentResinType] ?? [];
 
   const { uploadFile, isUploading } = useUpload({
     onSuccess: (response: { objectPath: string }) => {
@@ -240,21 +260,57 @@ export function ResinForm({
               <h3 className="text-sm font-semibold uppercase tracking-wider text-muted-foreground mb-4 pt-4 border-t border-border/50">製品</h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-5">
                 <FormGroup label="樹脂種類" error={errors.resinType?.message}>
-                  <input
-                    type="text"
-                    placeholder="PP、PE、ABS など"
-                    {...register("resinType")}
-                    className="input-field"
-                  />
+                  {resinTypeIsOther ? (
+                    <div className="flex gap-1">
+                      <input
+                        type="text"
+                        placeholder="例: PVDF、CPE…"
+                        {...register("resinType")}
+                        className="input-field flex-1"
+                        autoFocus
+                      />
+                      <button
+                        type="button"
+                        onClick={() => { setResinTypeIsOther(false); formSetValue("resinType", RESIN_OPTIONS[0]); }}
+                        className="px-2 text-muted-foreground hover:text-foreground"
+                        title="リストに戻る"
+                      >✕</button>
+                    </div>
+                  ) : (
+                    <select
+                      value={currentResinType}
+                      onChange={e => {
+                        if (e.target.value === "__other__") {
+                          setResinTypeIsOther(true);
+                          formSetValue("resinType", "");
+                        } else {
+                          formSetValue("resinType", e.target.value, { shouldValidate: true });
+                          formSetValue("ppType", null);
+                        }
+                      }}
+                      className="input-field"
+                    >
+                      <option value="">― 未選択 ―</option>
+                      {RESIN_OPTIONS.map(t => <option key={t} value={t}>{t}</option>)}
+                      <option value="__other__">その他（手動入力）</option>
+                    </select>
+                  )}
                 </FormGroup>
 
                 <FormGroup label="タイプ" error={errors.ppType?.message}>
-                  <input
-                    type="text"
-                    placeholder="ホモ、LD など"
-                    {...register("ppType")}
-                    className="input-field"
-                  />
+                  {subtypeOptions.length > 0 ? (
+                    <select {...register("ppType")} className="input-field">
+                      <option value="">― 未選択 ―</option>
+                      {subtypeOptions.map(t => <option key={t} value={t}>{t}</option>)}
+                    </select>
+                  ) : (
+                    <input
+                      type="text"
+                      placeholder="タイプを入力"
+                      {...register("ppType")}
+                      className="input-field"
+                    />
+                  )}
                 </FormGroup>
                 
                 {resinCategory !== ResinCategory.recycled && (

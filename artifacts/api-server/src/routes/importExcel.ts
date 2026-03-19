@@ -497,10 +497,31 @@ function normalizeResinType(raw: string): string | null {
   return VALID_RESIN_TYPES.find(t => t.toUpperCase() === vUp) ?? null;
 }
 
+function toFullWidthKatakana(s: string): string {
+  // Convert half-width katakana to full-width
+  const halfToFull: Record<string, string> = {
+    "ｦ":"ヲ","ｧ":"ァ","ｨ":"ィ","ｩ":"ゥ","ｪ":"ェ","ｫ":"ォ","ｬ":"ャ","ｭ":"ュ","ｮ":"ョ","ｯ":"ッ","ｰ":"ー",
+    "ｱ":"ア","ｲ":"イ","ｳ":"ウ","ｴ":"エ","ｵ":"オ","ｶ":"カ","ｷ":"キ","ｸ":"ク","ｹ":"ケ","ｺ":"コ",
+    "ｻ":"サ","ｼ":"シ","ｽ":"ス","ｾ":"セ","ｿ":"ソ","ﾀ":"タ","ﾁ":"チ","ﾂ":"ツ","ﾃ":"テ","ﾄ":"ト",
+    "ﾅ":"ナ","ﾆ":"ニ","ﾇ":"ヌ","ﾈ":"ネ","ﾉ":"ノ","ﾊ":"ハ","ﾋ":"ヒ","ﾌ":"フ","ﾍ":"ヘ","ﾎ":"ホ",
+    "ﾏ":"マ","ﾐ":"ミ","ﾑ":"ム","ﾒ":"メ","ﾓ":"モ","ﾔ":"ヤ","ﾕ":"ユ","ﾖ":"ヨ",
+    "ﾗ":"ラ","ﾘ":"リ","ﾙ":"ル","ﾚ":"レ","ﾛ":"ロ","ﾜ":"ワ","ﾝ":"ン","ﾞ":"゛","ﾟ":"゜",
+  };
+  // Multi-char combinations first (dakuten)
+  return s.replace(/ｳﾞ/g,"ヴ").replace(/ｶﾞ/g,"ガ").replace(/ｷﾞ/g,"ギ").replace(/ｸﾞ/g,"グ")
+    .replace(/ｹﾞ/g,"ゲ").replace(/ｺﾞ/g,"ゴ").replace(/ｻﾞ/g,"ザ").replace(/ｼﾞ/g,"ジ")
+    .replace(/ｽﾞ/g,"ズ").replace(/ｾﾞ/g,"ゼ").replace(/ｿﾞ/g,"ゾ").replace(/ﾀﾞ/g,"ダ")
+    .replace(/ﾁﾞ/g,"ヂ").replace(/ﾂﾞ/g,"ヅ").replace(/ﾃﾞ/g,"デ").replace(/ﾄﾞ/g,"ド")
+    .replace(/ﾊﾞ/g,"バ").replace(/ﾋﾞ/g,"ビ").replace(/ﾌﾞ/g,"ブ").replace(/ﾍﾞ/g,"ベ")
+    .replace(/ﾎﾞ/g,"ボ").replace(/ﾊﾟ/g,"パ").replace(/ﾋﾟ/g,"ピ").replace(/ﾌﾟ/g,"プ")
+    .replace(/ﾍﾟ/g,"ペ").replace(/ﾎﾟ/g,"ポ")
+    .split("").map(c => halfToFull[c] ?? c).join("");
+}
+
 function normalizePPType(val: string): string | null {
   if (!val || !val.trim() || val.trim() === "-") return null;
-  const v = val.trim();
-  return VALID_PP_TYPES.find(t => t.toLowerCase() === v.toLowerCase()) ?? v;
+  const v = toFullWidthKatakana(val.trim());
+  return v || null;
 }
 
 function normalizePackaging(val: string): string | null {
@@ -695,9 +716,9 @@ router.post("/import", upload.single("file"), async (req, res) => {
       const personInCharge = data.personInCharge ? String(data.personInCharge).trim() : null;
       const rawResinType = data.resinType ? String(data.resinType).trim() : "";
       const normalizedResinType = rawResinType ? normalizeResinType(rawResinType) : null;
-      // If the resin type is unknown, store as "Other" with the raw value in otherResinType
-      const resinType = normalizedResinType ?? (rawResinType ? "Other" : null);
-      const importedOtherResinType = normalizedResinType === null && rawResinType ? rawResinType : (data.otherResinType ? String(data.otherResinType).trim() : null);
+      // Store as normalized if known, otherwise store raw value as-is (free text)
+      const resinType = normalizedResinType ?? rawResinType ?? null;
+      const importedOtherResinType = data.otherResinType ? String(data.otherResinType).trim() : null;
 
       // Route generic "タイプ" value to the correct resin-specific type field
       if (data.resinSubType && String(data.resinSubType).trim()) {
