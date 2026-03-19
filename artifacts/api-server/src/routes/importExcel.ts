@@ -140,6 +140,13 @@ const FIELD_ALIASES: Record<string, string> = {
   "その他(物性)": "physicalOther",
   "物性その他": "physicalOther",
 
+  // ── shape ────────────────────────────────────────────────────────────────
+  "shape": "shape",
+  "形状": "shape",
+  "形態": "shape",
+  "pellet form": "shape",
+  "resin form": "shape",
+
   // ── sampleAvailable ──────────────────────────────────────────────────────
   "sample available": "sampleAvailable",
   "sample": "sampleAvailable",
@@ -781,6 +788,7 @@ router.post("/import", upload.single("file"), async (req, res) => {
           rohs: data.rohs ? String(data.rohs).trim() || null : null,
           mesh: data.mesh ? String(data.mesh).trim() || null : null,
           physicalOther: data.physicalOther ? String(data.physicalOther).trim() || null : null,
+          shape: data.shape ? String(data.shape).trim() || null : null,
           storageLocation: data.storageLocation ? String(data.storageLocation).trim() || null : null,
           arrivalPrice: numStr(data.arrivalPrice),
           spotPrice: numStr(data.spotPrice),

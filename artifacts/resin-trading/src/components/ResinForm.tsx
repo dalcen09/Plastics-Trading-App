@@ -61,6 +61,7 @@ const formSchema = z.object({
   rohs: z.string().nullable().optional(),
   mesh: z.string().nullable().optional(),
   physicalOther: z.string().nullable().optional(),
+  shape: z.string().nullable().optional(),
   remarks: z.string().nullable().optional(),
   imageUrl: z.string().nullable().optional(),
   imageUrls: z.array(z.string()).optional(),
@@ -136,6 +137,7 @@ export function ResinForm({
       rohs: initialData?.rohs ?? null,
       mesh: initialData?.mesh ?? null,
       physicalOther: (initialData as any)?.physicalOther ?? null,
+      shape: (initialData as any)?.shape ?? null,
       remarks: initialData?.remarks || "",
       imageUrl: initialData?.imageUrl ?? null,
       imageUrls: initialData?.imageUrls?.length
@@ -352,11 +354,18 @@ export function ResinForm({
                   </FormGroup>
                 )}
                 
-                <FormGroup label="メーカー" error={errors.manufacturer?.message}>
-                  <input type="text" placeholder="ExxonMobil など" {...register("manufacturer")} className="input-field" />
-                </FormGroup>
+                {resinCategory !== ResinCategory.recycled && (
+                  <FormGroup label="メーカー" error={errors.manufacturer?.message}>
+                    <input type="text" placeholder="ExxonMobil など" {...register("manufacturer")} className="input-field" />
+                  </FormGroup>
+                )}
                 <FormGroup label="グレード" error={errors.grade?.message}>
-                  <input type="text" placeholder="グレード名" {...register("grade")} className="input-field" />
+                  <input
+                    type="text"
+                    placeholder={resinCategory === ResinCategory.recycled ? "ブロー、押出など" : "グレード名"}
+                    {...register("grade")}
+                    className="input-field"
+                  />
                 </FormGroup>
               </div>
               {resinCategory === ResinCategory.recycled && (
@@ -377,6 +386,9 @@ export function ResinForm({
                   </FormGroup>
                   <FormGroup label="メッシュ" error={errors.mesh?.message}>
                     <input type="text" placeholder="例: 60mesh、100mesh…" {...register("mesh")} className="input-field" />
+                  </FormGroup>
+                  <FormGroup label="形状" error={(errors as any).shape?.message}>
+                    <input type="text" placeholder="例: ペレット、パウダー、フレーク…" {...register("shape" as any)} className="input-field" />
                   </FormGroup>
                 </div>
               )}

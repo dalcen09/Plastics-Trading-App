@@ -59,6 +59,7 @@ export interface CreateResinEntry {
   rohs?: string | null;
   mesh?: string | null;
   physicalOther?: string | null;
+  shape?: string | null;
   imageUrl?: string | null;
   imageUrls?: string[] | null;
   tdsUrl?: string | null;
