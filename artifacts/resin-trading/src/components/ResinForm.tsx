@@ -24,7 +24,6 @@ const RESIN_OPTIONS = [
 
 const RESIN_SUBTYPE_OPTIONS: Record<string, string[]> = {
   PP:    ["ホモ", "ブロック", "ランダム", "C4", "LD"],
-  HDPE:  ["C4"],
   LLDPE: ["C4", "C6"],
 };
 
