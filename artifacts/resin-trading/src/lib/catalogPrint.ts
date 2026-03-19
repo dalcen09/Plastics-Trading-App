@@ -155,6 +155,8 @@ export function openCatalogPrint(row: ResinEntry) {
 
 
   const css = `
+    @page { size: A4; margin: 0; }
+
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
@@ -168,7 +170,8 @@ export function openCatalogPrint(row: ResinEntry) {
 
     .page {
       width: 210mm;
-      min-height: 297mm;
+      height: 297mm;
+      max-height: 297mm;
       background: #fff;
       margin: 20px auto;
       display: flex;
@@ -305,7 +308,6 @@ export function openCatalogPrint(row: ResinEntry) {
     .tds-link { color: hsl(152, 73%, 38%); word-break: break-all; }
 
     /* ── Print ── */
-    @page { size: A4; margin: 0; }
     @media print {
       body { background: #fff; }
       .page {
@@ -316,8 +318,6 @@ export function openCatalogPrint(row: ResinEntry) {
         box-shadow: none;
         border-radius: 0;
         overflow: hidden;
-        page-break-after: always;
-        break-after: page;
       }
     }
   `;
