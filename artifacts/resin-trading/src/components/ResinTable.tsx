@@ -79,7 +79,6 @@ function PhotoCell({ urls }: { urls: string[] }) {
             onClick={() => setGalleryOpen(true)}
             className="flex-shrink-0 w-9 h-9 rounded-md bg-secondary border border-border/50 flex items-center justify-center text-xs font-medium text-primary hover:bg-primary/10 hover:border-primary/40 transition-colors cursor-pointer"
             style={{ marginLeft: -8, zIndex: 0 }}
-            title={`全${urls.length}枚を表示`}
           >
             +{overflow}
           </button>
