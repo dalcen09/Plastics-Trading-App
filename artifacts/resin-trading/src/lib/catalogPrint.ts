@@ -37,23 +37,23 @@ function buildFields(rows: [string, string | null | undefined][]): Field[] {
     .map(([label, value]) => ({ label, value: value! }));
 }
 
-function sectionHtml(title: string, fieldList: Field[], cols = 2): string {
-  if (fieldList.length === 0) return "";
-  const grid = cols === 2 ? "field-grid-2" : "field-grid-1";
+function fieldRows(fields: Field[]): string {
+  if (fields.length === 0) return "";
+  return fields.map((f, i) => `
+    <tr class="_c_tr${i % 2 === 0 ? " _c_tr_even" : ""}">
+      <td class="_c_lbl">${f.label}</td>
+      <td class="_c_val">${f.value}</td>
+    </tr>`).join("");
+}
+
+function panelHtml(title: string, fields: Field[]): string {
+  if (fields.length === 0) return `<div class="_c_panel"><div class="_c_sh">${title}</div></div>`;
   return `
-    <div class="section">
-      <h3 class="section-title">${title}</h3>
-      <div class="${grid}">
-        ${fieldList
-          .map(
-            (f) => `
-          <div class="field">
-            <div class="field-label">${f.label}</div>
-            <div class="field-value">${f.value}</div>
-          </div>`
-          )
-          .join("")}
-      </div>
+    <div class="_c_panel">
+      <div class="_c_sh">${title}</div>
+      <table class="_c_tbl">
+        <tbody>${fieldRows(fields)}</tbody>
+      </table>
     </div>`;
 }
 
@@ -77,10 +77,7 @@ function buildCatalogContent(row: ResinEntry): { pageHtml: string; css: string; 
   ]);
 
   const detailFields = buildFields([
-    [
-      "数量 (kg)",
-      fmtRange(row.quantityLower ?? row.quantity, row.quantityUpper ?? row.quantity) || null,
-    ],
+    ["数量 (kg)", fmtRange(row.quantityLower ?? row.quantity, row.quantityUpper ?? row.quantity) || null],
     ["月間・スポット", row.quantityType],
     ["納入・置場", row.locationType],
     ["場所", row.storageLocation],
@@ -98,51 +95,56 @@ function buildCatalogContent(row: ResinEntry): { pageHtml: string; css: string; 
     : [];
   const photos = allPhotos.slice(0, 10);
   const hasPhotos = photos.length > 0;
+  const hasPhysical = physicalFields.length > 0;
 
   const photoCols =
-    photos.length <= 2 ? 2 :
+    photos.length === 1 ? 1 :
     photos.length <= 4 ? 2 :
     photos.length <= 6 ? 3 :
     5;
 
   const categoryLabel =
-    row.resinCategory === "offgrade"
-      ? "オフグレード"
-      : row.resinCategory === "recycled"
-      ? "再生"
-      : "";
+    row.resinCategory === "offgrade" ? "オフグレード" :
+    row.resinCategory === "recycled" ? "再生" : "";
+
+  const physicalSection = hasPhysical ? `
+    <div class="_c_full_section">
+      <div class="_c_sh">物性</div>
+      <table class="_c_tbl _c_tbl_inline">
+        <tbody>
+          <tr>${physicalFields.map(f => `<td class="_c_lbl_inline">${f.label}</td><td class="_c_val_inline">${f.value}</td>`).join("")}</tr>
+        </tbody>
+      </table>
+    </div>` : "";
 
   const photoAspect = photoCols >= 5 ? "1 / 1" : "4 / 3";
-  const photosSection = hasPhotos
-    ? `
-    <div class="section">
-      <h3 class="section-title">写真（${photos.length}枚${allPhotos.length > 10 ? " / 最大10枚表示" : ""}）</h3>
-      <div class="photos-inline-grid" style="grid-template-columns: repeat(${photoCols}, 1fr);">
-        ${photos
-          .map(
-            (url) =>
-              `<div class="photo-cell" style="aspect-ratio: ${photoAspect};"><img src="${url}" alt="製品写真" loading="eager" /></div>`
-          )
-          .join("")}
+  const photosSection = hasPhotos ? `
+    <div class="_c_full_section">
+      <div class="_c_sh">写真（${photos.length}枚${allPhotos.length > 10 ? " / 最大10枚表示" : ""}）</div>
+      <div class="_c_photos" style="grid-template-columns: repeat(${photoCols}, 1fr);">
+        ${photos.map(url =>
+          `<div class="_c_photo_cell" style="aspect-ratio:${photoAspect};"><img src="${url}" alt="製品写真" loading="eager" /></div>`
+        ).join("")}
       </div>
-    </div>`
-    : "";
+    </div>` : "";
 
   const pageHtml = `
-    <div class="page">
-      <div class="header">
-        <div class="header-left">
-          <div class="company-name">丸喜産業株式会社</div>
-          <div class="catalog-title">樹脂製品カタログ</div>
+    <div class="_c_page">
+      <div class="_c_header">
+        <div class="_c_hleft">
+          <div class="_c_company">丸喜産業株式会社</div>
+          <div class="_c_title">樹脂製品カタログ</div>
         </div>
-        <div class="header-right">
-          ${categoryLabel ? `<div class="badge">${categoryLabel}</div>` : ""}
+        <div class="_c_hright">
+          ${categoryLabel ? `<div class="_c_badge">${categoryLabel}</div>` : ""}
         </div>
       </div>
-      <div class="content">
-        ${sectionHtml("製品", productFields)}
-        ${sectionHtml("物性", physicalFields)}
-        ${sectionHtml("詳細", detailFields)}
+      <div class="_c_body">
+        <div class="_c_two_panels">
+          ${panelHtml("製品情報", productFields)}
+          ${panelHtml("取引詳細", detailFields)}
+        </div>
+        ${physicalSection}
         ${photosSection}
       </div>
     </div>`;
@@ -150,134 +152,168 @@ function buildCatalogContent(row: ResinEntry): { pageHtml: string; css: string; 
   const css = `
     @page { size: A4; margin: 0; }
 
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    body {
-      font-family: 'Noto Sans JP', 'Hiragino Kaku Gothic ProN', 'Hiragino Sans',
-                   'Yu Gothic UI', 'Meiryo', sans-serif;
-      color: #1e293b;
-      background: #eef2f7;
-      -webkit-print-color-adjust: exact;
-      print-color-adjust: exact;
+    ._c_page *, ._c_page *::before, ._c_page *::after {
+      box-sizing: border-box; margin: 0; padding: 0;
     }
 
-    .page {
+    ._c_page {
+      font-family: 'Noto Sans JP', 'Hiragino Kaku Gothic ProN', 'Hiragino Sans',
+                   'Yu Gothic UI', 'Meiryo', sans-serif;
       width: 210mm;
       height: 297mm;
       max-height: 297mm;
       background: #fff;
-      margin: 20px auto;
+      color: #1e293b;
       display: flex;
       flex-direction: column;
-      box-shadow: 0 8px 32px rgba(0,0,0,0.12);
-      border-radius: 2px;
       overflow: hidden;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
     }
 
     /* ── Header ── */
-    .header {
+    ._c_header {
       background: hsl(152, 73%, 41%);
       color: #fff;
-      padding: 16px 28px;
+      padding: 14px 28px;
       display: flex;
       justify-content: space-between;
       align-items: center;
       flex-shrink: 0;
     }
-
-    .company-name {
-      font-size: 11px;
+    ._c_company {
+      font-size: 10.5px;
       font-weight: 600;
       letter-spacing: 0.08em;
       color: rgba(255,255,255,0.85);
-      margin-bottom: 4px;
+      margin-bottom: 3px;
     }
-    .catalog-title {
-      font-size: 22px;
+    ._c_title {
+      font-size: 21px;
       font-weight: 700;
-      letter-spacing: 0.12em;
+      letter-spacing: 0.1em;
       color: #fff;
     }
-    .header-right { text-align: right; }
-    .badge {
+    ._c_hright { text-align: right; }
+    ._c_badge {
       display: inline-block;
       background: rgba(255,255,255,0.22);
       border: 1px solid rgba(255,255,255,0.4);
       border-radius: 5px;
-      padding: 3px 10px;
+      padding: 3px 12px;
       font-size: 11px;
-      font-weight: 600;
-      letter-spacing: 0.06em;
+      font-weight: 700;
+      letter-spacing: 0.08em;
     }
 
-    /* ── Content ── */
-    .content { flex: 1; padding: 14px 28px; overflow: hidden; }
+    /* ── Body ── */
+    ._c_body {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      padding: 14px 22px 14px;
+      gap: 10px;
+      overflow: hidden;
+    }
 
-    .section { margin-bottom: 12px; }
+    /* ── Two-panel layout ── */
+    ._c_two_panels {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0 14px;
+    }
 
-    .section-title {
-      font-size: 9px;
+    ._c_panel {
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Section heading ── */
+    ._c_sh {
+      font-size: 8.5px;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.14em;
-      color: hsl(152, 60%, 36%);
+      color: hsl(152, 60%, 34%);
       border-bottom: 2px solid hsl(152, 73%, 41%);
       padding-bottom: 3px;
-      margin-bottom: 7px;
+      margin-bottom: 5px;
     }
 
-    .field-grid-2 {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 5px 28px;
+    /* ── Field table ── */
+    ._c_tbl {
+      width: 100%;
+      border-collapse: collapse;
     }
-    .field-grid-1 { display: grid; grid-template-columns: 1fr; gap: 5px; }
-
-    .field { display: flex; flex-direction: column; gap: 1px; }
-
-    .field-label {
-      font-size: 9px;
-      color: #94a3b8;
-      font-weight: 500;
-      letter-spacing: 0.04em;
+    ._c_tr_even { background: #f8fafc; }
+    ._c_lbl {
+      font-size: 9.5px;
+      color: #64748b;
+      font-weight: 600;
+      padding: 4px 8px 4px 4px;
+      white-space: nowrap;
+      width: 38%;
+      vertical-align: top;
+      border-bottom: 1px solid #f1f5f9;
     }
-    .field-value {
-      font-size: 12px;
+    ._c_val {
+      font-size: 11px;
       color: #0f172a;
       font-weight: 500;
+      padding: 4px 4px;
+      border-bottom: 1px solid #f1f5f9;
+      vertical-align: top;
     }
 
-    /* ── Photos inline ── */
-    .photos-inline-grid {
-      display: grid;
-      gap: 10px;
-      margin-top: 6px;
+    /* ── Physical (inline row) ── */
+    ._c_full_section {
+      flex-shrink: 0;
     }
-    .photo-cell {
+    ._c_tbl_inline { border-collapse: collapse; }
+    ._c_lbl_inline {
+      font-size: 9px;
+      color: #64748b;
+      font-weight: 600;
+      padding: 3px 6px 3px 4px;
+      white-space: nowrap;
+    }
+    ._c_val_inline {
+      font-size: 10.5px;
+      color: #0f172a;
+      font-weight: 500;
+      padding: 3px 16px 3px 0;
+    }
+
+    /* ── Photos ── */
+    ._c_photos {
+      display: grid;
+      gap: 8px;
+      margin-top: 5px;
+    }
+    ._c_photo_cell {
       overflow: hidden;
-      border-radius: 6px;
+      border-radius: 5px;
       border: 1px solid #e2e8f0;
       background: #f8fafc;
       display: flex;
       align-items: center;
       justify-content: center;
     }
-    .photo-cell img {
+    ._c_photo_cell img {
       width: 100%;
       height: 100%;
       object-fit: contain;
+      display: block;
     }
 
     /* ── Print ── */
     @media print {
       body { background: #fff; }
-      .page {
+      ._c_page {
         width: 210mm;
         height: 297mm;
-        min-height: unset;
         margin: 0;
         box-shadow: none;
-        border-radius: 0;
         overflow: hidden;
       }
     }
@@ -301,7 +337,19 @@ export function openCatalogPrint(row: ResinEntry) {
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <style>${css}</style>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #eef2f7;
+      display: flex; justify-content: center; padding: 20px;
+    }
+    ${css}
+    ._c_page {
+      box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+      border-radius: 2px;
+      margin: 0 auto;
+    }
+  </style>
 </head>
 <body>
   ${pageHtml}
@@ -402,7 +450,7 @@ export async function downloadCatalogImage(row: ResinEntry): Promise<void> {
 
     await new Promise<void>((r) => setTimeout(r, 400));
 
-    const pageEl = container.querySelector(".page") as HTMLElement;
+    const pageEl = container.querySelector("._c_page") as HTMLElement;
 
     const canvas = await html2canvas(pageEl, {
       scale: 2,
