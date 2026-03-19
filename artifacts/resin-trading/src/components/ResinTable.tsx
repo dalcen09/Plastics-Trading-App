@@ -352,11 +352,7 @@ function ActionMenu({ row, onEdit, onDuplicate, onDelete }: {
   const toggle = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (open) { setOpen(false); return; }
-    if (!btnRef.current) return;
-    const r = btnRef.current.getBoundingClientRect();
-    const menuW = 168;
-    const left = Math.max(4, r.right - menuW);
-    setPos({ top: r.bottom + 4, left });
+    setPos({ top: 0, left: 0 }); // sentinel — actual layout is centered via CSS
     setOpen(true);
   };
 
@@ -383,10 +379,14 @@ function ActionMenu({ row, onEdit, onDuplicate, onDelete }: {
       </button>
       {open && pos && createPortal(
         <div
-          style={{ position: "fixed", top: pos.top, left: pos.left, zIndex: 9999, minWidth: 168 }}
-          className="bg-card border border-border rounded-xl shadow-lg shadow-black/10 py-1 overflow-hidden"
-          onMouseDown={e => e.stopPropagation()}
+          style={{ position: "fixed", inset: 0, zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center" }}
+          onMouseDown={() => setOpen(false)}
         >
+          <div
+            style={{ minWidth: 200 }}
+            className="bg-card border border-border rounded-xl shadow-2xl shadow-black/20 py-1 overflow-hidden animate-in zoom-in-95 duration-150"
+            onMouseDown={e => e.stopPropagation()}
+          >
           <button
             onClick={() => { setOpen(false); onEdit(row); }}
             className="w-full flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-secondary transition-colors text-left"
@@ -419,6 +419,7 @@ function ActionMenu({ row, onEdit, onDuplicate, onDelete }: {
           >
             <Trash2 className="w-3.5 h-3.5 flex-shrink-0" /> 削除
           </button>
+          </div>
         </div>,
         document.body
       )}

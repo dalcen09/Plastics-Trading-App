@@ -352,7 +352,7 @@ export function ResinForm({
                       <option value="要確認">要確認</option>
                     </select>
                   </FormGroup>
-                  <FormGroup label="メッシュ" error={errors.mesh?.message}>
+                  <FormGroup label="メッシュ / mesh" error={errors.mesh?.message}>
                     <input type="text" placeholder="例: 60mesh、100mesh…" {...register("mesh")} className="input-field" />
                   </FormGroup>
                   <FormGroup label="形状" error={(errors as any).shape?.message}>
