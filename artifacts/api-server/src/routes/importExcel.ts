@@ -427,7 +427,7 @@ const VALID_RESIN_TYPES = [
   "HDPE", "LDPE", "LLDPE",
   "GPPS", "HIPS",
   "POM", "EPDM", "PEI", "PETG", "AS", "MS", "PVDC",
-  "PA", "PA6", "PA66", "PA9T", "PBT", "PC/ABS",
+  "PA", "PA6", "PA66", "PA9T", "PBT", "PET/PBT", "PC/ABS",
   "AAS", "ASA", "COP", "IP", "K-レジン", "MB", "OPS", "PSP", "PSU", "PO", "SBC", "TPE", "TPO",
   "Other",
 ];

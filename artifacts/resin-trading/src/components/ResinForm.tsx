@@ -20,7 +20,7 @@ const RESIN_OPTIONS = [
   "ABS", "PC", "POM",
   "PEI", "MS", "PMMA", "PET-G", "AS", "PVDC",
   "PVC", "PET", "EVA", "EPDM",
-  "PA", "PA6", "PA66", "PA9T", "PBT", "PC/ABS",
+  "PA", "PA6", "PA66", "PA9T", "PBT", "PET/PBT", "PC/ABS",
   "AAS", "ASA", "COP", "IP", "K-レジン", "MB", "OPS", "PSP", "PSU", "PO", "SBC", "TPE", "TPO",
 ];
 
