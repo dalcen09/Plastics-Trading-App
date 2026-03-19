@@ -64,7 +64,7 @@ function sectionHtml(title: string, fieldList: Field[], cols = 2): string {
 
 export function openCatalogPrint(row: ResinEntry) {
   const productFields = buildFields([
-    ["樹脂種別", resinLabel(row) || null],
+    ["樹脂種類", resinLabel(row) || null],
     ["メーカー", row.manufacturer],
     ["グレード", row.grade],
     ["由来", row.origin],

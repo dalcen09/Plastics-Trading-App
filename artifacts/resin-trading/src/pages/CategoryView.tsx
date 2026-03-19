@@ -653,7 +653,7 @@ export function CategoryView({ category }: CategoryViewProps) {
           <div className="bg-card border border-border rounded-xl p-4 flex flex-wrap gap-3 items-end shadow-sm">
             {/* Resin type */}
             <div className="flex flex-col gap-1 min-w-[140px]">
-              <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">樹脂種別</label>
+              <label className="text-xs font-semibold text-muted-foreground uppercase tracking-wider">樹脂種類</label>
               <select
                 value={filters.resinType}
                 onChange={e => setFilter("resinType", e.target.value)}
