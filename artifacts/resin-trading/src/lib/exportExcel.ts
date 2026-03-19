@@ -37,7 +37,7 @@ const COL_LABEL: Record<string, string> = {
   quantity:             "数量 (kg)",
   quantityLower:        "数量 下限 (kg)",
   quantityUpper:        "数量 上限 (kg)",
-  quantityType:         "数量区分",
+  quantityType:         "月間・スポット",
   packagingWeight:      "梱包重量 (kg)",
   plainMaker:           "無地・メーカー",
   usageType:            "ランニング・ワンウェイ",

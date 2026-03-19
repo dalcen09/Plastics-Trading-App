@@ -86,7 +86,7 @@ export function openCatalogPrint(row: ResinEntry) {
       "数量 (kg)",
       fmtRange(row.quantityLower ?? row.quantity, row.quantityUpper ?? row.quantity) || null,
     ],
-    ["数量区分", row.quantityType],
+    ["月間・スポット", row.quantityType],
     ["納入・置場", row.locationType],
     ["場所", row.storageLocation],
     ["梱包形態", row.packaging],

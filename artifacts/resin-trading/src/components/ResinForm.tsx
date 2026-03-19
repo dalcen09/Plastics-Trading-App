@@ -415,7 +415,7 @@ export function ResinForm({
                   <input type="number" step="0.01" placeholder="下限" {...register("quantityLower")} className="input-field" />
                   <input type="number" step="0.01" placeholder="上限" {...register("quantityUpper")} className="input-field" />
                 </RangeGroup>
-                <FormGroup label="数量区分" error={errors.quantityType?.message}>
+                <FormGroup label="月間・スポット" error={errors.quantityType?.message}>
                   <select {...register("quantityType")} className="input-field">
                     <option value="">— 未選択 —</option>
                     <option value="月間">月間</option>

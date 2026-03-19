@@ -208,7 +208,7 @@ export const ALL_COLUMNS: { key: ColumnKey; label: string }[] = [
   { key: "locationType",    label: "納入・置場" },
   { key: "storageLocation", label: "場所" },
   { key: "quantity",        label: "数量 下限〜上限 (kg)" },
-  { key: "quantityType",   label: "数量区分" },
+  { key: "quantityType",   label: "月間・スポット" },
   { key: "packaging",             label: "梱包形態" },
   { key: "packagingWeight",       label: "梱包重量" },
   { key: "plainMaker",            label: "無地・メーカー" },
@@ -507,7 +507,7 @@ export function ResinTable({ data, onEdit, onDelete, onDuplicate, onToggleClosed
               {col("locationType")    && <th className="px-4 py-4">納入・置場</th>}
               {col("storageLocation") && <th className="px-4 py-4">場所</th>}
               {col("quantity")       && <SortTh colKey="quantity"  sort={sort} onSort={onSort} className="text-right">数量 (kg)</SortTh>}
-              {col("quantityType")   && <th className="px-4 py-4">数量区分</th>}
+              {col("quantityType")   && <th className="px-4 py-4">月間・スポット</th>}
               {col("packaging")             && <th className="px-4 py-4">梱包形態</th>}
               {col("packagingWeight")       && <th className="px-4 py-4 text-right">梱包重量</th>}
               {col("plainMaker")            && <th className="px-4 py-4">無地・メーカー</th>}
