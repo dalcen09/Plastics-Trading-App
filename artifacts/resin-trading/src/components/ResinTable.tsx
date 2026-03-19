@@ -397,13 +397,13 @@ function ActionMenu({ row, onEdit, onDuplicate, onDelete }: {
             onClick={() => { setOpen(false); openCatalogPrint(row); }}
             className="w-full flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-secondary transition-colors text-left"
           >
-            <BookOpen className="w-3.5 h-3.5 text-violet-500 flex-shrink-0" /> カタログ出力
+            <BookOpen className="w-3.5 h-3.5 text-violet-500 flex-shrink-0" /> カタログ PDF
           </button>
           <button
             onClick={() => { setOpen(false); downloadCatalogImage(row); }}
             className="w-full flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-secondary transition-colors text-left"
           >
-            <ImageIcon className="w-3.5 h-3.5 text-violet-500 flex-shrink-0" /> 画像ダウンロード
+            <ImageIcon className="w-3.5 h-3.5 text-violet-500 flex-shrink-0" /> カタログ画像
           </button>
           {onDuplicate && (
             <button

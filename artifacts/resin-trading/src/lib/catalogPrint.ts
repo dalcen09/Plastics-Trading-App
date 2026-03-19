@@ -245,8 +245,6 @@ function buildCatalogContent(row: ResinEntry): { pageHtml: string; css: string; 
       font-size: 12px;
       color: #0f172a;
       font-weight: 500;
-      border-bottom: 1px solid #f1f5f9;
-      padding-bottom: 3px;
     }
 
     /* ── Photos inline ── */
