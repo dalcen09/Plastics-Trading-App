@@ -15,13 +15,19 @@ import { X, Loader2, Upload, Trash2, FileText } from "lucide-react";
 import { format } from "date-fns";
 
 const RESIN_OPTIONS = [
-  "PP", "PE", "HDPE", "LLDPE", "LDPE",
-  "PS", "GPPS", "HIPS",
-  "ABS", "PC", "POM",
-  "PEI", "MS", "PMMA", "PET-G", "AS", "PVDC",
-  "PVC", "PET", "EVA", "EPDM",
-  "PA", "PA6", "PA66", "PA9T", "PBT", "PET/PBT", "PC/ABS",
-  "AAS", "ASA", "COP", "IP", "K-レジン", "MB", "OPS", "PSP", "PSU", "PO", "SBC", "TPE", "TPO",
+  "AAS", "ABS", "AS", "ASA",
+  "COP",
+  "EPDM", "EVA",
+  "GPPS",
+  "HDPE", "HIPS",
+  "IP",
+  "K-レジン",
+  "LDPE", "LLDPE",
+  "MB", "MS",
+  "OPS",
+  "PA", "PA6", "PA66", "PA9T", "PBT", "PC", "PC/ABS", "PE", "PEI", "PET", "PET-G", "PET/PBT", "PMMA", "PO", "POM", "PP", "PS", "PSP", "PSU", "PVC", "PVDC",
+  "SBC",
+  "TPE", "TPO",
 ];
 
 const RESIN_SUBTYPE_OPTIONS: Record<string, string[]> = {
