@@ -1,9 +1,10 @@
 import { ResinEntry } from "@workspace/api-client-react";
-import { Edit2, Trash2, Copy, Box, Package, ArrowUp, ArrowDown, ArrowUpDown, ImageIcon, Download, FileText, Square, CheckSquare, BookOpen, MoreHorizontal } from "lucide-react";
+import { Edit2, Trash2, Copy, Box, Package, ArrowUp, ArrowDown, ArrowUpDown, ImageIcon, Download, FileText, Square, CheckSquare, BookOpen, MoreHorizontal, X, LayoutGrid } from "lucide-react";
 import { openCatalogPrint } from "@/lib/catalogPrint";
 import { formatCurrency, formatDate, formatNumber, cn } from "@/lib/utils";
 import { useState, useRef, useCallback, useEffect } from "react";
 import { createPortal } from "react-dom";
+import JSZip from "jszip";
 
 function PhotoThumbnail({ url, index }: { url: string; index: number }) {
   const [popup, setPopup] = useState<{ top: number; left: number } | null>(null);
@@ -54,6 +55,122 @@ function PhotoThumbnail({ url, index }: { url: string; index: number }) {
         document.body
       )}
     </div>
+  );
+}
+
+function PhotoCell({ urls }: { urls: string[] }) {
+  const [galleryOpen, setGalleryOpen] = useState(false);
+  const MAX = 3;
+  const visible = urls.slice(0, MAX);
+  const overflow = urls.length - MAX;
+  if (urls.length === 0) {
+    return <div className="flex justify-center"><ImageIcon className="w-4 h-4 text-muted-foreground/30" /></div>;
+  }
+  return (
+    <>
+      <div className="flex items-center">
+        {visible.map((url, i) => (
+          <div key={url} className="relative flex-shrink-0 rounded-md ring-2 ring-card" style={{ marginLeft: i === 0 ? 0 : -8, zIndex: MAX - i }}>
+            <PhotoThumbnail url={url} index={i} />
+          </div>
+        ))}
+        {overflow > 0 && (
+          <button
+            onClick={() => setGalleryOpen(true)}
+            className="flex-shrink-0 w-9 h-9 rounded-md bg-secondary border border-border/50 flex items-center justify-center text-xs font-medium text-primary hover:bg-primary/10 hover:border-primary/40 transition-colors cursor-pointer"
+            style={{ marginLeft: -8, zIndex: 0 }}
+            title={`全${urls.length}枚を表示`}
+          >
+            +{overflow}
+          </button>
+        )}
+      </div>
+      {galleryOpen && <PhotoGalleryModal urls={urls} onClose={() => setGalleryOpen(false)} />}
+    </>
+  );
+}
+
+function PhotoGalleryModal({ urls, onClose }: { urls: string[]; onClose: () => void }) {
+  const [downloading, setDownloading] = useState(false);
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => { if (e.key === "Escape") onClose(); };
+    document.addEventListener("keydown", onKey);
+    return () => document.removeEventListener("keydown", onKey);
+  }, [onClose]);
+
+  const downloadAll = async () => {
+    setDownloading(true);
+    try {
+      const zip = new JSZip();
+      await Promise.all(
+        urls.map(async (url, i) => {
+          const res = await fetch(url);
+          const blob = await res.blob();
+          const ext = blob.type.split("/")[1]?.replace("jpeg", "jpg") || "jpg";
+          zip.file(`photo_${i + 1}.${ext}`, blob);
+        })
+      );
+      const content = await zip.generateAsync({ type: "blob" });
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(content);
+      a.download = "photos.zip";
+      a.click();
+      URL.revokeObjectURL(a.href);
+    } finally {
+      setDownloading(false);
+    }
+  };
+
+  return createPortal(
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm"
+      onClick={(e) => { if (e.target === e.currentTarget) onClose(); }}
+    >
+      <div className="relative bg-card border border-border rounded-2xl shadow-2xl w-full max-w-2xl mx-4 flex flex-col max-h-[90vh]">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-border/50">
+          <div className="flex items-center gap-2 text-foreground font-semibold">
+            <LayoutGrid className="w-4 h-4 text-primary" />
+            写真一覧 ({urls.length}枚)
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={downloadAll}
+              disabled={downloading}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-primary text-primary-foreground text-xs font-medium hover:bg-primary/90 disabled:opacity-60 transition-colors"
+            >
+              <Download className="w-3.5 h-3.5" />
+              {downloading ? "作成中..." : "ZIP でダウンロード"}
+            </button>
+            <button onClick={onClose} className="p-1.5 rounded-lg hover:bg-secondary transition-colors text-muted-foreground">
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+        <div className="overflow-y-auto p-5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+            {urls.map((url, i) => (
+              <div key={url} className="relative group aspect-square rounded-xl overflow-hidden border border-border/50 bg-secondary/30">
+                <img src={url} alt={`写真 ${i + 1}`} className="w-full h-full object-cover" />
+                <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center opacity-0 group-hover:opacity-100">
+                  <a
+                    href={url}
+                    download
+                    onClick={(e) => e.stopPropagation()}
+                    className="flex items-center gap-1 px-3 py-1.5 rounded-lg bg-white/90 text-gray-900 text-xs font-medium hover:bg-white transition-colors"
+                  >
+                    <Download className="w-3 h-3" />
+                    保存
+                  </a>
+                </div>
+                <span className="absolute top-1.5 left-1.5 bg-black/50 text-white text-[10px] px-1.5 py-0.5 rounded font-medium">{i + 1}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>,
+    document.body
   );
 }
 
@@ -564,30 +681,7 @@ export function ResinTable({ data, onEdit, onDelete, onDuplicate, onToggleClosed
                 )}
                 {col("photo") && (
                   <td className="pl-4 pr-8 py-3">
-                    {(() => {
-                      const urls = row.imageUrls?.length ? row.imageUrls : row.imageUrl ? [row.imageUrl] : [];
-                      const MAX = 3;
-                      const visible = urls.slice(0, MAX);
-                      const overflow = urls.length - MAX;
-                      return urls.length > 0 ? (
-                        <div className="flex items-center">
-                          {visible.map((url, i) => (
-                            <div key={url} className="relative flex-shrink-0 rounded-md ring-2 ring-card" style={{ marginLeft: i === 0 ? 0 : -8, zIndex: MAX - i }}>
-                              <PhotoThumbnail url={url} index={i} />
-                            </div>
-                          ))}
-                          {overflow > 0 && (
-                            <div className="flex-shrink-0 w-9 h-9 rounded-md bg-secondary border border-border/50 flex items-center justify-center text-xs font-medium text-muted-foreground" style={{ marginLeft: -8, zIndex: 0 }}>
-                              +{overflow}
-                            </div>
-                          )}
-                        </div>
-                      ) : (
-                        <div className="flex justify-center">
-                          <ImageIcon className="w-4 h-4 text-muted-foreground/30" />
-                        </div>
-                      );
-                    })()}
+                    <PhotoCell urls={row.imageUrls?.length ? row.imageUrls : row.imageUrl ? [row.imageUrl] : []} />
                   </td>
                 )}
                 {col("tdsUrl") && (
