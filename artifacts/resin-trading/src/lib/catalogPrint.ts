@@ -118,19 +118,6 @@ export function openCatalogPrint(row: ResinEntry) {
       : row.resinCategory === "recycled"
       ? "再生"
       : "";
-  const typeLabel = (row as { entryType?: string }).entryType === "source" ? "仕入れ先" : "販売先";
-
-  const totalPages = 1;
-
-  const footerHtml = (pageNum: number) => `
-    <div class="page-footer">
-      <div class="footer-company">
-        <span class="footer-name">丸喜産業株式会社</span>
-        <span>〒939-1273　富山県高岡市葦付5858　／　TEL：0766-36-1464　／　FAX：0766-36-1429　／　URL：http://www.maruki-plastics.co.jp</span>
-      </div>
-      <span class="footer-page">${pageNum} / ${totalPages}</span>
-    </div>`;
-
   const photoAspect = photoCols >= 5 ? "1 / 1" : "4 / 3";
   const photosSection = hasPhotos
     ? `
@@ -151,6 +138,7 @@ export function openCatalogPrint(row: ResinEntry) {
     <div class="page">
       <div class="header">
         <div class="header-left">
+          <div class="company-name">丸喜産業株式会社</div>
           <div class="catalog-title">樹脂製品カタログ</div>
         </div>
         <div class="header-right">
@@ -163,7 +151,6 @@ export function openCatalogPrint(row: ResinEntry) {
         ${sectionHtml("詳細", detailFields)}
         ${photosSection}
       </div>
-      ${footerHtml(1)}
     </div>`;
 
 
@@ -202,6 +189,13 @@ export function openCatalogPrint(row: ResinEntry) {
       flex-shrink: 0;
     }
 
+    .company-name {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      color: rgba(255,255,255,0.85);
+      margin-bottom: 4px;
+    }
     .catalog-title {
       font-size: 22px;
       font-weight: 700;
@@ -309,37 +303,6 @@ export function openCatalogPrint(row: ResinEntry) {
     .tds-image { max-width: 100%; border: 1px solid #e2e8f0; border-radius: 6px; }
     .tds-link-note { font-size: 10px; color: #94a3b8; margin-top: 6px; }
     .tds-link { color: hsl(152, 73%, 38%); word-break: break-all; }
-
-    /* ── Footer ── */
-    .page-footer {
-      border-top: 2px solid hsl(152, 73%, 41%);
-      padding: 8px 32px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 16px;
-      font-size: 8.5px;
-      color: #64748b;
-      letter-spacing: 0.03em;
-      flex-shrink: 0;
-      background: #f8fafc;
-    }
-    .footer-company {
-      display: flex;
-      flex-direction: column;
-      gap: 2px;
-    }
-    .footer-name {
-      font-weight: 700;
-      font-size: 10px;
-      color: hsl(152, 73%, 35%);
-      letter-spacing: 0.06em;
-    }
-    .footer-page {
-      white-space: nowrap;
-      font-size: 9px;
-      color: #94a3b8;
-    }
 
     /* ── Print ── */
     @page { size: A4; margin: 0; }
