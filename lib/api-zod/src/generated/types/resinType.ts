@@ -6,31 +6,4 @@
  * OpenAPI spec version: 0.1.0
  */
 
-export type ResinType = (typeof ResinType)[keyof typeof ResinType];
-
-export const ResinType = {
-  PP: "PP",
-  PE: "PE",
-  PS: "PS",
-  ABS: "ABS",
-  PVC: "PVC",
-  PET: "PET",
-  PC: "PC",
-  PA6: "PA6",
-  PA66: "PA66",
-  EVA: "EVA",
-  PMMA: "PMMA",
-  HDPE: "HDPE",
-  LDPE: "LDPE",
-  LLDPE: "LLDPE",
-  GPPS: "GPPS",
-  HIPS: "HIPS",
-  POM: "POM",
-  EPDM: "EPDM",
-  PEI: "PEI",
-  PETG: "PETG",
-  AS: "AS",
-  MS: "MS",
-  PVDC: "PVDC",
-  Other: "Other",
-} as const;
+export type ResinType = string;
