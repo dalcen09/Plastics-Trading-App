@@ -348,22 +348,38 @@ function ActionMenu({ row, onEdit, onDuplicate, onDelete }: {
   const [open, setOpen] = useState(false);
   const [pos, setPos] = useState<{ top: number; left: number } | null>(null);
   const btnRef = useRef<HTMLButtonElement>(null);
+  const menuRef = useRef<HTMLDivElement>(null);
 
   const toggle = (e: React.MouseEvent) => {
     e.stopPropagation();
     if (open) { setOpen(false); return; }
-    setPos({ top: 0, left: 0 }); // sentinel — actual layout is centered via CSS
+    if (btnRef.current) {
+      const r = btnRef.current.getBoundingClientRect();
+      const menuW = 200;
+      const menuH = 230; // approximate height
+      // Prefer opening to the left of the button; fall back to right if too close to left edge
+      let left = r.left - menuW - 4;
+      if (left < 8) left = r.right + 4;
+      // Prefer aligning top with button; shift up if it would overflow bottom
+      let top = r.top;
+      if (top + menuH > window.innerHeight - 8) top = r.bottom - menuH;
+      if (top < 8) top = 8;
+      setPos({ top, left });
+    }
     setOpen(true);
   };
 
   useEffect(() => {
     if (!open) return;
-    const close = () => setOpen(false);
+    const close = (e: MouseEvent) => {
+      if (menuRef.current && menuRef.current.contains(e.target as Node)) return;
+      if (btnRef.current && btnRef.current.contains(e.target as Node)) return;
+      setOpen(false);
+    };
     document.addEventListener("mousedown", close);
-    document.addEventListener("scroll", close, true);
+    document.addEventListener("scroll", () => setOpen(false), true);
     return () => {
       document.removeEventListener("mousedown", close);
-      document.removeEventListener("scroll", close, true);
     };
   }, [open]);
 
@@ -379,14 +395,11 @@ function ActionMenu({ row, onEdit, onDuplicate, onDelete }: {
       </button>
       {open && pos && createPortal(
         <div
-          style={{ position: "fixed", inset: 0, zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center" }}
-          onMouseDown={() => setOpen(false)}
+          ref={menuRef}
+          style={{ position: "fixed", top: pos.top, left: pos.left, zIndex: 9999, minWidth: 200 }}
+          className="bg-card border border-border rounded-xl shadow-2xl shadow-black/20 py-1 overflow-hidden animate-in zoom-in-95 duration-150"
+          onMouseDown={e => e.stopPropagation()}
         >
-          <div
-            style={{ minWidth: 200 }}
-            className="bg-card border border-border rounded-xl shadow-2xl shadow-black/20 py-1 overflow-hidden animate-in zoom-in-95 duration-150"
-            onMouseDown={e => e.stopPropagation()}
-          >
           <button
             onClick={() => { setOpen(false); onEdit(row); }}
             className="w-full flex items-center gap-2.5 px-3 py-2 text-sm hover:bg-secondary transition-colors text-left"
@@ -425,7 +438,6 @@ function ActionMenu({ row, onEdit, onDuplicate, onDelete }: {
           >
             <Trash2 className="w-3.5 h-3.5 flex-shrink-0" /> 削除
           </button>
-          </div>
         </div>,
         document.body
       )}
