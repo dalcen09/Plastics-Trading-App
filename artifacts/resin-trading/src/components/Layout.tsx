@@ -8,6 +8,7 @@ import {
   Menu,
   X,
   Recycle,
+  LogOut,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
@@ -15,11 +16,12 @@ import { useGetMatchCount } from "@workspace/api-client-react";
 
 interface LayoutProps {
   children: ReactNode;
+  onLogout?: () => void;
 }
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
 
-export function Layout({ children }: LayoutProps) {
+export function Layout({ children, onLogout }: LayoutProps) {
   const [location] = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -229,7 +231,7 @@ export function Layout({ children }: LayoutProps) {
             </button>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3">
             <div className="relative hidden sm:block">
               <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
               <input
@@ -238,13 +240,16 @@ export function Layout({ children }: LayoutProps) {
                 className="pl-9 pr-4 py-2 bg-secondary/50 border-none rounded-full text-sm w-64 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
               />
             </div>
-            <button className="relative p-2 text-muted-foreground hover:bg-secondary rounded-full transition-colors">
-              <Bell className="w-5 h-5" />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-destructive rounded-full border border-card"></span>
-            </button>
-            <div className="w-8 h-8 rounded-full bg-gradient-to-tr from-primary to-accent text-white flex items-center justify-center font-bold text-sm shadow-sm ring-2 ring-background cursor-pointer">
-              AD
-            </div>
+            {onLogout && (
+              <button
+                onClick={onLogout}
+                title="ログアウト"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
+              >
+                <LogOut className="w-4 h-4" />
+                <span className="hidden sm:inline">ログアウト</span>
+              </button>
+            )}
           </div>
         </header>
 

@@ -65,7 +65,7 @@ const CATEGORY_THEME: Record<string, string> = {
   recycled: "text-teal-600  bg-teal-500/10  border-teal-500/20",
 };
 
-export function Matches({ category }: { category?: string } = {}) {
+export function Matches({ category, onLogout }: { category?: string; onLogout?: () => void } = {}) {
   const [page, setPage] = useState(0);
   const [, navigate] = useLocation();
 
@@ -95,7 +95,7 @@ export function Matches({ category }: { category?: string } = {}) {
   const isFiltered = !!entryId || !!resinCategory;
 
   return (
-    <Layout>
+    <Layout onLogout={onLogout}>
       <div className="flex flex-col h-full max-w-6xl mx-auto">
 
         {/* Header */}

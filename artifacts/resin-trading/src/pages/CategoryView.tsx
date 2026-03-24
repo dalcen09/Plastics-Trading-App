@@ -30,6 +30,7 @@ import { ImportModal } from "@/components/ImportModal";
 
 interface CategoryViewProps {
   category: "virgin" | "offgrade" | "recycled";
+  onLogout?: () => void;
 }
 
 const categoryLabels: Record<string, string> = {
@@ -80,7 +81,7 @@ function applyFilters(data: ResinEntry[], filters: Filters): ResinEntry[] {
   });
 }
 
-export function CategoryView({ category }: CategoryViewProps) {
+export function CategoryView({ category, onLogout }: CategoryViewProps) {
   const queryClient = useQueryClient();
   const { toast } = useToast();
   
@@ -466,7 +467,7 @@ export function CategoryView({ category }: CategoryViewProps) {
   }[category];
 
   return (
-    <Layout>
+    <Layout onLogout={onLogout}>
       <div className="flex flex-col h-full space-y-2">
         
         {/* Header Section */}
