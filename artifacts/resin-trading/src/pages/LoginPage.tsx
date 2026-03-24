@@ -53,33 +53,6 @@ export function LoginPage({ onSuccess }: LoginPageProps) {
       >
         {/* Logo / brand */}
         <div style={{ textAlign: "center" }}>
-          <div
-            style={{
-              width: 64,
-              height: 64,
-              borderRadius: "50%",
-              background: "hsl(152,73%,41%)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              margin: "0 auto 1rem",
-            }}
-          >
-            <svg width="34" height="34" viewBox="0 0 34 34" fill="none">
-              <circle cx="17" cy="17" r="16" stroke="white" strokeWidth="2" />
-              <text
-                x="17"
-                y="22"
-                textAnchor="middle"
-                fill="white"
-                fontSize="14"
-                fontWeight="bold"
-                fontFamily="serif"
-              >
-                丸
-              </text>
-            </svg>
-          </div>
           <div style={{ fontSize: "1.15rem", fontWeight: 700, color: "#1a2e1e", letterSpacing: "0.02em" }}>
             丸喜産業株式会社
           </div>
