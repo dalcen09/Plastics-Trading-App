@@ -321,9 +321,9 @@ function MatchCard({ match, highlightEntryId }: { match: any; highlightEntryId?:
             <div className="grid grid-cols-2 gap-3 text-sm">
               <InfoBadge label="樹脂" value={match.source.resinType ?? '—'} />
               <InfoBadge label="タイプ" value={getResinSubType(match.source) ?? '—'} />
-              <InfoBadge icon={<Gauge className="w-3.5 h-3.5"/>} label="製品" value={`${match.source.manufacturer || '未指定'} ${match.source.grade || ''}`} />
+              <InfoBadge icon={<Gauge className="w-3.5 h-3.5"/>} label="製品" value={(match.source.manufacturer || match.source.grade) ? `${match.source.manufacturer || ''} ${match.source.grade || ''}`.trim() : 'ー'} />
               <InfoBadge icon={<DollarSign className="w-3.5 h-3.5"/>} label="価格" value={formatPriceRange(match.source.priceLower, match.source.priceUpper, match.source.price)} />
-              <InfoBadge label="MI" value={formatMI(match.source.meltFlowIndexLower, match.source.meltFlowIndexUpper) ?? '指定なし'} />
+              <InfoBadge label="MI" value={formatMI(match.source.meltFlowIndexLower, match.source.meltFlowIndexUpper) ?? 'ー'} />
               <InfoBadge label="数量" value={formatQty(match.source.quantityLower, match.source.quantityUpper, match.source.quantity)} />
             </div>
           </div>
@@ -365,9 +365,9 @@ function MatchCard({ match, highlightEntryId }: { match: any; highlightEntryId?:
             <div className="grid grid-cols-2 gap-3 text-sm">
               <InfoBadge label="樹脂" value={match.demand.resinType ?? '—'} />
               <InfoBadge label="タイプ" value={getResinSubType(match.demand) ?? '—'} />
-              <InfoBadge icon={<Gauge className="w-3.5 h-3.5"/>} label="希望製品" value={`${match.demand.manufacturer || '指定なし'} ${match.demand.grade || ''}`} />
+              <InfoBadge icon={<Gauge className="w-3.5 h-3.5"/>} label="希望製品" value={(match.demand.manufacturer || match.demand.grade) ? `${match.demand.manufacturer || ''} ${match.demand.grade || ''}`.trim() : 'ー'} />
               <InfoBadge icon={<DollarSign className="w-3.5 h-3.5"/>} label="目標価格" value={formatPriceRange(match.demand.priceLower, match.demand.priceUpper, match.demand.price)} />
-              <InfoBadge label="目標MI" value={formatMI(match.demand.meltFlowIndexLower, match.demand.meltFlowIndexUpper) ?? '指定なし'} />
+              <InfoBadge label="目標MI" value={formatMI(match.demand.meltFlowIndexLower, match.demand.meltFlowIndexUpper) ?? 'ー'} />
               <InfoBadge label="希望数量" value={formatQty(match.demand.quantityLower, match.demand.quantityUpper, match.demand.quantity)} />
             </div>
           </div>
