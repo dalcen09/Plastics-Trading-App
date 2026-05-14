@@ -1,5 +1,6 @@
 {
-  "buildCommand": "pnpm install && pnpm --filter @workspace/resin-trading run build",
+  "framework": null,
+  "buildCommand": "pnpm install && BASE_PATH=/ pnpm --filter @workspace/resin-trading run build",
   "outputDirectory": "artifacts/resin-trading/dist/public",
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/index" },
