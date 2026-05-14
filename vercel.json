@@ -1,6 +1,6 @@
 {
   "framework": null,
-  "buildCommand": "pnpm install && sh scripts/vercel-build.sh",
+  "buildCommand": "pnpm run build",
   "outputDirectory": "artifacts/resin-trading/dist/public",
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/index" },
