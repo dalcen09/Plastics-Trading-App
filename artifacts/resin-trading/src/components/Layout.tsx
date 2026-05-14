@@ -7,6 +7,7 @@ import {
   Menu,
   X,
   Recycle,
+  LogOut,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useQuery } from "@tanstack/react-query";
@@ -14,11 +15,12 @@ import { useGetMatchCount } from "@workspace/api-client-react";
 
 interface LayoutProps {
   children: ReactNode;
+  onLogout?: () => void;
 }
 
 const BASE = import.meta.env.BASE_URL.replace(/\/$/, "");
 
-export function Layout({ children }: LayoutProps) {
+export function Layout({ children, onLogout }: LayoutProps) {
   const [location] = useLocation();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
@@ -237,6 +239,16 @@ export function Layout({ children }: LayoutProps) {
                 className="pl-9 pr-4 py-2 bg-secondary/50 border-none rounded-full text-sm w-64 focus:outline-none focus:ring-2 focus:ring-primary/20 transition-all"
               />
             </div>
+            {onLogout && (
+              <button
+                onClick={onLogout}
+                title="ログアウト"
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
+              >
+                <LogOut className="w-4 h-4" />
+                <span className="hidden sm:inline">ログアウト</span>
+              </button>
+            )}
           </div>
         </header>
 
