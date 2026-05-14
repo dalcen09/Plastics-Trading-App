@@ -1,6 +1,6 @@
 {
   "framework": null,
-  "buildCommand": "pnpm install && BASE_PATH=/ pnpm --filter @workspace/resin-trading run build && cd artifacts/api-server && pnpm exec esbuild src/app.ts --bundle --platform=node --format=cjs --outfile=dist/app.cjs",
+  "buildCommand": "pnpm install && pnpm --filter @workspace/api-zod exec tsc --build && pnpm --filter @workspace/db exec tsc --build && BASE_PATH=/ pnpm --filter @workspace/resin-trading run build && cd artifacts/api-server && pnpm exec esbuild src/app.ts --bundle --platform=node --format=cjs --outfile=dist/app.cjs",
   "outputDirectory": "artifacts/resin-trading/dist/public",
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/api/index" },
