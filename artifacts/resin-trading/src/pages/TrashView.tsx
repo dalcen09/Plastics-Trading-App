@@ -65,7 +65,7 @@ function formatDate(iso: string) {
   }
 }
 
-export function TrashView({ onLogout }: { onLogout?: () => void } = {}) {
+export function TrashView() {
   const qc = useQueryClient();
   const [selected, setSelected] = useState<Set<number>>(new Set());
   const [confirmPurgeId, setConfirmPurgeId] = useState<number | null>(null);
@@ -141,7 +141,7 @@ export function TrashView({ onLogout }: { onLogout?: () => void } = {}) {
   const selectedArr = Array.from(selected);
 
   return (
-    <Layout onLogout={onLogout}>
+    <Layout>
       <div className="h-full flex flex-col gap-4 overflow-hidden">
         {/* Header */}
         <div className="flex items-center justify-between flex-shrink-0">
