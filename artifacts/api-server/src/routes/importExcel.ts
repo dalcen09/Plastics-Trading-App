@@ -3,7 +3,7 @@ import multer from "multer";
 import * as XLSX from "xlsx";
 import { db } from "@workspace/db";
 import { resinEntriesTable } from "@workspace/db/schema";
-import { invalidateMatchCache } from "./resinEntries";
+import { invalidateMatchCache } from "./resinEntries.js";
 
 const router: IRouter = Router();
 const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 20 * 1024 * 1024 } });
